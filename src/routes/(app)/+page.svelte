@@ -20,6 +20,19 @@
 	import { memoizeDebounce } from '$lib/utils/memoizeDebounce';
 	import Sentiment from '$lib/comps/widgets/Sentiment.svelte';
 	import SocialSharePopup from '$lib/comps/SocialSharePopup.svelte';
+	import HomepageSmallChart from '$lib/comps/HomepageSmallChart.svelte';
+	import IndicatorCard from '$lib/comps/IndicatorCard.svelte';
+	import VideoContainer from '$lib/comps/VideoContainer.svelte';
+	import IndicatorGraphicsCard from '$lib/comps/IndicatorGraphicsCard.svelte';
+	import SmallGreedIndicatorCard from '$lib/comps/SmallGreedIndicatorCard.svelte';
+	import FloatingCard from '$lib/comps/FloatingCard.svelte';
+	import CoinSwiper from '$lib/comps/CoinSwiper.svelte';
+	import PremiumBadge from '$lib/comps/decorations/PremiumBadge.svelte';
+	import FreeCard from '$lib/comps/plan-cards/FreeCard.svelte';
+	import PremiumCard from '$lib/comps/plan-cards/PremiumCard.svelte';
+	import DegenCard from '$lib/comps/plan-cards/DegenCard.svelte';
+	import MemeSwiper from '$lib/comps/MemeSwiper.svelte';
+	import HomepageBigChart from '$lib/comps/HomepageBigChart.svelte';
 
 	async function get_tokens_func() {
 		const coins = await fetch('https://api.coin-stats.com/v4/coins?skip=0&limit=2500')
@@ -219,7 +232,7 @@
 	});
 </script>
 
-<section class="max-w-4xl mx-auto mt-16 fear_index">
+<!-- <section class="max-w-4xl mx-auto mt-16 fear_index">
 	<div class="flex flex-col items-center justify-center w-full text-center top">
 		<h1 class="w-full text-3xl font-extrabold">Fear and Greed Index</h1>
 		<div class="px-6 pt-4 opacity-50 descriptio text-whiten">
@@ -268,4 +281,185 @@
 
 <div class="w-full h-20 sm:h-10 spacer"></div>
 
-<SocialSharePopup />
+<SocialSharePopup /> -->
+
+<main class="w-full relative overflow-hidden">
+	<div class="h-full max-w-[980px] mx-auto pt-28 min-h-screen px-4">
+		<div
+			class="bg-[url(/background/homepage-top.png)] bg-cover min-h-screen w-screen absolute top-0 left-0 -z-10"
+		></div>
+		<h1 class="text-5xl text-center font-paralucent-demibold">
+			<span class="bg-clip-text text-transparent bg-gradient-to-r from-primary to-[#F3C111]">
+				Calculate
+			</span>{' '}
+			Your Trading
+		</h1>
+		<h2 class="opacity-80 text-center mt-[10px] font-bold text-lg">
+			Toolset for effortlessly navigating the emotional rollercoaster that is crypto.
+		</h2>
+
+		<div
+			style="background: linear-gradient(180deg, #000000 0%, rgba(0, 0, 0, 0.2) 125.15%) padding-box, linear-gradient(179.91deg, rgba(255, 59, 16, 0.4) 11.58%, rgba(255, 59, 16, 0) 99.92%) border-box"
+			class="bg-gradient-to-b from-black to-[#00000033] w-full h-[550px] mt-[25px] rounded-[28px] pt-[46px] flex flex-col border-2 border-transparent pb-[20px]"
+		>
+			<div
+				class="grid grid-cols-3 pl-[50px] pr-[80px] gap-x-16 -desktop:grid-cols-1 -desktop:max-h-[100px] -desktop:overflow-scroll -desktop:snap-y -desktop:snap-mandatory"
+			>
+				<HomepageSmallChart
+					change={-3.78}
+					value={2551894647950}
+					title="Market Cap"
+					prefix="$"
+					postfix=""
+				/>
+				<HomepageSmallChart
+					change={3.78}
+					value={2551894647950}
+					title="Market Cap"
+					prefix="$"
+					postfix=""
+				/>
+				<HomepageSmallChart
+					change={3.78}
+					value={2551894647950}
+					title="Market Cap"
+					prefix="$"
+					postfix=""
+				/>
+			</div>
+
+			<div class="flex pr-[25px] flex-grow">
+				<div class="flex-grow flex-shrink pt-[66px] relative overflow-hidden">
+					<div
+						class="desktop:w-[600px] -desktop:w-full h-full overflow-hidden pl-[30px] desktop:pr-4"
+					>
+						<HomepageBigChart />
+					</div>
+
+					<div class="absolute top-0 flex justify-center w-full items-end h-full">
+						<div
+							style="background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)) padding-box, linear-gradient(180deg, rgba(255, 59, 16, 0.3) -4.26%, rgba(255, 59, 16, 0) 100%) border-box"
+							class="bg-black/50 rounded-[20px] border-transparent border-2 w-[400px] h-[90px] backdrop-blur-xl px-[65px] py-[27px] flex justify-between"
+						>
+							<img src={'/icons/btc.svg'} width={35} height={35} alt="Bitcoin." />
+							<img src={'/icons/eth.svg'} width={35} height={35} alt="Ethereum." />
+							<img src={'/icons/tether.svg'} width={35} height={35} alt="Tether." />
+							<img src={'/icons/bnc.svg'} width={35} height={35} alt="Binance Coin." />
+							<img src={'/icons/map.svg'} width={35} height={35} alt="Don't know Coin." />
+						</div>
+					</div>
+				</div>
+
+				<div class="pt-[24px] w-[320px] relative flex-shrink-0 -desktop:hidden">
+					<div class="absolute h-[430px]">
+						<IndicatorCard percentage={80} prev={67} average={67} orangeOutline />
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="max-w-screen-xl mx-auto pt-[260px] min-h-[800px] relative -z-10 px-4">
+		<div class="absolute top-0 -translate-y-40">
+			<img
+				src="/background/homepage-2.svg"
+				width={1158}
+				height={919}
+				alt=""
+				class="relative -z-10"
+			/>
+		</div>
+
+		<div class="relative">
+			<div class="max-w-[570px] -1120:max-w-[430px]">
+				<h2 class="text-[64px] leading-[75px] font-paralucent-demibold">
+					Stop Trading With <br />
+					<span class="text-transparent bg-clip-text bg-gradient-to-r from-primary to-yellow">
+						Emotions
+					</span>
+				</h2>
+
+				<p class="font-bold text-lg pt-[25px] opacity-80">
+					Fomoed provides a toolset for effortlessly navigating the emotional rollercoaster that is
+					crypto.
+					<br /> <br />
+					Have complete access to your favorite Altcoins and get precise data-based market sentiment
+					analysis
+				</p>
+			</div>
+
+			<div class="w-[509px] h-[373px] absolute top-0 right-0">
+				<VideoContainer thumbnail="/images/video-thumbnail.png" />
+			</div>
+
+			<div class="absolute top-0 right-0 translate-x-10 -translate-y-[70%]">
+				<IndicatorGraphicsCard percentage={80} />
+			</div>
+
+			<div class="absolute left-1/2 top-0 -translate-y-[130%]">
+				<SmallGreedIndicatorCard percentage={80} />
+			</div>
+
+			<div class="absolute left-1/2 bottom-0 translate-y-[105%] w-[245px] h-[144px]">
+				<FloatingCard>
+					<div class="px-[22px]">
+						<HomepageSmallChart
+							title="BTC Dominance"
+							value={51.78}
+							change={0.14}
+							postfix="%"
+							prefix=""
+						></HomepageSmallChart>
+					</div>
+				</FloatingCard>
+			</div>
+		</div>
+	</div>
+	<div class="h-[500px]">
+		<CoinSwiper />
+	</div>
+	<div>
+		<div>
+			<h2 class="text-[36px] text-center font-paralucent-demibold">
+				Get your free trial to unlock more!
+			</h2>
+
+			<div class="flex mx-auto max-w-max gap-x-[20px] pt-[9px]">
+				<img src="/fomoed.svg" width={158} height={33} alt="Fomoed." />
+
+				<PremiumBadge />
+			</div>
+		</div>
+	</div>
+	<div class="pt-[52px] flex justify-center gap-x-[14px] items-center px-4">
+		<FreeCard />
+		<PremiumCard />
+		<DegenCard />
+	</div>
+
+	<div class="max-w-[914px] mx-auto flex items-center gap-x-[80px] pt-40 relative pb-48 px-4">
+		<div class="absolute inset-x-0 -translate-y-40 translate-x-1/3 -z-10 scale-150">
+			<img src="/background/homepage-3.png" width={1040} height={2352} alt="" />
+		</div>
+
+		<MemeSwiper />
+
+		<div>
+			<div class="text-[36px] leading-[45px] font-paralucent-demibold">
+				Got any trouble or question?
+			</div>
+			<div class="pt-[15px] text-[20px] font-semibold">
+				Send us your thought to{' '}
+				<a href="mailto:fomoed@mail.com" class="text-primary underline"> fomoed@mail.com </a>
+			</div>
+		</div>
+	</div>
+
+	<footer
+		class="bg-[#201F1FB2] backdrop-blur-xl h-[125px] pt-[40px] flex flex-col items-center gap-y-[20px] opacity-60 pb-[25px]"
+	>
+		<img src="/fomoed-white.svg" width={108} height={22} alt="Fomoed logo." />
+
+		<div class="text-xs">© All Copyright Reserved Fomoed 2024</div>
+	</footer>
+</main>
