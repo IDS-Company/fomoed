@@ -6,8 +6,10 @@
 </script>
 
 <nav class="relative flex h-[75px] items-center justify-center w-full max-w-screen-xl mx-auto z-10">
-	<div class="absolute h-full left-0 top-0">
-		<img src="/fomoed.svg" alt="Fomoed." class="h-full" width={110} height={23} />
+	<div class="absolute h-full left-0 top-0 z-10">
+		<a href="/">
+			<img src="/fomoed.svg" alt="Fomoed." class="h-full" width={110} height={23} />
+		</a>
 	</div>
 
 	<div class="absolute inset-x-0 flex gap-x-[10px] w-full">

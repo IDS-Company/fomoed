@@ -13,8 +13,9 @@
 	import { no_reroute_routes } from '$lib';
 	import { auth_email } from '$lib/stores/user';
 	import { SvelteToast } from '@zerodevx/svelte-toast';
-	import { failure } from '$lib/utils/index.js';
+	import { failure, fetch_global_data } from '$lib/utils/index.js';
 	import { MetaTags } from 'svelte-meta-tags';
+	import { refresh_coinstats_coin_list } from '$lib/utils';
 
 	// Redirected here once the user has bought and they will add the sessionId as a query parameter
 
@@ -22,6 +23,9 @@
 	$: ({ session, supabase, user } = data);
 
 	onMount(() => {
+		refresh_coinstats_coin_list();
+		fetch_global_data();
+
 		const { data } = supabase.auth.onAuthStateChange((_, newSession) => {
 			if (!newSession) {
 				/**
