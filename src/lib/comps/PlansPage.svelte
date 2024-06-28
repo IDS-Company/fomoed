@@ -14,6 +14,8 @@
 	import PremiumCard from './plan-cards/PremiumCard.svelte';
 	import DegenCard from './plan-cards/DegenCard.svelte';
 	import AppNav from './AppNav.svelte';
+	import UnsubscribeConfirmPopup from './popups/UnsubscribeConfirmPopup.svelte';
+	import UnsubscribeSuccessPopup from './popups/UnsubscribeSuccessPopup.svelte';
 
 	let stripeContext = getContext<{
 		getStripe: () => Stripe;
@@ -370,3 +372,6 @@
 		</div>
 	</div>
 </div>
+
+<!-- <UnsubscribeConfirmPopup planName="Test" monthlyFee={123} /> -->
+<!-- <UnsubscribeSuccessPopup /> -->

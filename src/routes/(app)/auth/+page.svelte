@@ -30,14 +30,16 @@
 			failure(form.error);
 		} else {
 			if (form.action === 'signup') {
-				success(
-					'Successfully created your account. Please check your email for additional instructions'
-				);
+				goto('/auth/sent/create-account');
+				// success(
+				// 	'Successfully created your account. Please check your email for additional instructions'
+				// );
 			}
 			if (form.action === 'forgot') {
-				success(
-					'Successfully sent password reset email. Please check your email for the confirmation link'
-				);
+				goto('/auth/sent/password-reset');
+				// success(
+				// 	'Successfully sent password reset email. Please check your email for the confirmation link'
+				// );
 			}
 			if (form.action === 'update_password') {
 				goto('/').then(() => {
