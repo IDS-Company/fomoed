@@ -1,0 +1,22 @@
+<script>
+	import CryptoDropdown from './CryptoDropdown.svelte';
+	import ProfileButton from './ProfileButton.svelte';
+
+	export let showCurrencyDropdown = false;
+</script>
+
+<nav class="relative flex h-[75px] items-center justify-center w-full max-w-screen-xl mx-auto z-10">
+	<div class="absolute h-full left-0 top-0">
+		<img src="/fomoed.svg" alt="Fomoed." class="h-full" width={110} height={23} />
+	</div>
+
+	<div class="absolute inset-x-0 flex gap-x-[10px] w-full">
+		<div class="flex-grow"></div>
+
+		{#if showCurrencyDropdown}
+			<CryptoDropdown />
+		{/if}
+
+		<ProfileButton></ProfileButton>
+	</div>
+</nav>

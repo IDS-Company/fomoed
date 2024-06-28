@@ -70,7 +70,7 @@
 
 	<div class="absolute right-4">
 		<div class="w-[138px]">
-			<a href="/login">
+			<a href="/auth">
 				<MainButton>
 					<span class="uppercase">Login</span>
 					<img src="/icons/login-arrow.svg" width={17} height={13} alt="Arrow right" />

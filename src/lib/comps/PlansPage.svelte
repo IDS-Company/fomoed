@@ -9,6 +9,11 @@
 	import { browser } from '$app/environment';
 	import type { SupabaseClient } from '@supabase/supabase-js';
 	import { get_user, sleep } from '$lib';
+	import PremiumBadge from './decorations/PremiumBadge.svelte';
+	import FreeCard from './plan-cards/FreeCard.svelte';
+	import PremiumCard from './plan-cards/PremiumCard.svelte';
+	import DegenCard from './plan-cards/DegenCard.svelte';
+	import AppNav from './AppNav.svelte';
 
 	let stripeContext = getContext<{
 		getStripe: () => Stripe;
@@ -157,7 +162,7 @@
 	}
 </script>
 
-<section class="px-6 pt-16 mx-auto max-w-screen-2xl">
+<!-- <section class="px-6 pt-16 mx-auto max-w-screen-2xl">
 	<header class="flex flex-col items-center justify-between pb-10 md:flex-row header">
 		<div class="start_section">
 			<div class="text-2xl font-bold sm:text-3xl title_tag">Stop Trading With Emotions</div>
@@ -215,7 +220,6 @@
 			Unlock a Full Suite of Professional Tools
 		</div>
 
-		<!-- Plans -->
 		<div
 			class="flex flex-col items-center justify-center py-6 space-y-3 sm:py-16 sm:flex-row sm:space-y-0 sm:space-x-3 plans_list"
 		>
@@ -325,8 +329,9 @@
 		</div>
 	</article>
 </section>
+-->
 
-<style lang="postcss">
+<!-- <style lang="postcss">
 	.premium {
 		@apply border-none relative p-[1px];
 		@apply content-none block bg-gradient-to-r from-[#ff3432] to-[#ff9851];
@@ -335,4 +340,33 @@
 			@apply border-none mx-auto;
 		}
 	}
-</style>
+</style> -->
+
+<div
+	style="background-image: url(/background/select-plan.svg)"
+	class="absolute inset-0 overflow-hidden bg-cover flex flex-col"
+>
+	<AppNav />
+
+	<div class="flex-grow grid place-items-center pb-24">
+		<div
+			style="grid-template-rows;: 1fr 3fr"
+			class="grid place-items-center grid-cols-3 gap-[7px] mx-auto h-full pb-6 w-full max-w-[1050px] max-h-[700px]"
+		>
+			<div class="col-span-3">
+				<h1 class="font-paralucent-demibold text-[28px] text-center">
+					Get your free trial to unlock more!
+				</h1>
+
+				<div class="mt-[9px] flex items-center justify-center gap-x-[20px]">
+					<img src="/fomoed.svg" alt="Fomoed." class="h-full" width={158} height={33} />
+					<PremiumBadge />
+				</div>
+			</div>
+
+			<FreeCard />
+			<PremiumCard />
+			<DegenCard />
+		</div>
+	</div>
+</div>
