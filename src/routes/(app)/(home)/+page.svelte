@@ -1,4 +1,5 @@
 <script lang="ts">
+	import HomepageCoinSwitcher from '$lib/comps/homepage/HomepageCoinSwitcher.svelte';
 	import SymbolInfo from '$lib/comps/widgets/SymbolInfo.svelte';
 	import CFGIGaugeChart from '$lib/comps/widgets/CFGIGaugeChart.svelte';
 	import CFGITrendChart from '$lib/comps/widgets/CFGITrendChart.svelte';
@@ -33,6 +34,7 @@
 	import DegenCard from '$lib/comps/plan-cards/DegenCard.svelte';
 	import MemeSwiper from '$lib/comps/MemeSwiper.svelte';
 	import HomepageBigChart from '$lib/comps/HomepageBigChart.svelte';
+	import { writable } from 'svelte/store';
 
 	async function get_tokens_func() {
 		const coins = await fetch('https://api.coin-stats.com/v4/coins?skip=0&limit=2500')
@@ -230,6 +232,18 @@
 			);
 		}
 	});
+
+	const selectedSymbol = writable<string>('BTC');
+
+	selectedSymbol.subscribe((symbol) => {
+		if (!$coinstats_coin_list) return;
+
+		const coin = $coinstats_coin_list.find((c) => c.symbol === symbol);
+
+		if (coin) {
+			coinstats_selected_coin.set(coin);
+		}
+	});
 </script>
 
 <!-- <section class="max-w-4xl mx-auto mt-16 fear_index">
@@ -306,25 +320,25 @@
 				class="grid grid-cols-3 pl-[50px] pr-[80px] gap-x-16 -desktop:grid-cols-1 -desktop:max-h-[100px] -desktop:overflow-scroll -desktop:snap-y -desktop:snap-mandatory"
 			>
 				<HomepageSmallChart
-					change={-3.78}
-					value={2551894647950}
+					change={$coinstats_global_data?.marketCapChange}
+					value={$coinstats_global_data?.marketCap.toLocaleString()}
 					title="Market Cap"
 					prefix="$"
 					postfix=""
 				/>
 				<HomepageSmallChart
-					change={3.78}
-					value={2551894647950}
-					title="Market Cap"
+					change={$coinstats_global_data?.volumeChange}
+					value={$coinstats_global_data?.volume.toLocaleString()}
+					title="Volume 24H"
 					prefix="$"
 					postfix=""
 				/>
 				<HomepageSmallChart
-					change={3.78}
-					value={2551894647950}
-					title="Market Cap"
-					prefix="$"
-					postfix=""
+					change={$coinstats_global_data?.btcDominanceChange}
+					value={$coinstats_global_data?.btcDominance.toLocaleString()}
+					title="BTC Dominance"
+					prefix=""
+					postfix="%"
 				/>
 			</div>
 
@@ -336,23 +350,17 @@
 						<HomepageBigChart />
 					</div>
 
-					<div class="absolute top-0 flex justify-center w-full items-end h-full">
-						<div
-							style="background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)) padding-box, linear-gradient(180deg, rgba(255, 59, 16, 0.3) -4.26%, rgba(255, 59, 16, 0) 100%) border-box"
-							class="bg-black/50 rounded-[20px] border-transparent border-2 w-[400px] h-[90px] backdrop-blur-xl px-[65px] py-[27px] flex justify-between"
-						>
-							<img src={'/icons/btc.svg'} width={35} height={35} alt="Bitcoin." />
-							<img src={'/icons/eth.svg'} width={35} height={35} alt="Ethereum." />
-							<img src={'/icons/tether.svg'} width={35} height={35} alt="Tether." />
-							<img src={'/icons/bnc.svg'} width={35} height={35} alt="Binance Coin." />
-							<img src={'/icons/map.svg'} width={35} height={35} alt="Don't know Coin." />
-						</div>
-					</div>
+					<HomepageCoinSwitcher bind:selectedTicker={$selectedSymbol}></HomepageCoinSwitcher>
 				</div>
 
 				<div class="pt-[24px] w-[320px] relative flex-shrink-0 -desktop:hidden">
 					<div class="absolute h-[430px]">
-						<IndicatorCard percentage={80} prev={67} average={67} orangeOutline />
+						<IndicatorCard
+							percentage={$cfgi_summary?.now.value}
+							prev={$cfgi_summary?.previous.value}
+							average={$cfgi_summary?.average.value}
+							orangeOutline
+						/>
 					</div>
 				</div>
 			</div>
@@ -397,7 +405,7 @@
 			</div>
 
 			<div class="absolute left-1/2 top-0 -translate-y-[130%]">
-				<SmallGreedIndicatorCard percentage={80} />
+				<SmallGreedIndicatorCard percentage={$cfgi_summary?.now.value} />
 			</div>
 
 			<div class="absolute left-1/2 bottom-0 translate-y-[105%] w-[245px] h-[144px]">
@@ -405,8 +413,8 @@
 					<div class="px-[22px]">
 						<HomepageSmallChart
 							title="BTC Dominance"
-							value={51.78}
-							change={0.14}
+							value={$coinstats_global_data?.btcDominance.toLocaleString()}
+							change={$coinstats_global_data?.btcDominanceChange}
 							postfix="%"
 							prefix=""
 						></HomepageSmallChart>

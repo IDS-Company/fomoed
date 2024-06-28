@@ -10,7 +10,7 @@
 >
 	<img
 		src="/icons/change-arrow-down.svg"
-		class:rotate-180={percentage < 0}
+		class:rotate-180={percentage >= 0}
 		width={10}
 		height={7}
 		alt="Arrow down"

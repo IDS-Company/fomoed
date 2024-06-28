@@ -7,7 +7,7 @@
 	export let title = 'Title';
 	export let prefix = '';
 	export let postfix = '';
-	export let value = 0;
+	export let value = '0';
 	export let change = 0;
 
 	const chartData = getChartData();
@@ -15,7 +15,7 @@
 
 	onMount(() => {
 		const ctx = canvas.getContext('2d');
-		const chart = new Chart(ctx, {
+		const chart = new Chart(ctx!, {
 			type: 'line',
 			data: data,
 			options: options

@@ -23,11 +23,11 @@
 			</DashboardCard>
 
 			<DashboardCard>
-				<HomepageSmallChart title="Market cap" value={1234} change={1.23} prefix="$" />
+				<HomepageSmallChart title="Volume 24H" value={1234} change={1.23} prefix="$" />
 			</DashboardCard>
 
 			<DashboardCard>
-				<HomepageSmallChart title="Market cap" value={1234} change={1.23} prefix="$" />
+				<HomepageSmallChart title="BTC Dominance" value={1234} change={1.23} prefix="$" />
 			</DashboardCard>
 
 			<div class="col-span-2 h-full">
