@@ -172,7 +172,6 @@ export async function fetch_token_data(
 			return [];
 		});
 	trend_chart_loading.set(false);
-
 	if (data?.length > 0) {
 		coin_data.set(data);
 		fear_and_greed_index_summary(data);

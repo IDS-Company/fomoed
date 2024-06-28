@@ -1,7 +1,16 @@
 <script>
-	const options = ['15M', '1H', '7H', '1D'];
+	import { coinstats_selected_coin } from "$lib/stores";
+	import { fetch_token_data } from "$lib/utils";
+	import { CfgiPeriods } from "$lib/utils/cfgi_data";
 
-	let selected = options[0];
+	const options = CfgiPeriods;
+
+	export let selected = options[0];
+
+	$: if ($coinstats_selected_coin && selected) {
+		console.log(selected.value);
+		fetch_token_data($coinstats_selected_coin.symbol, $coinstats_selected_coin.slug, selected.value, $coinstats_selected_coin.name);
+	}
 </script>
 
 <div class="h-[38px] flex gap-x-[5px]">
@@ -13,7 +22,7 @@
 				? 'bg-[#FFFFFF1A]'
 				: ''}"
 		>
-			{duration}
+			{duration.label}
 		</button>
 	{/each}
 </div>
