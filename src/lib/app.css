@@ -5,3 +5,51 @@
 html, body {
     @apply text-white;
 }
+
+@font-face {
+    font-family: 'Switzer-Variable';
+    src: url('/fonts/switzer/Switzer-Variable.woff2') format('woff2');
+    font-weight: 100 900;
+    font-display: swap;
+    font-style: normal;
+  }
+
+@font-face {
+    font-family: 'Satoshi-Variable';
+    src: url('/fonts/satoshi/Satoshi-Variable.woff2') format('woff2');
+    font-weight: 300 900;
+    font-display: swap;
+    font-style: normal;
+}
+
+@font-face {
+font-family: 'ParalucentDemibold';
+  src: url('/fonts/paralucent/ParalucentDemiBold.woff') format('woff');
+  font-weight: 400;
+  font-display: swap;
+  font-style: normal;
+  }
+
+@font-face {
+font-family: 'ParalucentHeavy';
+  src: url('/fonts/paralucent/ParalucentHeavy.woff') format('woff');
+  font-weight: 400;
+  font-display: swap;
+  font-style: normal;
+  }
+
+@font-face {
+font-family: 'Paralucent';
+  src: url('/fonts/paralucent/ParalucentCondLight.woff') format('woff');
+  font-weight: 300;
+  font-display: swap;
+  font-style: normal;
+  }
+
+@font-face {
+font-family: 'Paralucent';
+  src: url('/fonts/paralucent/ParalucentMedium.woff') format('woff');
+  font-weight: 500;
+  font-display: swap;
+  font-style: normal;
+  }

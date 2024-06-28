@@ -73,9 +73,7 @@
 		<div class="uppercase opacity-60 text-sm whitespace-nowrap">{title}</div>
 
 		<div class="mt-[10px] text-lg font-paralucent font-medium">
-			<span>{prefix}</span>
-			<span>{value}</span>
-			<span>{postfix}</span>
+			{prefix}{value}{postfix}
 		</div>
 
 		<div class="mt-[6px]">

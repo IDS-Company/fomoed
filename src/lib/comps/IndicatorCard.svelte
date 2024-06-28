@@ -31,7 +31,7 @@
 	<div class="grid grid-cols-3 justify-between px-[28px]">
 		<div>
 			<div class="text-xs opacity-60">Prev</div>
-			<div class="opacity-80 font-paralucent font-medium">{prev}</div>
+			<div class="opacity-80 font-paralucent font-medium text-[18px]">{prev}</div>
 		</div>
 
 		<div class="text-center">
@@ -43,7 +43,7 @@
 
 		<div class="text-right">
 			<div class="text-xs opacity-60">Average</div>
-			<div class="opacity-80 font-paralucent font-medium">{average}</div>
+			<div class="opacity-80 font-paralucent font-medium text-[18px]">{average}</div>
 		</div>
 	</div>
 
