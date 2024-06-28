@@ -165,9 +165,6 @@
 				<div class="pt-[24px] w-[320px] relative flex-shrink-0 -desktop:hidden">
 					<div class="absolute h-[430px]">
 						<IndicatorCard
-							percentage={$cfgi_summary?.now.value}
-							prev={$cfgi_summary?.previous.value}
-							average={$cfgi_summary?.average.value}
 							orangeOutline
 						/>
 					</div>
