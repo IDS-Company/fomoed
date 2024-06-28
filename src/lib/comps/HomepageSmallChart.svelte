@@ -1,5 +1,6 @@
-<script>
+<script lang="ts">
 	import { getChartData } from '$lib/utils/mockChartData';
+	import { onMount } from 'svelte';
 	import ChangeBadge from './ChangeBadge.svelte';
 	import { Chart } from 'chart.js/auto';
 
@@ -11,6 +12,15 @@
 
 	const chartData = getChartData();
 	const color = '#FF3B10';
+
+	onMount(() => {
+		const ctx = canvas.getContext('2d');
+		const chart = new Chart(ctx, {
+			type: 'line',
+			data: data,
+			options: options
+		});
+	});
 
 	const data = {
 		labels: chartData.labels,
@@ -66,6 +76,8 @@
 			}
 		}
 	};
+
+	let canvas: HTMLCanvasElement;
 </script>
 
 <div class="flex items-center gap-x-2 w-full h-full">
@@ -82,6 +94,6 @@
 	</div>
 
 	<div class="w-[95px] h-[45px] flex-grow">
-		<!-- <Line {data} {options} /> -->
+		<canvas bind:this={canvas} width="400" height="150" />
 	</div>
 </div>

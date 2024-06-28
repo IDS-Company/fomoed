@@ -1,9 +1,7 @@
-<script>
+<script lang="ts">
 	import { onMount } from 'svelte';
 	import { getGreedData } from '$lib/utils/mockChartData';
 	import Chart from 'chart.js/auto';
-
-	let chart;
 
 	let chartData = {
 		labels: [],
@@ -85,9 +83,7 @@
 		}
 	};
 
-	$: console.log('chartData', chartData);
-
-	let canvas;
+	let canvas: HTMLCanvasElement;
 </script>
 
 <canvas bind:this={canvas} width="400" height="150" />
