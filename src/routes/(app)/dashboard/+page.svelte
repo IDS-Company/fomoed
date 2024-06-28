@@ -5,6 +5,7 @@
 	import HomepageBigChart from '$lib/comps/HomepageBigChart.svelte';
 	import HomepageSmallChart from '$lib/comps/HomepageSmallChart.svelte';
 	import IndicatorCard from '$lib/comps/IndicatorCard.svelte';
+	import { coinstats_global_data } from '$lib/stores';
 </script>
 
 <div
@@ -19,20 +20,36 @@
 			class="grid grid-cols-3 gap-[7px] mx-auto h-full pb-6 w-full max-w-[1050px] max-h-[700px]"
 		>
 			<DashboardCard>
-				<HomepageSmallChart title="Market cap" value={1234} change={1.23} prefix="$" />
+				<!-- svelte-ignore missing-declaration -->
+				<HomepageSmallChart
+					title="Market cap"
+					change={$coinstats_global_data?.marketCapChange}
+					value={$coinstats_global_data?.marketCap.toLocaleString()}
+					prefix="$"
+				/>
 			</DashboardCard>
 
 			<DashboardCard>
-				<HomepageSmallChart title="Volume 24H" value={1234} change={1.23} prefix="$" />
+				<HomepageSmallChart
+					title="Volume 24H"
+					change={$coinstats_global_data?.volumeChange}
+					value={$coinstats_global_data?.volume.toLocaleString()}
+					prefix="$"
+				/>
 			</DashboardCard>
 
 			<DashboardCard>
-				<HomepageSmallChart title="BTC Dominance" value={1234} change={1.23} prefix="$" />
+				<HomepageSmallChart
+					title="BTC Dominance"
+					change={$coinstats_global_data?.btcDominanceChange}
+					value={$coinstats_global_data?.btcDominance.toLocaleString()}
+					prefix="$"
+				/>
 			</DashboardCard>
 
 			<div class="col-span-2 h-full">
 				<DashboardCard>
-					<div class="w-full h-full flex flex-col">
+					<div class="w-full h-full flex flex-col overflow-hidden">
 						<div class="flex items-center w-full">
 							<div>
 								<div class="text-[20px] font-paralucent-heavy">BITCOIN</div>

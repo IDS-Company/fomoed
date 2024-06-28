@@ -54,6 +54,8 @@
 			datasets: [cfgiData]
 		};
 
+		console.log(chart_data);
+
 		const options: _DeepPartialObject<
 			CoreChartOptions<'bar'> &
 				ElementChartOptions<'bar'> &
@@ -116,10 +118,10 @@
 		}
 	});
 
-	onMount(() => {
+	$: if (trend_chart_canvas) {
 		ctx = trend_chart_canvas.getContext('2d')!;
 		chart_init();
-	});
+	}
 
 	let trend_chart_canvas: HTMLCanvasElement;
 </script>

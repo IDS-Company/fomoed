@@ -3,10 +3,16 @@ import type { CFGIEnum } from '$lib/utils';
 import type { ICoinCfgiPriceData } from '..';
 import { CFGI_SUPPORTED_PERIODS_ENUM } from '$lib/utils/cfgi_data';
 
-export const coinstats_coin_list =
-	writable<
-		{ price: number; icon: string; symbol: string; name: string; color: string; slug: string }[]
-	>();
+export type CoinstatsCoinListItem = {
+	price: number;
+	icon: string;
+	symbol: string;
+	name: string;
+	color: string;
+	slug: string;
+};
+
+export const coinstats_coin_list = writable<CoinstatsCoinListItem[]>();
 
 export const coinstats_selected_coin = writable<{
 	price: number;
