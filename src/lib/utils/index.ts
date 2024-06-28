@@ -1,5 +1,9 @@
 import { toast } from '@zerodevx/svelte-toast';
 
+export function get_data_index (data: number) {
+	return Math.floor(data / 25);
+}
+
 export function get_data_color(data: number) {
 	return data <= 25 ? '#f02834' : data <= 50 ? '#f07d29' : data <= 75 ? '#99cb81' : '#34b348';
 }
