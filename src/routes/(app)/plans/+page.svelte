@@ -22,6 +22,8 @@
 			})
 			.finally(() => loading.set(false));
 	});
+
+	$: console.log($prices_store);
 </script>
 
 {#if $loading}

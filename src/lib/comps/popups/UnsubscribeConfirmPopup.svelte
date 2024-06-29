@@ -25,7 +25,7 @@
 
 		<div class="pt-[36px]">
 			<div class="flex gap-x-[20px] h-[45px]">
-				<SecondaryButton on:click={() => dispatch('click-sign-out')}>Confirm</SecondaryButton>
+				<SecondaryButton on:click={() => dispatch('click-confirm')}>Confirm</SecondaryButton>
 				<MainButton on:click={() => dispatch('click-cancel')}>Cancel</MainButton>
 			</div>
 		</div>

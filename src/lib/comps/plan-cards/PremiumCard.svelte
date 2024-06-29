@@ -1,5 +1,13 @@
 <script lang="ts">
+	import { auth_user } from '$lib/stores/user';
+	import { createEventDispatcher } from 'svelte';
 	import MainButton from '../buttons/MainButton.svelte';
+	import { active_premium_sub, changingSubscription } from '$lib/stores/subs';
+	import Time from 'svelte-time/Time.svelte';
+
+	const dispatch = createEventDispatcher();
+
+	$: disabled = $changingSubscription;
 </script>
 
 <div
@@ -15,7 +23,15 @@
 			</div>
 			<div class="text-[48px] mt-[9px] leading-[54px] font-paralucent-demibold">$4.99</div>
 			<div class="opacity-60 font-paralucent font-medium">/month</div>
-			<div class="pt-[12px] opacity-60 text-sm font-paralucent font-medium">Renews in a month</div>
+			<div class="pt-[12px] opacity-60 text-sm font-paralucent font-medium">
+				{#if $active_premium_sub && !$active_premium_sub.has_cancelled}
+					Renews <Time relative timestamp={$active_premium_sub.end_timestamp} />
+				{:else if $active_premium_sub && $active_premium_sub.has_cancelled}
+					Cancels <Time relative timestamp={$active_premium_sub.end_timestamp} />
+				{:else}
+					Renews once a month
+				{/if}
+			</div>
 		</div>
 	</div>
 
@@ -28,14 +44,26 @@
 
 	<div class="flex-grow"></div>
 
-	<div class="px-[20px] pb-[24px] pt-[24px]">
-		<MainButton>
-			<span class="uppercase">Start Free Trial</span>
-		</MainButton>
+	<div class="px-[20px] pb-[24px] pt-[24px] uppercase">
+		{#if !$auth_user?.has_had_free_trial}
+			<MainButton {disabled} on:click={() => dispatch('click-free-trial')}>
+				Start Free Trial
+			</MainButton>
+		{:else if $active_premium_sub && !$active_premium_sub.has_cancelled}
+			<MainButton {disabled} on:click={() => dispatch('click-unsubscribe')}>Unsubscribe</MainButton>
+		{:else if $active_premium_sub && $active_premium_sub.has_cancelled}
+			<MainButton {disabled} on:click={() => dispatch('click-resubscribe')}>Resubscribe</MainButton>
+		{:else if !$active_premium_sub}
+			<MainButton {disabled} on:click={() => dispatch('click-subscribe')}>Select Plan</MainButton>
+		{/if}
 	</div>
 
 	<div class="text-center opacity-60 pb-[22px] text-xs">
-		$4.99 After Trial <br /> Recurring Billing, Cancel Anytime
+		{#if !$auth_user?.has_had_free_trial}
+			$4.99 After Trial <br />
+		{/if}
+
+		Recurring Billing, Cancel Anytime
 	</div>
 
 	<div class="absolute top-[-2px] inset-x-0 flex justify-center">

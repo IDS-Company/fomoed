@@ -11,11 +11,13 @@
 	import Nav from '$lib/comps/Nav.svelte';
 	import { page } from '$app/stores';
 	import { no_reroute_routes } from '$lib';
-	import { auth_email } from '$lib/stores/user';
+	import { auth_email, auth_user } from '$lib/stores/user';
 	import { SvelteToast } from '@zerodevx/svelte-toast';
 	import { failure, fetch_global_data } from '$lib/utils/index.js';
 	import { MetaTags } from 'svelte-meta-tags';
 	import { refresh_coinstats_coin_list } from '$lib/utils';
+
+	$: console.log($auth_user);
 
 	// Redirected here once the user has bought and they will add the sessionId as a query parameter
 

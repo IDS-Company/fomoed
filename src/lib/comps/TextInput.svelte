@@ -6,6 +6,7 @@
 
 <input
 	{id}
+	name={id}
 	type={hidden ? 'password' : 'text'}
 	{placeholder}
 	class={`${

@@ -1,35 +1,12 @@
 <script lang="ts">
-	import { browser } from '$app/environment';
-	import { goto } from '$app/navigation';
-	import Logo from '$lib/icons/Logo.svelte';
-	import { auth_email, auth_user } from '$lib/stores/user';
-	import type { SupabaseClient } from '@supabase/supabase-js';
-	import { getContext } from 'svelte';
-	import { get_user } from '$lib';
+	import { auth_email } from '$lib/stores/user';
 	import Navlink from './Navlink.svelte';
 	import MainButton from './buttons/MainButton.svelte';
-
-	const supabase = getContext<SupabaseClient>('supabase');
-
-	async function handleActions() {
-		if ($auth_email) {
-			const { error } = await supabase.auth.signOut();
-			error && console.log('Auth Action Error: ', error);
-		} else {
-			await goto('/auth');
-		}
-	}
-
-	auth_email.subscribe(async (email) => {
-		if (email) {
-			if (browser && supabase) {
-				await get_user(supabase);
-			}
-		} else {
-			auth_user.set(null);
-		}
-	});
+	import ProfileButton from '$lib/comps/ProfileButton.svelte';
+	import LoadUserData from './func/LoadUserData.svelte';
 </script>
+
+<LoadUserData />
 
 <!-- <nav
 	class="z-50 flex items-center justify-between px-3 text-xs border-b-2 sm:px-6 border-background bg-background h-14 sm:text-base"
@@ -69,13 +46,17 @@
 	</div>
 
 	<div class="absolute right-4">
-		<div class="w-[138px]">
-			<a href="/auth">
-				<MainButton>
-					<span class="uppercase">Login</span>
-					<img src="/icons/login-arrow.svg" width={17} height={13} alt="Arrow right" />
-				</MainButton>
-			</a>
-		</div>
+		{#if $auth_email}
+			<ProfileButton></ProfileButton>
+		{:else}
+			<div class="w-[138px]">
+				<a href="/auth">
+					<MainButton>
+						<span class="uppercase">Login</span>
+						<img src="/icons/login-arrow.svg" width={17} height={13} alt="Arrow right" />
+					</MainButton>
+				</a>
+			</div>
+		{/if}
 	</div>
 </nav>

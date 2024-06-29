@@ -6,6 +6,15 @@ html, body {
     @apply text-white;
 }
 
+.checkmark-list-item {
+  @apply flex items-center gap-x-2;
+}
+
+.checkmark-list-item::before {
+  @apply translate-y-0.5;
+  content: url("/icons/checkmark.svg");
+}
+
 @font-face {
     font-family: 'Switzer-Variable';
     src: url('/fonts/switzer/Switzer-Variable.woff2') format('woff2');

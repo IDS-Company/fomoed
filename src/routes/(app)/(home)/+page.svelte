@@ -35,6 +35,7 @@
 	import MemeSwiper from '$lib/comps/MemeSwiper.svelte';
 	import HomepageBigChart from '$lib/comps/HomepageBigChart.svelte';
 	import { writable } from 'svelte/store';
+	import { goto } from '$app/navigation';
 
 	// const memoizedTokens = memoizeDebounce(refresh_coinstats_coin_list, 1000, { maxWait: 2000 });
 
@@ -250,8 +251,14 @@
 	</div>
 	<div class="pt-[52px] flex justify-center gap-x-[14px] items-center px-4">
 		<FreeCard />
-		<PremiumCard />
-		<DegenCard />
+		<PremiumCard
+			on:click-free-trial={() => goto('/plans')}
+			on:click-subscribe={() => goto('/plans')}
+		/>
+		<DegenCard
+			on:click-subscribe={() => goto('/plans')}
+			on:click-unsubscribe={() => goto('/plans')}
+		/>
 	</div>
 
 	<div class="max-w-[914px] mx-auto flex items-center gap-x-[80px] pt-40 relative pb-48 px-4">

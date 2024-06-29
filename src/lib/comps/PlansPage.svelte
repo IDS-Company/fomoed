@@ -5,7 +5,6 @@
 	import { failure, success, warning } from '$lib/utils';
 	import { getContext } from 'svelte';
 	import type { Stripe } from '@stripe/stripe-js';
-	import Time from 'svelte-time';
 	import { browser } from '$app/environment';
 	import type { SupabaseClient } from '@supabase/supabase-js';
 	import { get_user, sleep } from '$lib';
@@ -16,6 +15,8 @@
 	import AppNav from './AppNav.svelte';
 	import UnsubscribeConfirmPopup from './popups/UnsubscribeConfirmPopup.svelte';
 	import UnsubscribeSuccessPopup from './popups/UnsubscribeSuccessPopup.svelte';
+	import { writable } from 'svelte/store';
+	import { active_degen_sub, active_premium_sub, changingSubscription } from '$lib/stores/subs';
 
 	let stripeContext = getContext<{
 		getStripe: () => Stripe;
@@ -24,7 +25,7 @@
 
 	async function subscribeTo(price_id: string) {
 		if (!$auth_user) {
-			warning('Please login before proceeding to your checkout');
+			// warning('Please login before proceeding to your checkout');
 			goto('/auth');
 			return;
 		} else if (
@@ -35,18 +36,20 @@
 			return;
 		}
 
+		changingSubscription.set(true);
+
 		if (price_id === 'free' && $auth_user.subscriptions.length) {
 			// UnSubscribe all plans
 			await Promise.all(
 				$prices_store.map(async (price) => {
 					if (price.id !== 'free') {
-						await unsubscribeFrom(price.id);
+						await unsubscribeFrom(price.id, true);
 					}
 				})
 			);
 
 			if (browser && supabase) {
-				await sleep(1000);
+				await sleep(5000);
 				await get_user(supabase);
 			}
 		} else {
@@ -54,7 +57,7 @@
 			await Promise.all(
 				$prices_store.map(async (price) => {
 					if (price.id !== 'free') {
-						await unsubscribeFrom(price.id);
+						await unsubscribeFrom(price.id, true);
 					}
 				})
 			);
@@ -92,9 +95,13 @@
 				}
 			}
 		}
+
+		changingSubscription.set(false);
 	}
 
 	async function unsubscribeFrom(price_id: string, implicit = false) {
+		changingSubscription.set(true);
+
 		if ($auth_user) {
 			await Promise.all(
 				$auth_user.subscriptions
@@ -125,21 +132,35 @@
 
 			if (
 				!!$auth_user.subscriptions.filter((sub) => sub.price_id === price_id).length &&
-				implicit
+				!implicit
 			) {
-				success(
-					'Success\nYour subscription will not be billed at the end of your current payment period'
-				);
+				// success(
+				// 	'Success\nYour subscription will not be billed at the end of your current payment period'
+				// );
+
+				showUnsubSuccess.set(true);
 
 				if (browser && supabase) {
-					await sleep(1000);
+					await sleep(5000);
 					await get_user(supabase);
 				}
 			}
 		}
+
+		changingSubscription.set(false);
 	}
 
-	async function resume_subscription(sub_id: string) {
+	async function resubscribePlan(planName: 'Premium' | 'Degen') {
+		changingSubscription.set(true);
+
+		let sub_id: string;
+
+		if (planName === 'Premium') {
+			sub_id = $active_premium_sub!.subscription_id;
+		} else {
+			sub_id = $active_degen_sub!.subscription_id;
+		}
+
 		await fetch('/api/resume_subscription', {
 			method: 'POST',
 			headers: {
@@ -158,10 +179,60 @@
 			});
 
 		if (browser && supabase) {
-			await sleep(1000);
+			await sleep(5000);
 			await get_user(supabase);
 		}
+
+		changingSubscription.set(false);
 	}
+
+	function subscribeFreeTrial() {
+		if (!$auth_user) {
+			goto('/auth');
+			return;
+		}
+
+		if (!$auth_user?.has_had_free_trial) {
+			const price = $prices_store.find(
+				(price) => price.recurring?.interval === 'month' && price.id !== 'free'
+			);
+
+			if (price) {
+				subscribeTo(price.id);
+			}
+		}
+	}
+
+	function subscribeToPlan(planName: string) {
+		if (!$auth_user) {
+			goto('/auth');
+			return;
+		}
+
+		const price = $prices_store.find((price) => price.name === planName);
+
+		if (price) {
+			subscribeTo(price.id);
+		}
+	}
+
+	const unsubFromName = writable<string | null>(null);
+	const showUnsubSuccess = writable(false);
+
+	function unsubPlanFromCard(planName: string) {
+		unsubFromName.set(planName);
+	}
+
+	function unsubPlanFromConfirm() {
+		const price = $prices_store.find((price) => price.name === $unsubFromName);
+		unsubFromName.set(null);
+
+		if (price) {
+			unsubscribeFrom(price.id);
+		}
+	}
+
+	$: console.log('premium', $active_premium_sub);
 </script>
 
 <!-- <section class="px-6 pt-16 mx-auto max-w-screen-2xl">
@@ -367,11 +438,30 @@
 			</div>
 
 			<FreeCard />
-			<PremiumCard />
-			<DegenCard />
+			<PremiumCard
+				on:click-free-trial={subscribeFreeTrial}
+				on:click-subscribe={() => subscribeToPlan('Premium')}
+				on:click-unsubscribe={() => unsubPlanFromCard('Premium')}
+				on:click-resubscribe={() => resubscribePlan('Premium')}
+			/>
+			<DegenCard
+				on:click-subscribe={() => subscribeToPlan('Degen')}
+				on:click-unsubscribe={() => unsubPlanFromCard('Degen')}
+				on:click-resubscribe={() => resubscribePlan('Degen')}
+			/>
 		</div>
 	</div>
 </div>
 
-<!-- <UnsubscribeConfirmPopup planName="Test" monthlyFee={123} /> -->
-<!-- <UnsubscribeSuccessPopup /> -->
+{#if $unsubFromName}
+	<UnsubscribeConfirmPopup
+		planName={$unsubFromName}
+		monthlyFee={$prices_store.find((price) => price.name === $unsubFromName)?.unit_amount || 0}
+		on:click-confirm={unsubPlanFromConfirm}
+		on:click-cancel={() => unsubFromName.set(null)}
+	/>
+{/if}
+
+{#if $showUnsubSuccess}
+	<UnsubscribeSuccessPopup on:click-close={() => showUnsubSuccess.set(false)} />
+{/if}

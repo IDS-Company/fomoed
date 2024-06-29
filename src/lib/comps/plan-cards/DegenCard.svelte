@@ -1,5 +1,12 @@
 <script lang="ts">
+	import { createEventDispatcher } from 'svelte';
 	import SecondaryButton from '../buttons/SecondaryButton.svelte';
+	import { active_degen_sub, changingSubscription } from '$lib/stores/subs';
+	import Time from 'svelte-time/Time.svelte';
+
+	const dispatch = createEventDispatcher();
+
+	$: disabled = $changingSubscription;
 </script>
 
 <div
@@ -16,7 +23,13 @@
 			<div class="text-[48px] mt-[9px] leading-[54px] font-paralucent-demibold">$50</div>
 			<div class="opacity-60 font-paralucent font-medium">/year</div>
 			<div class="pt-[12px] opacity-60 text-sm font-paralucent font-medium">
-				Renews every 1 year
+				{#if $active_degen_sub && !$active_degen_sub.has_cancelled}
+					Renews <Time relative timestamp={$active_degen_sub.end_timestamp} />
+				{:else if $active_degen_sub && $active_degen_sub.has_cancelled}
+					Cancels <Time relative timestamp={$active_degen_sub.end_timestamp} />
+				{:else}
+					Renews every 1 year
+				{/if}
 			</div>
 		</div>
 	</div>
@@ -31,6 +44,14 @@
 	<div class="flex-grow"></div>
 
 	<div class="px-[20px] pb-[25px]">
-		<SecondaryButton>Select Plan</SecondaryButton>
+		{#if $active_degen_sub && !$active_degen_sub.has_cancelled}
+			<SecondaryButton on:click={() => dispatch('click-unsubscribe')}>Unsubscribe</SecondaryButton>
+		{:else if $active_degen_sub && $active_degen_sub.has_cancelled}
+			<SecondaryButton {disabled} on:click={() => dispatch('click-resubscribe')}>
+				Resubscribe
+			</SecondaryButton>
+		{:else if !$active_degen_sub}
+			<SecondaryButton on:click={() => dispatch('click-subscribe')}>Select Plan</SecondaryButton>
+		{/if}
 	</div>
 </div>
