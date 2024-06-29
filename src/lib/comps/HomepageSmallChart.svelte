@@ -93,7 +93,7 @@
 		</div>
 	</div>
 
-	<div class="w-[95px] h-[45px] flex-grow">
+	<div class="w-[95px] h-[45px] flex-grow opacity-0">
 		<canvas bind:this={canvas} width="400" height="150" />
 	</div>
 </div>
