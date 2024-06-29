@@ -1,5 +1,6 @@
 <script>
 	import { auth_user } from '$lib/stores/user';
+	import LoginButton from './buttons/LoginButton.svelte';
 	import CryptoDropdown from './CryptoDropdown.svelte';
 	import LoadUserData from './func/LoadUserData.svelte';
 	import ProfileButton from './ProfileButton.svelte';
@@ -25,6 +26,8 @@
 
 		{#if $auth_user}
 			<ProfileButton></ProfileButton>
+		{:else}
+			<LoginButton></LoginButton>
 		{/if}
 	</div>
 </nav>

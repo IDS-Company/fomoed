@@ -63,7 +63,7 @@ export const cfgi_period = writable<CFGI_SUPPORTED_PERIODS_ENUM>(CFGI_SUPPORTED_
 
 export const coinstats_token_historical_price = writable<{ date: Date; price: number }[]>();
 export const loading = writable<boolean>(false);
-export const trend_chart_loading = writable<boolean>(false);
+export const trend_chart_loading = writable<boolean>(true);
 export const cfgi_chart_loading = writable<boolean>(false);
 export const free_tokens = ['BTC', 'ETH'];
 export const aped_score = writable<number>(0);

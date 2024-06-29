@@ -6,7 +6,6 @@
 	import HomepageSmallChart from '$lib/comps/HomepageSmallChart.svelte';
 	import IndicatorCard from '$lib/comps/IndicatorCard.svelte';
 	import { coinstats_global_data } from '$lib/stores';
-	import { auth_user } from '$lib/stores/user';
 </script>
 
 <div

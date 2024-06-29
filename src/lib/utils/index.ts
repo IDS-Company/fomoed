@@ -258,6 +258,8 @@ coinstats_coin_list.subscribe((coins) => {
 });
 
 coinstats_selected_coin.subscribe(async (coin) => {
+	console.log('here');
+
 	if (coin) {
 		if (get(coin_data) && get(coin_data)[0].symbol === coin.symbol) {
 			return;

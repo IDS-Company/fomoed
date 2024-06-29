@@ -3,7 +3,7 @@
 	import Chart from 'chart.js/auto';
 	import { dayjs } from 'svelte-time';
 	import type { _DeepPartialObject } from 'chart.js/dist/types/utils';
-	import { coin_data } from '$lib/stores';
+	import { coin_data, trend_chart_loading } from '$lib/stores';
 	import type {
 		ChartDataset,
 		CoreChartOptions,
@@ -14,8 +14,8 @@
 		ScaleChartOptions
 	} from 'chart.js/auto';
 	import LoadingAnim from './animations/LoadingAnim.svelte';
-	import { writable } from 'svelte/store';
 	import { fade } from 'svelte/transition';
+	import { sleep } from '$lib';
 
 	const color = '#47A663';
 
@@ -23,6 +23,8 @@
 	let ctx: CanvasRenderingContext2D;
 
 	function chart_init() {
+		console.log('chart_init');
+
 		if (!$coin_data?.length || !trend_chart_canvas) {
 			return;
 		}
@@ -69,6 +71,9 @@
 				ScaleChartOptions<'bar'> &
 				LineControllerChartOptions
 		> = {
+			animation: {
+				duration: 0
+			},
 			responsive: true,
 			maintainAspectRatio: false,
 			scales: {
@@ -117,19 +122,10 @@
 		}
 	}
 
-	const loading = writable(true);
-	const displayChart = writable(false);
+	trend_chart_loading.subscribe(async (loading) => {
+		await sleep(600);
 
-	coin_data.subscribe((coin_cfgi) => {
-		if (coin_cfgi?.length) {
-			loading.set(false);
-		}
-	});
-
-	displayChart.subscribe(async ($displayChart) => {
-		await tick();
-
-		if ($displayChart) {
+		if (!loading) {
 			ctx = trend_chart_canvas.getContext('2d')!;
 			chart_init();
 		}
@@ -138,10 +134,17 @@
 	let trend_chart_canvas: HTMLCanvasElement;
 </script>
 
-{#if $loading}
-	<div out:fade on:outroend={() => displayChart.set(true)}>
-		<LoadingAnim />
-	</div>
-{:else if $displayChart}
-	<canvas bind:this={trend_chart_canvas} width="400" height="150" in:fade />
-{/if}
+<div class="relative h-full">
+	{#if $trend_chart_loading}
+		<div out:fade class="absolute inset-0">
+			<LoadingAnim />
+		</div>
+	{/if}
+
+	<canvas
+		class:opacity-0={$trend_chart_loading}
+		bind:this={trend_chart_canvas}
+		width="400"
+		height="150"
+	/>
+</div>

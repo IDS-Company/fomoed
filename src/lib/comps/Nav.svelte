@@ -4,6 +4,7 @@
 	import MainButton from './buttons/MainButton.svelte';
 	import ProfileButton from '$lib/comps/ProfileButton.svelte';
 	import LoadUserData from './func/LoadUserData.svelte';
+	import LoginButton from './buttons/LoginButton.svelte';
 </script>
 
 <LoadUserData />
@@ -49,14 +50,7 @@
 		{#if $auth_email}
 			<ProfileButton></ProfileButton>
 		{:else}
-			<div class="w-[138px]">
-				<a href="/auth">
-					<MainButton>
-						<span class="uppercase">Login</span>
-						<img src="/icons/login-arrow.svg" width={17} height={13} alt="Arrow right" />
-					</MainButton>
-				</a>
-			</div>
+			<LoginButton></LoginButton>
 		{/if}
 	</div>
 </nav>
