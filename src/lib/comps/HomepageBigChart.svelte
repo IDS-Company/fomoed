@@ -120,10 +120,10 @@
 		}
 	});
 
-	$: if (trend_chart_canvas) {
+	onMount(() => {
 		ctx = trend_chart_canvas.getContext('2d')!;
 		chart_init();
-	}
+	});
 
 	let trend_chart_canvas: HTMLCanvasElement;
 </script>
