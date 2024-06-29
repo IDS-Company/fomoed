@@ -1,4 +1,4 @@
-<script lang="ts">
+<!-- <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { page } from '$app/stores';
 	import FomoedLogo from '$lib/icons/FomoedLogo.svelte';
@@ -224,4 +224,4 @@
 			</button>
 		</div>
 	{/if}
-</div>
+</div> -->

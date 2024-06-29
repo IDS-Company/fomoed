@@ -21,6 +21,7 @@
 	import Facebook from '$lib/icons/social/Facebook.svelte';
 	import Telegram from '$lib/icons/social/Telegram.svelte';
 	import Copy from '$lib/icons/social/Copy.svelte';
+	import { fade } from 'svelte/transition';
 
 	export let orangeOutline = false;
 	export let prev = 0;
@@ -58,7 +59,7 @@
 
 	export let for_screenshot = false;
 
-	const loading = writable(false);
+	const loading = writable(true);
 	const has_voted = writable(false);
 	const votes = writable<{ device_id: string; sentiment: number }[]>([]);
 	const device_id = writable<string>();
@@ -176,8 +177,7 @@
 		}
 	});
 
-	$: console.log('device_id', $device_id);
-	$: console.log('has voted', $has_voted);
+	let loadingIsOut = false;
 </script>
 
 <div
@@ -221,24 +221,34 @@
 	</div>
 
 	<div class="flex-grow flex flex-col mb-4 justify-evenly">
-		{#if $has_voted}
-			<div>
+		{#if $loading}
+			<div
+				in:fade
+				out:fade
+				on:introstart={() => (loadingIsOut = false)}
+				on:outroend={() => (loadingIsOut = true)}
+				class="font-medium text-sm text-center mt-[20px] opacity-80"
+			>
+				Loading...
+			</div>
+		{:else if $has_voted && loadingIsOut}
+			<div in:fade>
 				<div class="font-medium text-sm text-center mt-[20px] opacity-80">Share your polls on</div>
 
 				<div class="flex gap-x-2 justify-center mt-[10px]">
-					<a href={copy_social_link('twitter', getLink())}>
+					<a href={copy_social_link('twitter', getLink())} target="_blank">
 						<SocialButton>
 							<X />
 						</SocialButton>
 					</a>
 
-					<a href={copy_social_link('facebook', getLink())}>
+					<a href={copy_social_link('facebook', getLink())} target="_blank">
 						<SocialButton>
 							<Facebook />
 						</SocialButton>
 					</a>
 
-					<a href={copy_social_link('telegram', getLink())}>
+					<a href={copy_social_link('telegram', getLink())} target="_blank">
 						<SocialButton>
 							<Telegram />
 						</SocialButton>
@@ -257,27 +267,29 @@
 					</SocialButton>
 				</div>
 			</div>
-		{:else}
-			<div class="font-medium text-sm text-center mt-[20px] opacity-80">
-				How do you feel about the market today?
-			</div>
+		{:else if !$loading && !$has_voted && loadingIsOut}
+			<div in:fade>
+				<div class="font-medium text-sm text-center mt-[20px] opacity-80">
+					How do you feel about the market today?
+				</div>
 
-			<div class="flex gap-x-[10px] justify-center mt-4 relative z-10">
-				<TintedSecondaryButton
-					disabled={$loading || $has_voted}
-					on:click={() => vote(SentimentRatingEnum.BEARISH)}
-					color="red"
-				>
-					Bearish
-				</TintedSecondaryButton>
+				<div class="flex gap-x-[10px] justify-center mt-4 relative z-10">
+					<TintedSecondaryButton
+						disabled={$loading || $has_voted}
+						on:click={() => vote(SentimentRatingEnum.BEARISH)}
+						color="red"
+					>
+						Bearish
+					</TintedSecondaryButton>
 
-				<TintedSecondaryButton
-					disabled={$loading || $has_voted}
-					on:click={() => vote(SentimentRatingEnum.BULLISH)}
-					color="green"
-				>
-					Bullish
-				</TintedSecondaryButton>
+					<TintedSecondaryButton
+						disabled={$loading || $has_voted}
+						on:click={() => vote(SentimentRatingEnum.BULLISH)}
+						color="green"
+					>
+						Bullish
+					</TintedSecondaryButton>
+				</div>
 			</div>
 		{/if}
 	</div>
