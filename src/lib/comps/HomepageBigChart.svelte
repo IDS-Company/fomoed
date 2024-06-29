@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
+	import { onMount, tick } from 'svelte';
 	import Chart from 'chart.js/auto';
 	import { dayjs } from 'svelte-time';
 	import type { _DeepPartialObject } from 'chart.js/dist/types/utils';
@@ -13,6 +13,9 @@
 		PluginChartOptions,
 		ScaleChartOptions
 	} from 'chart.js/auto';
+	import LoadingAnim from './animations/LoadingAnim.svelte';
+	import { writable } from 'svelte/store';
+	import { fade } from 'svelte/transition';
 
 	const color = '#47A663';
 
@@ -114,18 +117,31 @@
 		}
 	}
 
+	const loading = writable(true);
+	const displayChart = writable(false);
+
 	coin_data.subscribe((coin_cfgi) => {
 		if (coin_cfgi?.length) {
-			chart_init();
+			loading.set(false);
 		}
 	});
 
-	onMount(() => {
-		ctx = trend_chart_canvas.getContext('2d')!;
-		chart_init();
+	displayChart.subscribe(async ($displayChart) => {
+		await tick();
+
+		if ($displayChart) {
+			ctx = trend_chart_canvas.getContext('2d')!;
+			chart_init();
+		}
 	});
 
 	let trend_chart_canvas: HTMLCanvasElement;
 </script>
 
-<canvas bind:this={trend_chart_canvas} width="400" height="150" />
+{#if $loading}
+	<div out:fade on:outroend={() => displayChart.set(true)}>
+		<LoadingAnim />
+	</div>
+{:else if $displayChart}
+	<canvas bind:this={trend_chart_canvas} width="400" height="150" in:fade />
+{/if}

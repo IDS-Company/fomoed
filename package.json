@@ -32,6 +32,7 @@
 	},
 	"type": "module",
 	"dependencies": {
+		"@rive-app/canvas": "^2.19.0",
 		"@sparticuz/chromium": "^123.0.1",
 		"@stripe/stripe-js": "^3.3.0",
 		"@supabase/ssr": "^0.3.0",

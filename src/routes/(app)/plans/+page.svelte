@@ -26,10 +26,6 @@
 	$: console.log($prices_store);
 </script>
 
-{#if $loading}
-	<Loader />
-{:else}
-	<StripeProvider>
-		<PlansPage />
-	</StripeProvider>
-{/if}
+<StripeProvider>
+	<PlansPage />
+</StripeProvider>

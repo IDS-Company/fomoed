@@ -22,6 +22,8 @@
 	import Telegram from '$lib/icons/social/Telegram.svelte';
 	import Copy from '$lib/icons/social/Copy.svelte';
 	import { fade } from 'svelte/transition';
+	import LoadingAnim from './animations/LoadingAnim.svelte';
+	import IndicatorEmpty from './indicator/IndicatorEmpty.svelte';
 
 	export let orangeOutline = false;
 	export let prev = 0;
@@ -169,9 +171,6 @@
 	}
 
 	device_id.subscribe((id) => {
-		console.log('updated id');
-		console.log($votes);
-
 		if (id) {
 			update_mean_rating($votes);
 		}
@@ -188,16 +187,33 @@
 	<div class="relative max-h-[220px] w-full">
 		<div class="inset-x-0 grid place-items-center">
 			<div class="-translate-y-14">
-				<svelte:component this={icons[iconIdx][0]} />
+				{#if $cfgi_summary}
+					<svelte:component this={icons[iconIdx][0]} />
+				{:else}
+					<IndicatorEmpty />
+				{/if}
 			</div>
 		</div>
 
 		<div class="inset-x-0 absolute bottom-4 flex justify-center items-center">
-			<img src="/images/{icons[iconIdx][1]}" alt="" class="max-w-[92px] max-h-[124px]" />
+			<div class="relative">
+				<img
+					class:opacity-0={!$cfgi_summary}
+					src="/images/{icons[iconIdx][1]}"
+					alt=""
+					class="max-w-[92px] max-h-[124px]"
+				/>
+			</div>
+
+			{#if !$cfgi_summary}
+				<div class="absolute w-full">
+					<LoadingAnim />
+				</div>
+			{/if}
 		</div>
 	</div>
 
-	<div class="grid grid-cols-[1fr_2fr_1fr] justify-between px-[28px]">
+	<div class="grid grid-cols-[1fr_2fr_1fr] justify-between px-[28px]" class:opacity-0={loading}>
 		<div>
 			<div class="text-xs opacity-60">Prev</div>
 			<div class="opacity-80 font-paralucent font-medium text-[18px]">{prev}</div>
