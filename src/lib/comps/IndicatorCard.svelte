@@ -1,6 +1,6 @@
 <script lang="ts">
+	import { cfgi_summary } from '$lib/stores';
 	import { get_data_color, get_data_index, get_data_label } from '$lib/utils';
-	import { onMount } from 'svelte';
 	import IndicatorHigh from './indicator/IndicatorHigh.svelte';
 	import IndicatorHighest from './indicator/IndicatorHighest.svelte';
 	import IndicatorLow from './indicator/IndicatorLow.svelte';
@@ -27,6 +27,13 @@
 		[IndicatorHigh, 'indicator-meme-2.png'],
 		[IndicatorHighest, 'indicator-meme-1.png'],
 	]
+
+	cfgi_summary.subscribe((data) => {
+		if (!data) return;
+		prev = data.previous.value;
+		percentage = data.now.value;
+		average = data.average.value;
+	});
 
 </script>
 

@@ -74,7 +74,7 @@
 			</div>
 
 			<div class="max-h-[500px]">
-				<IndicatorCard percentage={0} prev={0} average={0} />
+				<IndicatorCard />
 			</div>
 		</div>
 	</div>

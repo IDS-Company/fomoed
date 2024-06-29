@@ -26,6 +26,8 @@
 
 		const formatted_data = $coin_data.filter((d) => d.price && d.cfgi);
 
+		console.log(formatted_data);
+
 		const prices_data = formatted_data.map((d) => d.price);
 		const cfgi_data = formatted_data.map((c) => c.cfgi);
 
