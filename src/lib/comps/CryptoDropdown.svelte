@@ -19,10 +19,14 @@
 		}
 	});
 
-	$: enabledSymbols =
-		$auth_user && $auth_user?.has_valid_sub
-			? $coinstats_coin_list.map((t) => t.symbol)
-			: free_tokens;
+	let enabledSymbols: string[] = free_tokens;
+
+	$: if ($coinstats_coin_list) {
+		enabledSymbols =
+			$auth_user && $auth_user?.has_valid_sub
+				? $coinstats_coin_list.map((t) => t.symbol)
+				: free_tokens;
+	}
 
 	$: console.log(enabledSymbols);
 </script>

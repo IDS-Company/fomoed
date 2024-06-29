@@ -5,6 +5,8 @@
 	import type { SupabaseClient } from '@supabase/supabase-js';
 	import { goto } from '$app/navigation';
 	import { auth_email, auth_user } from '$lib/stores/user';
+	import Time from 'svelte-time/Time.svelte';
+	import { active_sub } from '$lib/stores/subs';
 
 	let displaLogoutPopup = false;
 
@@ -46,7 +48,10 @@
 		</div>
 	</div>
 
-	<div class="pt-[9px] text-[10px] text-[#FFFFFF99] mt-1">Renew on May 21, 2024 (TODO)</div>
+	<div class="pt-[9px] text-[10px] text-[#FFFFFF99] mt-1">
+		Renew on
+		<Time timestamp={$active_sub?.end_timestamp} format="MMM DD, YYYY" />
+	</div>
 
 	<div class="flex-grow"></div>
 

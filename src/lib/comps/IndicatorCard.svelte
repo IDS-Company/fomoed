@@ -1,11 +1,26 @@
 <script lang="ts">
-	import { cfgi_summary } from '$lib/stores';
-	import { get_data_color, get_data_index, get_data_label } from '$lib/utils';
+	import {
+		copy_social_link,
+		get_data_color,
+		get_data_index,
+		get_data_label,
+		success
+	} from '$lib/utils';
 	import IndicatorHigh from './indicator/IndicatorHigh.svelte';
 	import IndicatorHighest from './indicator/IndicatorHighest.svelte';
 	import IndicatorLow from './indicator/IndicatorLow.svelte';
 	import IndicatorMedium from './indicator/IndicatorMedium.svelte';
 	import TintedSecondaryButton from './TintedSecondaryButton.svelte';
+	import { page } from '$app/stores';
+	import { aped_score, cfgi_summary } from '$lib/stores';
+	import { onMount } from 'svelte';
+	import { writable } from 'svelte/store';
+	import _ from 'lodash-es';
+	import SocialButton from './buttons/SocialButton.svelte';
+	import X from '$lib/icons/social/X.svelte';
+	import Facebook from '$lib/icons/social/Facebook.svelte';
+	import Telegram from '$lib/icons/social/Telegram.svelte';
+	import Copy from '$lib/icons/social/Copy.svelte';
 
 	export let orangeOutline = false;
 	export let prev = 0;
@@ -25,8 +40,8 @@
 		[IndicatorLow, 'indicator-meme-4.png'],
 		[IndicatorMedium, 'indicator-meme-3.png'],
 		[IndicatorHigh, 'indicator-meme-2.png'],
-		[IndicatorHighest, 'indicator-meme-1.png'],
-	]
+		[IndicatorHighest, 'indicator-meme-1.png']
+	];
 
 	cfgi_summary.subscribe((data) => {
 		if (!data) return;
@@ -35,6 +50,134 @@
 		average = data.average.value;
 	});
 
+	// Sentiment rating
+	enum SentimentRatingEnum {
+		BEARISH = 'BEARISH',
+		BULLISH = 'BULLISH'
+	}
+
+	export let for_screenshot = false;
+
+	const loading = writable(false);
+	const has_voted = writable(false);
+	const votes = writable<{ device_id: string; sentiment: number }[]>([]);
+	const device_id = writable<string>();
+
+	async function vote(rating: SentimentRatingEnum) {
+		if (!$device_id) {
+			console.log('Failed to Extract Device ID');
+			return;
+		}
+
+		loading.set(true);
+		const num_rating =
+			rating == SentimentRatingEnum.BEARISH ? 25 : rating == SentimentRatingEnum.BULLISH ? 75 : 50;
+
+		$votes.push({
+			device_id: $device_id,
+			sentiment: num_rating
+		});
+
+		has_voted.set(true);
+
+		await fetch('/api/sentiment', {
+			method: 'POST',
+			body: JSON.stringify({
+				sentiment: num_rating,
+				device_id: $device_id
+			})
+		});
+
+		await get_votes();
+		loading.set(false);
+	}
+
+	async function get_votes() {
+		loading.set(true);
+
+		const site_votes = await fetch('/api/sentiment')
+			.then((res) => res.json())
+			.then((res) => res)
+			.catch((err) => {
+				console.error('Error Fetching Sentiment: ', err.toString());
+
+				return { sentiment: [] };
+			});
+
+		// Loop through this result to determine if user has already voted
+
+		site_votes?.sentiment?.length && votes.set(site_votes.sentiment);
+		loading.set(false);
+	}
+
+	onMount(() => {
+		if (for_screenshot) {
+			has_voted.set(true);
+			_.toNumber($page.url.searchParams.get('score'))
+				? aped_score.set(_.toNumber($page.url.searchParams.get('score')))
+				: aped_score.set(0);
+		} else {
+			if (typeof window !== 'undefined') {
+				const calculated_device_id = new (window as any).DeviceUUID().get();
+				device_id.set(calculated_device_id);
+				console.log(calculated_device_id);
+			}
+			get_votes();
+		}
+	});
+
+	async function update_mean_rating(all_votes: { device_id: string; sentiment: number }[]) {
+		if (typeof window === 'undefined') return;
+
+		let ratings_mean = 0;
+		let did_vote = false;
+
+		if (!$device_id) {
+			console.log('Failed to Extract Device ID');
+			return;
+		}
+
+		if (all_votes?.length) {
+			ratings_mean =
+				all_votes
+					.map((v) => {
+						if (v.device_id === $device_id) {
+							has_voted.set(true);
+							did_vote = true;
+						}
+
+						return v.sentiment;
+					})
+					.reduce((a, b) => a + b) / all_votes.length;
+		}
+
+		if (ratings_mean <= 1 && did_vote) {
+			// Use CFGI
+			ratings_mean = $cfgi_summary?.now.value || ratings_mean;
+		}
+
+		aped_score.set(ratings_mean);
+	}
+
+	votes.subscribe((v) => v?.length && update_mean_rating(v));
+	cfgi_summary.subscribe((cfgi) => cfgi && update_mean_rating($votes));
+
+	// Social Share
+	function getLink() {
+		return `${$page.url.origin}?score=${+$aped_score.toFixed(2)}`;
+	}
+
+	device_id.subscribe((id) => {
+		console.log('updated id');
+		console.log($votes);
+
+		if (id) {
+			update_mean_rating($votes);
+		}
+	});
+
+	$: console.log('device_id', $device_id);
+	$: console.log('has voted', $has_voted);
 </script>
 
 <div
@@ -50,7 +193,7 @@
 		</div>
 
 		<div class="inset-x-0 absolute bottom-4 flex justify-center items-center">
-			<img src='/images/{icons[iconIdx][1]}' alt="" class="max-w-[92px] max-h-[124px]" />
+			<img src="/images/{icons[iconIdx][1]}" alt="" class="max-w-[92px] max-h-[124px]" />
 		</div>
 	</div>
 
@@ -78,13 +221,64 @@
 	</div>
 
 	<div class="flex-grow flex flex-col mb-4 justify-evenly">
-		<div class="font-medium text-sm text-center mt-[20px] opacity-80">
-			How do you feel about the market today?
-		</div>
+		{#if $has_voted}
+			<div>
+				<div class="font-medium text-sm text-center mt-[20px] opacity-80">Share your polls on</div>
 
-		<div class="flex gap-x-[10px] justify-center mt-4 relative z-10">
-			<TintedSecondaryButton color="red">Bearish</TintedSecondaryButton>
-			<TintedSecondaryButton color="green">Bullish</TintedSecondaryButton>
-		</div>
+				<div class="flex gap-x-2 justify-center mt-[10px]">
+					<a href={copy_social_link('twitter', getLink())}>
+						<SocialButton>
+							<X />
+						</SocialButton>
+					</a>
+
+					<a href={copy_social_link('facebook', getLink())}>
+						<SocialButton>
+							<Facebook />
+						</SocialButton>
+					</a>
+
+					<a href={copy_social_link('telegram', getLink())}>
+						<SocialButton>
+							<Telegram />
+						</SocialButton>
+					</a>
+
+					<SocialButton
+						on:click={() => {
+							navigator.clipboard.writeText(
+								copy_social_link('copy', `${$page.url.origin}?score=${+$aped_score.toFixed(2)}`)
+							);
+							success('Success: Copied Share Link to Clipboard');
+							return;
+						}}
+					>
+						<Copy />
+					</SocialButton>
+				</div>
+			</div>
+		{:else}
+			<div class="font-medium text-sm text-center mt-[20px] opacity-80">
+				How do you feel about the market today?
+			</div>
+
+			<div class="flex gap-x-[10px] justify-center mt-4 relative z-10">
+				<TintedSecondaryButton
+					disabled={$loading || $has_voted}
+					on:click={() => vote(SentimentRatingEnum.BEARISH)}
+					color="red"
+				>
+					Bearish
+				</TintedSecondaryButton>
+
+				<TintedSecondaryButton
+					disabled={$loading || $has_voted}
+					on:click={() => vote(SentimentRatingEnum.BULLISH)}
+					color="green"
+				>
+					Bullish
+				</TintedSecondaryButton>
+			</div>
+		{/if}
 	</div>
 </div>

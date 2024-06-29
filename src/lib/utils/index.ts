@@ -15,7 +15,7 @@ import { memoizeDebounce } from './memoizeDebounce';
 import { meanBy } from 'lodash-es';
 import { get } from 'svelte/store';
 
-export function get_data_index (data: number) {
+export function get_data_index(data: number) {
 	return Math.floor(data / 25);
 }
 
@@ -77,7 +77,7 @@ export const failure = (m: string) =>
 		}
 	});
 
-export type SocialSites = 'facebook' | 'twitter' | 'copy';
+export type SocialSites = 'facebook' | 'twitter' | 'telegram' | 'copy';
 
 export function copy_social_link(platform: SocialSites, link: string) {
 	let social_link = link;
@@ -88,6 +88,9 @@ export function copy_social_link(platform: SocialSites, link: string) {
 			break;
 		case 'twitter':
 			social_link = `https://twitter.com/intent/tweet?${new URLSearchParams({ text: link }).toString().trim()}`;
+			break;
+		case 'telegram':
+			social_link = `https://t.me/share/url?${new URLSearchParams({ url: link }).toString().trim()}`;
 			break;
 		default:
 			social_link = link;
