@@ -36,6 +36,7 @@
 	import HomepageBigChart from '$lib/comps/HomepageBigChart.svelte';
 	import { writable } from 'svelte/store';
 	import { goto } from '$app/navigation';
+	import SmallCharts from '$lib/comps/SmallCharts.svelte';
 
 	// const memoizedTokens = memoizeDebounce(refresh_coinstats_coin_list, 1000, { maxWait: 2000 });
 
@@ -126,31 +127,7 @@
 			style="background: linear-gradient(180deg, #000000 0%, rgba(0, 0, 0, 0.2) 125.15%) padding-box, linear-gradient(179.91deg, rgba(255, 59, 16, 0.4) 11.58%, rgba(255, 59, 16, 0) 99.92%) border-box"
 			class="bg-gradient-to-b from-black to-[#00000033] w-full h-[550px] mt-[25px] rounded-[28px] pt-[46px] flex flex-col border-2 border-transparent pb-[20px]"
 		>
-			<div
-				class="grid grid-cols-3 pl-[50px] pr-[80px] gap-x-16 -desktop:grid-cols-1 -desktop:max-h-[100px] -desktop:overflow-scroll -desktop:snap-y -desktop:snap-mandatory"
-			>
-				<HomepageSmallChart
-					change={$coinstats_global_data?.marketCapChange}
-					value={$coinstats_global_data?.marketCap.toLocaleString()}
-					title="Market Cap"
-					prefix="$"
-					postfix=""
-				/>
-				<HomepageSmallChart
-					change={$coinstats_global_data?.volumeChange}
-					value={$coinstats_global_data?.volume.toLocaleString()}
-					title="Volume 24H"
-					prefix="$"
-					postfix=""
-				/>
-				<HomepageSmallChart
-					change={$coinstats_global_data?.btcDominanceChange}
-					value={$coinstats_global_data?.btcDominance.toLocaleString()}
-					title="BTC Dominance"
-					prefix=""
-					postfix="%"
-				/>
-			</div>
+			<SmallCharts />
 
 			<div class="flex pr-[25px] flex-grow">
 				<div class="flex-grow flex-shrink pt-[66px] relative overflow-hidden">

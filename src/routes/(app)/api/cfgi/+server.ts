@@ -23,6 +23,8 @@ async function fetch_cfgi_data(
 	url = url.replace('END', end.toISOString().toLocaleString());
 	url = url.replace('PERIOD', period.toString());
 
+	console.log(period.toString());
+
 	return fetch(url)
 		.then((res) => res.text())
 		.then((res) => {
@@ -97,7 +99,7 @@ export async function POST({ request, locals: { supabase, user } }: RequestEvent
 
 		const cfgi_data = await fetch_cfgi_data(
 			token_symbol,
-			period,
+			secondsBack,
 			new Date(Date.now() - secondsBack),
 			new Date()
 		);
@@ -110,9 +112,9 @@ export async function POST({ request, locals: { supabase, user } }: RequestEvent
 						.map((d) => ({
 							...d,
 							cfgi: parseInt(d.cfgi.toString()),
-							date: new Date(d.date).getTime(),
-							period,
-							symbol: token_symbol
+							date: new Date(d.date).getTime()
+							// period,
+							// symbol: token_symbol
 						}))
 						.filter((d) => d.date && d.price && d.cfgi && !isNaN(d.cfgi)),
 					['date']
