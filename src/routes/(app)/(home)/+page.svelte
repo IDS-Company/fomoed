@@ -110,7 +110,7 @@
 <main class="w-full relative overflow-hidden">
 	<div class="h-full max-w-[980px] mx-auto pt-28 min-h-screen px-4">
 		<div
-			class="bg-[url(/background/homepage-top.png)] bg-cover min-h-screen w-screen absolute top-0 left-0 -z-10"
+			class="bg-[url(/background/homepage-1.webp)] bg-cover min-h-screen w-screen absolute top-0 left-0 -z-10"
 		></div>
 		<h1 class="text-5xl text-center font-paralucent-demibold">
 			<span class="bg-clip-text text-transparent bg-gradient-to-r from-primary to-[#F3C111]">
@@ -165,9 +165,7 @@
 
 				<div class="pt-[24px] w-[320px] relative flex-shrink-0 -desktop:hidden">
 					<div class="absolute h-[430px]">
-						<IndicatorCard
-							orangeOutline
-						/>
+						<IndicatorCard orangeOutline />
 					</div>
 				</div>
 			</div>
@@ -260,7 +258,7 @@
 
 	<div class="max-w-[914px] mx-auto flex items-center gap-x-[80px] pt-40 relative pb-48 px-4">
 		<div class="absolute inset-x-0 -translate-y-40 translate-x-1/3 -z-10 scale-150">
-			<img src="/background/homepage-3.png" width={1040} height={2352} alt="" />
+			<img src="/background/homepage-3.svg" width={1040} height={2352} alt="" />
 		</div>
 
 		<MemeSwiper />
