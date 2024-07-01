@@ -213,7 +213,10 @@
 		</div>
 	</div>
 
-	<div class="grid grid-cols-[1fr_2fr_1fr] justify-between px-[28px]" class:opacity-0={loading}>
+	<div
+		class="grid grid-cols-[1fr_2fr_1fr] justify-between px-[28px] duration-500"
+		class:opacity-0={!$cfgi_summary}
+	>
 		<div>
 			<div class="text-xs opacity-60">Prev</div>
 			<div class="opacity-80 font-paralucent font-medium text-[18px]">{prev}</div>
