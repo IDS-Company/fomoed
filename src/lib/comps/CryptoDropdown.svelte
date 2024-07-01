@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { browser } from '$app/environment';
 	import {
 		coinstats_coin_list,
 		coinstats_selected_coin,
@@ -57,29 +58,28 @@
 		/>
 	</button>
 
-	{#if isOpen}
-		<div
-			class="absolute top-16 bg-[#0F0D0DE5] border-[#FFFFFF1A] border rounded-[10px] h-[260px] w-[200px] overflow-hidden flex flex-col backdrop-blur-sm"
-		>
-			<div class="text-[#FFFFFFCC] py-[10px] pl-[13px] text-start text-sm">Select a Network</div>
+	<div
+		class:hidden={!isOpen}
+		class="absolute top-16 bg-[#0F0D0DE5] border-[#FFFFFF1A] border rounded-[10px] h-[260px] w-[200px] overflow-hidden flex flex-col backdrop-blur-sm"
+	>
+		<div class="text-[#FFFFFFCC] py-[10px] pl-[13px] text-start text-sm">Select a Network</div>
 
-			<div class="h-px bg-[#FFFFFF1A]"></div>
+		<div class="h-px bg-[#FFFFFF1A]"></div>
 
-			<div class="overflow-scroll">
-				{#each $coinstats_coin_list as item}
-					<button
-						on:click={() => {
-							selected = item;
-							isOpen = false;
-						}}
-						class="flex items-center gap-x-3 text-[#FFFFFFCC] disabled:opacity-40 enabled:hover:bg-[#FFFFFF0D] hover:text-[#FFFFFFCC] w-full py-3 px-[15px] h-[37px]"
-						disabled={!enabledSymbols.includes(item.symbol)}
-					>
-						<img src={item.icon} width={21} height={21} alt={item.name} />
-						<div>{item.name}</div>
-					</button>
-				{/each}
-			</div>
+		<div class="overflow-scroll">
+			{#each $coinstats_coin_list || [] as item}
+				<button
+					on:click={() => {
+						selected = item;
+						isOpen = false;
+					}}
+					class="flex items-center gap-x-3 text-[#FFFFFFCC] disabled:opacity-40 enabled:hover:bg-[#FFFFFF0D] hover:text-[#FFFFFFCC] w-full py-3 px-[15px] h-[37px]"
+					disabled={!enabledSymbols.includes(item.symbol)}
+				>
+					<img src={item.icon} width={21} height={21} alt={item.name} />
+					<div>{item.name}</div>
+				</button>
+			{/each}
 		</div>
-	{/if}
+	</div>
 </div>
