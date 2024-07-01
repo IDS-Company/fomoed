@@ -40,7 +40,7 @@
 		<img src="/fomoed.svg" alt="Fomoed." class="h-full" width={110} height={23} />
 	</div>
 
-	<div class="font-paralucent font-medium flex gap-x-8">
+	<div class="font-paralucent font-medium flex gap-x-8 -sm:hidden">
 		<Navlink href="/about">About</Navlink>
 		<Navlink href="/plans">Plans</Navlink>
 		<Navlink href="/contact">Contact</Navlink>

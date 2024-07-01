@@ -109,17 +109,19 @@
 <SocialSharePopup /> -->
 
 <main class="w-full relative overflow-hidden">
-	<div class="h-full max-w-[980px] mx-auto pt-28 min-h-screen px-4">
+	<div class="h-full max-w-[980px] mx-auto pt-28 desktop:min-h-screen px-4">
 		<div
-			class="bg-[url(/background/homepage-1.webp)] bg-cover min-h-screen w-screen absolute top-0 left-0 -z-10"
+			class="bg-[url(/background/homepage-1.webp)] bg-cover bg-center min-h-screen w-screen absolute top-0 left-0 -z-10"
 		></div>
-		<h1 class="text-5xl text-center font-paralucent-demibold">
+
+		<h1 class="text-5xl text-center font-paralucent-demibold -sm:text-[36px] mx-10">
 			<span class="bg-clip-text text-transparent bg-gradient-to-r from-primary to-[#F3C111]">
 				Calculate
 			</span>{' '}
-			Your Trading
+			Your&nbsp;Trading
 		</h1>
-		<h2 class="opacity-80 text-center mt-[10px] font-bold text-lg">
+
+		<h2 class="opacity-80 text-center mt-[10px] font-bold text-lg -sm:text-sm mx-10">
 			Toolset for effortlessly navigating the emotional rollercoaster that is crypto.
 		</h2>
 
@@ -132,7 +134,7 @@
 			<div class="flex pr-[25px] flex-grow">
 				<div class="flex-grow flex-shrink pt-[66px] relative overflow-hidden">
 					<div
-						class="desktop:w-[600px] -desktop:w-full h-full overflow-hidden pl-[30px] desktop:pr-4"
+						class="desktop:w-[600px] -desktop:pb-24 -desktop:w-full h-full overflow-hidden pl-[30px] desktop:pr-4"
 					>
 						<HomepageBigChart />
 					</div>
@@ -147,6 +149,10 @@
 				</div>
 			</div>
 		</div>
+	</div>
+
+	<div class="desktop:hidden px-4 mt-4">
+		<IndicatorCard />
 	</div>
 
 	<div class="max-w-screen-xl mx-auto pt-[260px] min-h-[800px] relative -z-10 px-4">

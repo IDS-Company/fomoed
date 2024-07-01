@@ -40,8 +40,8 @@
 			cfgi_trend_chart.destroy();
 		}
 
-		const gradient = ctx.createLinearGradient(0, 0, 0, 300);
-		gradient.addColorStop(0, 'rgba(71, 166, 99, 0.25)');
+		const gradient = ctx.createLinearGradient(0, 0, 0, 200);
+		gradient.addColorStop(0, 'rgba(71, 166, 99, 0.4)');
 		gradient.addColorStop(1, 'rgba(71, 166, 99, 0)');
 
 		const cfgiData: ChartDataset<'line'> = {
