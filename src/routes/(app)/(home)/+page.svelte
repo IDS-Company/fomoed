@@ -37,6 +37,7 @@
 	import { writable } from 'svelte/store';
 	import { goto } from '$app/navigation';
 	import SmallCharts from '$lib/comps/SmallCharts.svelte';
+	import HomepageBtcDominanceFloating from '$lib/comps/homepage/HomepageBtcDominanceFloating.svelte';
 
 	// const memoizedTokens = memoizeDebounce(refresh_coinstats_coin_list, 1000, { maxWait: 2000 });
 
@@ -109,9 +110,29 @@
 <SocialSharePopup /> -->
 
 <main class="w-full relative overflow-hidden">
+	<!-- Mobile top bg image -->
+	<div
+		class="desktop:hidden absolute w-full bg-bottom -z-20 bg-[url(/background/mobile/homepage-top.png)] bg-no-repeat bg-cover h-[120vh]"
+	></div>
+
+	<!-- Mobile top glow -->
+	<div
+		class="desktop:hidden absolute -z-10 bg-[url(/background/mobile/homepage-top-gradient.svg)] w-full h-[500px] bg-no-repeat bg-center -translate-y-20"
+	></div>
+
+	<!-- Mobile bnb coin -->
+	<div
+		class="desktop:hidden bg-[url(/images/mobile/bnb-coin-bg.svg)] w-[94px] aspect-square absolute left-0 top-20"
+	></div>
+
+	<!-- Mobile ether coin -->
+	<div
+		class="desktop:hidden bg-[url(/images/mobile/eth-coin-bg.svg)] w-[94px] aspect-square absolute -right-6 top-[600px] -z-10"
+	></div>
+
 	<div class="h-full max-w-[980px] mx-auto pt-28 desktop:min-h-screen px-4">
 		<div
-			class="bg-[url(/background/homepage-1.webp)] bg-cover bg-center min-h-screen w-screen absolute top-0 left-0 -z-10"
+			class="desktop:bg-[url(/background/homepage-1.webp)] bg-cover bg-center min-h-screen w-screen absolute top-0 left-0 -z-10"
 		></div>
 
 		<h1 class="text-5xl text-center font-paralucent-demibold -sm:text-[36px] mx-10">
@@ -127,11 +148,21 @@
 
 		<div
 			style="background: linear-gradient(180deg, #000000 0%, rgba(0, 0, 0, 0.2) 125.15%) padding-box, linear-gradient(179.91deg, rgba(255, 59, 16, 0.4) 11.58%, rgba(255, 59, 16, 0) 99.92%) border-box"
-			class="bg-gradient-to-b from-black to-[#00000033] w-full h-[550px] mt-[25px] rounded-[28px] pt-[46px] flex flex-col border-2 border-transparent pb-[20px]"
+			class="relative bg-gradient-to-b from-black to-[#00000033] w-full h-[550px] mt-[25px] rounded-[28px] pt-[46px] flex flex-col border-2 border-transparent pb-[20px]"
 		>
+			<!-- Mobile btc coin -->
+			<div
+				class="desktop:hidden bg-[url(/images/mobile/btc-coin.svg)] w-[94px] aspect-square absolute -right-6 -top-10"
+			></div>
+
+			<!-- Mobile sol coin -->
+			<div
+				class="desktop:hidden bg-[url(/images/mobile/sol-coin.svg)] w-[94px] aspect-square absolute -left-4 bottom-20"
+			></div>
+
 			<SmallCharts />
 
-			<div class="flex pr-[25px] flex-grow">
+			<div class="flex desktop:pr-[25px] flex-grow">
 				<div class="flex-grow flex-shrink pt-[66px] relative overflow-hidden">
 					<div
 						class="desktop:w-[600px] -desktop:pb-24 -desktop:w-full h-full overflow-hidden pl-[30px] desktop:pr-4"
@@ -155,8 +186,10 @@
 		<IndicatorCard />
 	</div>
 
-	<div class="max-w-screen-xl mx-auto pt-[260px] min-h-[800px] relative -z-10 px-4">
-		<div class="absolute top-0 -translate-y-40">
+	<div
+		class="max-w-screen-xl mx-auto desktop:pt-[260px] -desktop:pt-[50px] min-h-[800px] relative -z-10 px-4"
+	>
+		<div class="absolute top-0 -translate-y-40 -desktop:scale-[2.5] -desktop:translate-y-[200px]">
 			<img
 				src="/background/homepage-2.svg"
 				width={1158}
@@ -167,15 +200,17 @@
 		</div>
 
 		<div class="relative">
-			<div class="max-w-[570px] -1120:max-w-[430px]">
-				<h2 class="text-[64px] leading-[75px] font-paralucent-demibold">
+			<div class="-desktop:text-center desktop:max-w-[570px] -1120:max-w-[430px] -desktop:mx-auto">
+				<h2
+					class="text-[64px] -desktop:text-[36px] -desktop:leading-[42px] leading-[75px] font-paralucent-demibold"
+				>
 					Stop Trading With <br />
 					<span class="text-transparent bg-clip-text bg-gradient-to-r from-primary to-yellow">
 						Emotions
 					</span>
 				</h2>
 
-				<p class="font-bold text-lg pt-[25px] opacity-80">
+				<p class="font-bold text-lg pt-[25px] opacity-80 -desktop:text-sm">
 					Fomoed provides a toolset for effortlessly navigating the emotional rollercoaster that is
 					crypto.
 					<br /> <br />
@@ -184,50 +219,63 @@
 				</p>
 			</div>
 
-			<div class="w-[509px] h-[373px] absolute top-0 right-0">
+			<!-- Mobile cards -->
+			<div class="desktop:hidden mt-4">
+				<div class="flex flex-col">
+					<div class="translate-x-6 flex justify-end scale-75">
+						<SmallGreedIndicatorCard percentage={$cfgi_summary?.now.value} />
+					</div>
+					<div><VideoContainer thumbnail="/images/video-thumbnail.png" /></div>
+
+					<div class="flex mt-3 h-[120px]">
+						<div class="w-1/2 -translate-x-2"><HomepageBtcDominanceFloating /></div>
+						<div class="flex-grow"></div>
+						<div class="scale-[0.6] origin-top-right -translate-y-12 translate-x-2">
+							<IndicatorGraphicsCard percentage={80} />
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<!-- Desktop cards -->
+			<div class="-desktop:hidden w-[509px] h-[373px] absolute top-0 right-0">
 				<VideoContainer thumbnail="/images/video-thumbnail.png" />
 			</div>
 
-			<div class="absolute top-0 right-0 translate-x-10 -translate-y-[70%]">
+			<div class="-desktop:hidden absolute top-0 right-0 translate-x-10 -translate-y-[70%]">
 				<IndicatorGraphicsCard percentage={80} />
 			</div>
 
-			<div class="absolute left-1/2 top-0 -translate-y-[130%]">
+			<div class="-desktop:hidden absolute left-1/2 top-0 -translate-y-[130%]">
 				<SmallGreedIndicatorCard percentage={$cfgi_summary?.now.value} />
 			</div>
 
-			<div class="absolute left-1/2 bottom-0 translate-y-[105%] w-[245px] h-[144px]">
-				<FloatingCard>
-					<div class="px-[22px]">
-						<HomepageSmallChart
-							title="BTC Dominance"
-							value={$coinstats_global_data?.btcDominance.toLocaleString()}
-							change={$coinstats_global_data?.btcDominanceChange}
-							postfix="%"
-							prefix=""
-						></HomepageSmallChart>
-					</div>
-				</FloatingCard>
+			<div
+				class="-desktop:hidden absolute left-1/2 bottom-0 translate-y-[105%] w-[245px] h-[144px]"
+			>
+				<HomepageBtcDominanceFloating />
 			</div>
 		</div>
 	</div>
-	<div class="h-[500px]">
-		<CoinSwiper />
-	</div>
+
+	<CoinSwiper />
+
 	<div>
 		<div>
-			<h2 class="text-[36px] text-center font-paralucent-demibold">
+			<h2 class="text-[36px] text-center font-paralucent-demibold -desktop:text-[22px]">
 				Get your free trial to unlock more!
 			</h2>
 
 			<div class="flex mx-auto max-w-max gap-x-[20px] pt-[9px]">
-				<img src="/fomoed.svg" width={158} height={33} alt="Fomoed." />
+				<img src="/fomoed.svg" class="-desktop:w-[125px]" width={158} height={33} alt="Fomoed." />
 
 				<PremiumBadge />
 			</div>
 		</div>
 	</div>
-	<div class="pt-[52px] flex justify-center gap-x-[14px] items-center px-4">
+	<div
+		class="pt-[52px] -desktop:pt-8 flex justify-center gap-x-[14px] items-center px-4 -desktop:flex-col gap-y-4"
+	>
 		<FreeCard />
 		<PremiumCard
 			on:click-free-trial={() => goto('/plans')}
@@ -239,18 +287,24 @@
 		/>
 	</div>
 
-	<div class="max-w-[914px] mx-auto flex items-center gap-x-[80px] pt-40 relative pb-48 px-4">
-		<div class="absolute inset-x-0 -translate-y-40 translate-x-1/3 -z-10 scale-150">
+	<div
+		class="max-w-[914px] mx-auto flex -desktop:flex-col items-center gap-x-[80px] pt-40 -desktop:pt-8 relative -desktop:pb-16 pb-48 px-4 -desktop:scale-90"
+	>
+		<div
+			class="absolute inset-x-0 -desktop:bottom-0 desktop:-translate-y-40 translate-x-1/3 -z-10 scale-150 -desktop:scale-[2]"
+		>
 			<img src="/background/homepage-3.svg" width={1040} height={2352} alt="" />
 		</div>
 
 		<MemeSwiper />
 
-		<div>
-			<div class="text-[36px] leading-[45px] font-paralucent-demibold">
+		<div class="-desktop mt-32">
+			<div
+				class="text-[36px] -desktop:text-[24px] leading-[45px] font-paralucent-demibold -desktop:text-center"
+			>
 				Got any trouble or question?
 			</div>
-			<div class="pt-[15px] text-[20px] font-semibold">
+			<div class="pt-[15px] text-[20px] -desktop:text-sm font-semibold">
 				Send us your thought to{' '}
 				<a href="mailto:fomoed@mail.com" class="text-primary underline"> fomoed@mail.com </a>
 			</div>

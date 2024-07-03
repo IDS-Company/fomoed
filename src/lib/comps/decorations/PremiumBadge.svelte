@@ -3,5 +3,5 @@
 >
 	<img src="/icons/star.svg" width={23} height={23} alt="Star." />
 
-	<div class="text-[28px] font-paralucent-demibold">Premium</div>
+	<div class="text-[28px] -desktop:text-[20px] font-paralucent-demibold">Premium</div>
 </div>

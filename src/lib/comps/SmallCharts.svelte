@@ -43,7 +43,9 @@
 			postfix="%"
 		/>
 
-		<div class="absolute left-[18px] flex flex-col gap-y-[3px] inset-y-0 justify-center">
+		<div
+			class="absolute left-[18px] flex flex-col gap-y-[3px] inset-y-0 justify-center desktop:hidden"
+		>
 			<div class:selected={page === 0} class="--dot"></div>
 			<div class:selected={page === 1} class="--dot"></div>
 			<div class:selected={page === 2} class="--dot"></div>

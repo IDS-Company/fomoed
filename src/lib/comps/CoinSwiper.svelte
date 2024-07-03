@@ -1,10 +1,10 @@
-<div class="relative h-[500px] flex items-center">
+<div class="relative h-[500px] -sm:h-[250px] flex items-center">
 	<!-- Glow -->
-	<div class={`absolute inset-0 grid place-items-center transitionColor`}>
+	<div class="absolute w-screen grid place-items-center h-full transitionColor">
 		<svg
 			class=""
-			width="638"
-			height="593"
+			width="100%"
+			height="100%"
 			viewBox="0 0 638 593"
 			fill="none"
 			xmlns="http://www.w3.org/2000/svg"
@@ -32,54 +32,25 @@
 
 	<!-- Coins -->
 	<div class="h-full flex items-center">
-		<div class="overflow-hidden max-w-[100vw] relative">
+		<div class="overflow-hidden max-w-[100vw] relative h-full items-center flex">
 			<div class="movingContent">
-				<div class="w-[20vw] flex-shrink-0 p-2">
-					<img src="/images/carousel/btc.svg" width={235} height={235} alt="Bitcoin." />
-				</div>
-
-				<div class="w-[20vw] flex-shrink-0 p-2">
-					<img src="/images/carousel/ether.svg" width={235} height={235} alt="Ethereum." />
-				</div>
-
-				<div class="w-[20vw] flex-shrink-0 p-2">
-					<img src="/images/carousel/tether.svg" width={235} height={235} alt="Tether." />
-				</div>
-
-				<div class="w-[20vw] flex-shrink-0 p-2">
-					<img src="/images/carousel/bnc.svg" width={235} height={235} alt="Binance." />
-				</div>
-
-				<div class="w-[20vw] flex-shrink-0 p-2">
-					<img src="/images/carousel/map.svg" width={235} height={235} alt="TODO coin." />
-				</div>
-
-				<div class="w-[20vw] flex-shrink-0 p-2">
-					<img src="/images/carousel/btc.svg" width={235} height={235} alt="Bitcoin." />
-				</div>
-
-				<div class="w-[20vw] flex-shrink-0 p-2">
-					<img src="/images/carousel/ether.svg" width={235} height={235} alt="Ethereum." />
-				</div>
-
-				<div class="w-[20vw] flex-shrink-0 p-2">
-					<img src="/images/carousel/tether.svg" width={235} height={235} alt="Tether." />
-				</div>
-
-				<div class="w-[20vw] flex-shrink-0 p-2">
-					<img src="/images/carousel/bnc.svg" width={235} height={235} alt="Binance." />
-				</div>
-
-				<div class="w-[20vw] flex-shrink-0 p-2">
-					<img src="/images/carousel/map.svg" width={235} height={235} alt="TODO coin." />
-				</div>
+				<img src="/images/carousel/btc.svg" width={235} height={235} alt="Bitcoin." />
+				<img src="/images/carousel/ether.svg" width={235} height={235} alt="Ethereum." />
+				<img src="/images/carousel/tether.svg" width={235} height={235} alt="Tether." />
+				<img src="/images/carousel/bnc.svg" width={235} height={235} alt="Binance." />
+				<img src="/images/carousel/map.svg" width={235} height={235} alt="TODO coin." />
+				<img src="/images/carousel/btc.svg" width={235} height={235} alt="Bitcoin." />
+				<img src="/images/carousel/ether.svg" width={235} height={235} alt="Ethereum." />
+				<img src="/images/carousel/tether.svg" width={235} height={235} alt="Tether." />
+				<img src="/images/carousel/bnc.svg" width={235} height={235} alt="Binance." />
+				<img src="/images/carousel/map.svg" width={235} height={235} alt="TODO coin." />
 			</div>
 
 			<div
-				class="h-full bg-gradient-to-r from-black to-transparent w-[50%] absolute left-0 top-0 z-10"
+				class="h-full bg-gradient-to-r from-black to-transparent w-[50%] absolute -left-1 top-0 z-10"
 			></div>
 			<div
-				class="h-full bg-gradient-to-l from-black to-transparent w-[50%] absolute right-0 top-0 z-10"
+				class="h-full bg-gradient-to-l from-black to-transparent w-[50%] absolute -right-1 top-0 z-10"
 			></div>
 		</div>
 	</div>
@@ -92,17 +63,38 @@
 		animation: moveLinear 15s linear infinite;
 	}
 
-	@keyframes moveLinear {
-		0% {
-			transform: translateX(0);
+	.movingContent > img {
+		@apply -sm:w-[33.33vw] w-[20vw] flex-shrink-0 p-2;
+	}
+
+	@media (max-width: 639px) {
+		.transitionColor {
+			animation: transitionColor 18s linear infinite;
 		}
-		100% {
-			transform: translateX(-100%);
+
+		@keyframes moveLinear {
+			0% {
+				transform: translateX(0);
+			}
+			100% {
+				transform: translateX(-166%);
+			}
 		}
 	}
 
-	.transitionColor {
-		animation: transitionColor 15s linear infinite;
+	@media (min-width: 640px) {
+		.transitionColor {
+			animation: transitionColor 15s linear infinite;
+		}
+
+		@keyframes moveLinear {
+			0% {
+				transform: translateX(0);
+			}
+			100% {
+				transform: translateX(-100%);
+			}
+		}
 	}
 
 	@keyframes transitionColor {
