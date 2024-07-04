@@ -3,8 +3,7 @@
 </script>
 
 <div
-	style="background-image: url(/background/auth-single-pane.svg)"
-	class="bg-no-repeat bg-cover absolute inset-0 grid place-items-center"
+	class="bg-no-repeat desktop:bg-cover -desktop:bg-[60%_40%] absolute inset-0 grid place-items-center bg-[url(/background/auth-single-pane.svg)] -desktop:bg-[url(/background/mobile/email-sent.svg)]"
 >
 	<div class="max-w-[400px]">
 		<slot></slot>

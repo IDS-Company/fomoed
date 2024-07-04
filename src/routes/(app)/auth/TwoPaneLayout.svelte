@@ -14,7 +14,7 @@
 	class="bg-no-repeat desktop:bg-cover absolute inset-0 grid desktop:place-items-center bg-[url(/background/login/background.svg)] -desktop:bg-[url(/background/mobile/login.svg)] -desktop:bg-[50%_50%]"
 >
 	<div
-		class="-desktop:flex -desktop:justify-center -desktop:bg-gradient-to-b from-[#171514] to-[#1715147F] max-w-screen-xl w-full mx-auto grid desktop:place-items-center grid-cols-2 -desktop:grid-cols-1 -desktop:pt-[140px]"
+		class="-desktop:flex -desktop:justify-center -desktop:bg-gradient-to-b from-[#171514] to-[#1715147F] max-w-screen-xl w-full mx-auto grid desktop:place-items-center grid-cols-2 -desktop:grid-cols-1 -desktop:items-center"
 	>
 		<div class="z-20 max-w-[386px] w-full -desktop:px-5">
 			<slot></slot>
