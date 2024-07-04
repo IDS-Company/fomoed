@@ -11,20 +11,25 @@
 </script>
 
 <div
-	style="background-image: url(/background/login/background.svg)"
-	class="bg-no-repeat bg-cover absolute inset-0 grid place-items-center"
+	class="bg-no-repeat desktop:bg-cover absolute inset-0 grid desktop:place-items-center bg-[url(/background/login/background.svg)] -desktop:bg-[url(/background/mobile/login.svg)] -desktop:bg-[50%_50%]"
 >
-	<div class="max-w-screen-xl w-full mx-auto grid place-items-center grid-cols-2">
-		<div class="z-20 max-w-[386px] w-full">
+	<div
+		class="-desktop:flex -desktop:justify-center -desktop:bg-gradient-to-b from-[#171514] to-[#1715147F] max-w-screen-xl w-full mx-auto grid desktop:place-items-center grid-cols-2 -desktop:grid-cols-1 -desktop:pt-[140px]"
+	>
+		<div class="z-20 max-w-[386px] w-full -desktop:px-5">
 			<slot></slot>
 		</div>
 
-		<MemeSwiper></MemeSwiper>
+		<div class="-desktop:hidden">
+			<MemeSwiper></MemeSwiper>
+		</div>
 	</div>
 </div>
 
 <!-- Left blur rectangle -->
-<div class="bg-[#171514] bg-opacity-50 absolute inset-y-0 w-1/2 z-10 flex justify-end items-center">
+<div
+	class="bg-[#171514] bg-opacity-50 absolute inset-y-0 desktop:w-1/2 z-10 flex justify-end items-center"
+>
 	<!-- Glow in the middle -->
 	<svg
 		width="355"
@@ -32,6 +37,7 @@
 		viewBox="0 0 355 832"
 		fill="none"
 		xmlns="http://www.w3.org/2000/svg"
+		class="-desktop:hidden"
 	>
 		<g opacity="0.15" filter="url(#filter0_f_16_297)">
 			<circle cx="495.5" cy="416.5" r="249.5" fill="#FF3B10" />
