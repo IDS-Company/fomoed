@@ -22,7 +22,7 @@
 		<div class="flex-grow"></div>
 
 		<button on:click={() => mobileMenuOpen.set(false)}>
-			<img src="/icons/close.svg" alt="Close" class="px-4 py-5 translate-y-1" />
+			<img src="/icons/close.svg" alt="Close" class="px-4 py-5 mr-4" />
 		</button>
 	</div>
 

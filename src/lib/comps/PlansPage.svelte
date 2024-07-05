@@ -3,7 +3,7 @@
 	import { goto } from '$app/navigation';
 	import { auth_user } from '$lib/stores/user';
 	import { failure, success, warning } from '$lib/utils';
-	import { getContext } from 'svelte';
+	import { getContext, onMount } from 'svelte';
 	import type { Stripe } from '@stripe/stripe-js';
 	import { browser } from '$app/environment';
 	import type { SupabaseClient } from '@supabase/supabase-js';
@@ -17,6 +17,7 @@
 	import UnsubscribeSuccessPopup from './popups/UnsubscribeSuccessPopup.svelte';
 	import { writable } from 'svelte/store';
 	import { active_degen_sub, active_premium_sub, changingSubscription } from '$lib/stores/subs';
+	import ScrollerDots from './ScrollerDots.svelte';
 
 	let stripeContext = getContext<{
 		getStripe: () => Stripe;
@@ -232,7 +233,11 @@
 		}
 	}
 
-	$: console.log('premium', $active_premium_sub);
+	let cardsContainer: HTMLElement;
+
+	onMount(() => {
+		cardsContainer.scrollTo({ left: cardsContainer.scrollWidth / 3 });
+	});
 </script>
 
 <!-- <section class="px-6 pt-16 mx-auto max-w-screen-2xl">
@@ -423,32 +428,50 @@
 
 	<div class="flex-grow grid place-items-center pb-24">
 		<div
-			style="grid-template-rows;: 1fr 3fr"
 			class="grid place-items-center grid-cols-3 gap-[7px] mx-auto h-full pb-6 w-full max-w-[1050px] max-h-[700px]"
 		>
 			<div class="col-span-3">
-				<h1 class="font-paralucent-demibold text-[28px] text-center">
+				<h1
+					class="font-paralucent-demibold text-[28px] text-center -desktop:text-[22px] -desktop:mt-12"
+				>
 					Get your free trial to unlock more!
 				</h1>
 
 				<div class="mt-[9px] flex items-center justify-center gap-x-[20px]">
-					<img src="/fomoed.svg" alt="Fomoed." class="h-full" width={158} height={33} />
+					<img src="/fomoed.svg" alt="Fomoed." class="w-[158px] -desktop:w-[125px]" />
 					<PremiumBadge />
 				</div>
 			</div>
 
-			<FreeCard />
-			<PremiumCard
-				on:click-free-trial={subscribeFreeTrial}
-				on:click-subscribe={() => subscribeToPlan('Premium')}
-				on:click-unsubscribe={() => unsubPlanFromCard('Premium')}
-				on:click-resubscribe={() => resubscribePlan('Premium')}
-			/>
-			<DegenCard
-				on:click-subscribe={() => subscribeToPlan('Degen')}
-				on:click-unsubscribe={() => unsubPlanFromCard('Degen')}
-				on:click-resubscribe={() => resubscribePlan('Degen')}
-			/>
+			<div
+				bind:this={cardsContainer}
+				class="desktop:grid desktop:grid-cols-subgrid col-span-3 desktop:place-items-center -desktop:flex -desktop:overflow-x-scroll -desktop:gap-x-2 items-center -desktop:w-full -desktop:px-2 -desktop:snap-x -desktop:snap-mandatory no-scrollbar -desktop:mt-16"
+			>
+				<div class="flex-shrink-0 snap-center">
+					<FreeCard />
+				</div>
+
+				<div class="flex-shrink-0 snap-center">
+					<PremiumCard
+						on:click-free-trial={subscribeFreeTrial}
+						on:click-subscribe={() => subscribeToPlan('Premium')}
+						on:click-unsubscribe={() => unsubPlanFromCard('Premium')}
+						on:click-resubscribe={() => resubscribePlan('Premium')}
+					/>
+				</div>
+
+				<div class="flex-shrink-0 snap-center">
+					<DegenCard
+						on:click-subscribe={() => subscribeToPlan('Degen')}
+						on:click-unsubscribe={() => unsubPlanFromCard('Degen')}
+						on:click-resubscribe={() => resubscribePlan('Degen')}
+					/>
+				</div>
+			</div>
+		</div>
+
+		<div class="col-span-3 desktop:hidden">
+			<ScrollerDots container={cardsContainer} />
 		</div>
 	</div>
 </div>

@@ -2,10 +2,8 @@
 	import { onMount } from 'svelte';
 	import { prices_store } from '$lib/stores/stripe';
 	import { loading } from '$lib/stores';
-	import Loader from '$lib/comps/Loader.svelte';
 	import StripeProvider from '$lib/comps/StripeProvider.svelte';
 	import PlansPage from '$lib/comps/PlansPage.svelte';
-	import { page } from '$app/stores';
 
 	onMount(() => {
 		loading.set(true);

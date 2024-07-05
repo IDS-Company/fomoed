@@ -11,7 +11,9 @@
 
 <LoadUserData />
 
-<nav class="relative flex h-[75px] items-center justify-center w-full max-w-screen-xl mx-auto z-10">
+<nav
+	class="relative flex h-[75px] items-center justify-center w-full max-w-screen-xl mx-auto z-10 flex-shrink-0"
+>
 	<div class="absolute h-full left-2 top-0 z-10 ml-4">
 		<a href="/" class="h-[75px] flex items-center">
 			<img src="/fomoed.svg" alt="Fomoed." />

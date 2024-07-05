@@ -1,5 +1,5 @@
 <div
-	class="rounded-full items-center bg-gradient-to-r from-primary to-yellow flex gap-x-[6px] px-[25px] h-[55px]"
+	class="rounded-full items-center bg-gradient-to-r from-primary to-yellow flex gap-x-[6px] px-[25px] -desktop:pl-3 -desktop:pr-5 -desktop:py-[10px] h-[55px]"
 >
 	<img src="/icons/star.svg" width={23} height={23} alt="Star." />
 
