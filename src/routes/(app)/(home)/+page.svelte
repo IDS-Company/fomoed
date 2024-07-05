@@ -176,7 +176,7 @@
 
 				<div class="pt-[24px] w-[320px] relative flex-shrink-0 -desktop:hidden">
 					<div class="absolute h-[430px]">
-						<IndicatorCard orangeOutline />
+						<IndicatorCard onHomepage />
 					</div>
 				</div>
 			</div>

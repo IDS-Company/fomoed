@@ -445,7 +445,7 @@
 
 			<div
 				bind:this={cardsContainer}
-				class="desktop:grid desktop:grid-cols-subgrid col-span-3 desktop:place-items-center -desktop:flex -desktop:overflow-x-scroll -desktop:gap-x-2 items-center -desktop:w-full -desktop:px-2 -desktop:snap-x -desktop:snap-mandatory no-scrollbar -desktop:mt-16"
+				class="desktop:grid desktop:grid-cols-subgrid col-span-3 desktop:place-items-center -desktop:flex -desktop:overflow-x-scroll -desktop:gap-x-2 items-center -desktop:w-full -desktop:px-2 -desktop:snap-x -desktop:snap-mandatory no-scrollbar -desktop:mt-16 desktop:mt-8"
 			>
 				<div class="flex-shrink-0 snap-center">
 					<FreeCard />

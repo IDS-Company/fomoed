@@ -4,7 +4,7 @@
 
 <div
 	class="{!disablePadding &&
-		'px-[30px] py-[22px]'} bg-[#0F0D0D] rounded-[20px] border border-white border-opacity-10 grid place-items-center w-full h-full -desktop:snap-center"
+		'px-[30px] py-[22px]'} bg-[#0F0D0D] rounded-[26px] border border-white border-opacity-10 grid place-items-center w-full h-full -desktop:snap-center"
 >
 	<slot />
 </div>

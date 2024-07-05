@@ -25,12 +25,12 @@
 	import LoadingAnim from './animations/LoadingAnim.svelte';
 	import IndicatorEmpty from './indicator/IndicatorEmpty.svelte';
 
-	export let orangeOutline = false;
+	export let onHomepage = false;
 	export let prev = 0;
 	export let percentage = 0;
 	export let average = 0;
 
-	$: background = orangeOutline
+	$: background = onHomepage
 		? `linear-gradient(180deg, #000000 0%, rgba(0, 0, 0, 0.3) 135.93%) padding-box, linear-gradient(180deg, rgba(255, 59, 16, 0.4) -4.26%, rgba(255, 59, 16, 0) 100%) border-box`
 		: 'rgba(15, 13, 13, 1)';
 
@@ -181,8 +181,10 @@
 
 <div
 	style:background
-	class="w-full h-full rounded-[30px] backdrop-blur-xl flex flex-col {orangeOutline &&
-		'border-2 border-transparent'} {!orangeOutline && 'border border-[#FFFFFF1A]'}"
+	class="w-full h-full {onHomepage
+		? 'rounded-[30px]'
+		: 'rounded-[26px]'} backdrop-blur-xl flex flex-col {onHomepage &&
+		'border-2 border-transparent'} {!onHomepage && 'border border-[#FFFFFF1A]'}"
 >
 	<div class="relative max-h-[220px] w-full">
 		<div class="inset-x-0 grid place-items-center">
