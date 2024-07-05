@@ -7,20 +7,20 @@
 	import IndicatorCard from '$lib/comps/IndicatorCard.svelte';
 	import { coinstats_global_data, coinstats_selected_coin } from '$lib/stores';
 	import ScrollerDots from '$lib/comps/ScrollerDots.svelte';
+	import Footer from '$lib/comps/Footer.svelte';
 
 	let smallChartsCointainer: HTMLElement;
 </script>
 
 <div
 	style="background-image: url(/background/dashboard.svg)"
-	class="desktop:absolute desktop:inset-0 desktop:overflow-hidden bg-cover flex flex-col"
+	class="desktop:absolute desktop:inset-0 desktop:overflow-hidden bg-cover desktop:flex desktop:flex-col -desktop:bg-[50%_50%]"
 >
 	<AppNav showCurrencyDropdown />
 
-	<div class="flex-grow grid place-items-center pb-24 desktop:mx-4">
+	<div class="flex-grow grid place-items-center desktop:pb-24 desktop:mx-4">
 		<div
-			style="grid-template-rows: 1fr 3fr"
-			class="grid grid-cols-3 gap-[7px] mx-auto h-full pb-6 w-full max-w-[1050px] max-h-[700px]"
+			class="grid grid-cols-3 gap-[7px] mx-auto h-full pb-6 w-full max-w-[1050px] desktop:max-h-[700px] desktop:grid-rows-[1fr_3fr]"
 		>
 			<div
 				bind:this={smallChartsCointainer}
@@ -95,9 +95,11 @@
 				</DashboardCard>
 			</div>
 
-			<div class="max-h-[500px] -desktop:col-span-3 -desktop:pb-2 -desktop:mx-3">
+			<div class="max-h-[500px] -desktop:col-span-3 -desktop:pb-2 -desktop:mx-3 -desktop:mt-1">
 				<IndicatorCard />
 			</div>
 		</div>
 	</div>
+
+	<Footer></Footer>
 </div>
