@@ -23,7 +23,7 @@
 	import Copy from '$lib/icons/social/Copy.svelte';
 	import { fade } from 'svelte/transition';
 	import LoadingAnim from './animations/LoadingAnim.svelte';
-	import IndicatorEmpty from './indicator/IndicatorEmpty.svelte';
+	import Gauge from './indicator/Gauge.svelte';
 
 	export let onHomepage = false;
 	export let prev = 0;
@@ -189,11 +189,7 @@
 	<div class="relative max-h-[220px] w-full">
 		<div class="inset-x-0 grid place-items-center">
 			<div class="-translate-y-14">
-				{#if $cfgi_summary}
-					<svelte:component this={icons[iconIdx][0]} />
-				{:else}
-					<IndicatorEmpty />
-				{/if}
+				<Gauge percentage={$cfgi_summary ? percentage : 0} />
 			</div>
 		</div>
 

@@ -23,7 +23,7 @@ async function fetch_cfgi_data(
 	url = url.replace('END', end.toISOString().toLocaleString());
 	url = url.replace('PERIOD', period.toString());
 
-	console.log(period.toString());
+	console.log(url);
 
 	return fetch(url)
 		.then((res) => res.text())

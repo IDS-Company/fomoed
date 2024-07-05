@@ -33,7 +33,7 @@
 
 		console.log(formatted_data);
 
-		const prices_data = formatted_data.map((d) => d.price);
+		// const prices_data = formatted_data.map((d) => d.price);
 		const cfgi_data = formatted_data.map((c) => c.cfgi);
 
 		if (cfgi_trend_chart) {
