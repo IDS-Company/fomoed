@@ -145,6 +145,6 @@
 		class:opacity-0={$trend_chart_loading}
 		bind:this={trend_chart_canvas}
 		width="400"
-		height="150"
+		class="h-[150px] -desktop:h-[300px]"
 	/>
 </div>

@@ -3,6 +3,7 @@
 	import LoginButton from './buttons/LoginButton.svelte';
 	import CryptoDropdown from './CryptoDropdown.svelte';
 	import LoadUserData from './func/LoadUserData.svelte';
+	import MobileMenuButton from './mobile/MobileMenuButton.svelte';
 	import ProfileButton from './ProfileButton.svelte';
 
 	export let showCurrencyDropdown = false;
@@ -11,9 +12,9 @@
 <LoadUserData />
 
 <nav class="relative flex h-[75px] items-center justify-center w-full max-w-screen-xl mx-auto z-10">
-	<div class="absolute h-full left-2 top-0 z-10">
-		<a href="/">
-			<img src="/fomoed.svg" alt="Fomoed." class="h-full" width={110} height={23} />
+	<div class="absolute h-full left-2 top-0 z-10 ml-4">
+		<a href="/" class="h-[75px] flex items-center">
+			<img src="/fomoed.svg" alt="Fomoed." />
 		</a>
 	</div>
 
@@ -25,9 +26,17 @@
 		{/if}
 
 		{#if $auth_user}
-			<ProfileButton></ProfileButton>
+			<div class="-desktop:hidden">
+				<ProfileButton></ProfileButton>
+			</div>
 		{:else}
-			<LoginButton></LoginButton>
+			<div class="-desktop:hidden">
+				<LoginButton></LoginButton>
+			</div>
 		{/if}
+
+		<div class="desktop:hidden">
+			<MobileMenuButton></MobileMenuButton>
+		</div>
 	</div>
 </nav>

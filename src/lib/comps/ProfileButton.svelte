@@ -28,10 +28,10 @@
 			? 'bg-[#373534]'
 			: 'bg-[#221F1D]'} rounded-[8px] w-[40px] h-[40px] flex-shrink-0 grid place-items-center duration-150"
 	>
-		<img src="/images/profile-image.png" width={17} height={13} alt="Arrow right" />
+		<img src="/images/indicator-meme-5.png" width={17} height={13} alt="Arrow right" />
 	</div>
 
-	<div class="uppercase">Username</div>
+	<div class="uppercase">{$auth_user?.username || ''}</div>
 </button>
 
 {#if expanded}
