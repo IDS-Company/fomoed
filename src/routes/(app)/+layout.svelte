@@ -18,7 +18,7 @@
 	import { refresh_coinstats_coin_list } from '$lib/utils';
 	import MobileMenu from '$lib/comps/mobile/MobileMenu.svelte';
 	import type { SupabaseClient } from '@supabase/supabase-js';
-	import { displayLogoutPopup, mobileMenuOpen } from '$lib/stores/ui.js';
+	import { displayLogoutPopup, innerWidth, mobileMenuOpen } from '$lib/stores/ui.js';
 	import SignOutPopup from '$lib/comps/popups/SignOutPopup.svelte';
 	import { signOut } from '$lib/utils/user.js';
 
@@ -123,6 +123,8 @@ sentiment analysis"
 
 	<slot />
 </main> -->
+
+<svelte:window bind:innerWidth={$innerWidth} />
 
 {#if $displayLogoutPopup}
 	<SignOutPopup

@@ -2,7 +2,7 @@
 	export let selectedTicker = 'BTC';
 </script>
 
-<div class="absolute top-0 flex justify-center w-full items-end h-full">
+<div class="absolute top-0 flex justify-center w-full items-end h-full -desktop:mt-2">
 	<div
 		style="background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)) padding-box, linear-gradient(180deg, rgba(255, 59, 16, 0.3) -4.26%, rgba(255, 59, 16, 0) 100%) border-box"
 		class="-desktop:mx-4 bg-black/50 rounded-[20px] border-transparent border-2 w-[400px] h-[90px] backdrop-blur-xl -sm:px-6 sm:px-[65px] py-[27px] flex justify-between"

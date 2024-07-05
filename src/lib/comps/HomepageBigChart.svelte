@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { onMount, tick } from 'svelte';
 	import Chart from 'chart.js/auto';
 	import { dayjs } from 'svelte-time';
 	import type { _DeepPartialObject } from 'chart.js/dist/types/utils';
@@ -16,6 +15,7 @@
 	import LoadingAnim from './animations/LoadingAnim.svelte';
 	import { fade } from 'svelte/transition';
 	import { sleep } from '$lib';
+	import { isDesktop } from '$lib/stores/ui';
 
 	const color = '#47A663';
 
@@ -91,7 +91,8 @@
 					min: 0,
 					max: 100,
 					step: 20,
-					color: '#FFFFFF'
+					color: '#FFFFFF',
+					display: $isDesktop
 				},
 				x: {
 					beginAtZero: true,
@@ -132,6 +133,14 @@
 	});
 
 	let trend_chart_canvas: HTMLCanvasElement;
+
+	isDesktop.subscribe((desktop) => {
+		if (cfgi_trend_chart) {
+			// @ts-ignore
+			cfgi_trend_chart.options.scales.y.display = desktop;
+			cfgi_trend_chart.update();
+		}
+	});
 </script>
 
 <div class="relative h-full">

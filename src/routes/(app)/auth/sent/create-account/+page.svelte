@@ -10,9 +10,9 @@
 		Check your inbox and follow the instructions to create the account.
 	</div>
 
-	<div class="pt-[36px] text-[#FFFFFFCC] -desktop:text-sm">
+	<!-- <div class="pt-[36px] text-[#FFFFFFCC] -desktop:text-sm">
 		Did not receive the email? <button class="text-primary">Resend email</button>
-	</div>
+	</div> -->
 
 	<div class="pt-[20px] text-[#FFFFFFCC] -desktop:text-sm">
 		Wrong email address?{' '}

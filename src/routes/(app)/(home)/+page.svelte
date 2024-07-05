@@ -131,12 +131,12 @@
 		class="desktop:hidden bg-[url(/images/mobile/eth-coin-bg.svg)] w-[94px] aspect-square absolute -right-6 top-[600px] -z-10"
 	></div>
 
-	<div class="h-full max-w-[980px] mx-auto pt-28 desktop:min-h-screen px-4">
+	<div class="h-full max-w-[980px] mx-auto desktop:min-h-screen px-4 flex flex-col justify-center">
 		<div
 			class="desktop:bg-[url(/background/homepage-1.webp)] bg-cover bg-center min-h-screen w-screen absolute top-0 left-0 -z-10"
 		></div>
 
-		<h1 class="text-5xl text-center font-paralucent-demibold -sm:text-[36px] mx-10">
+		<h1 class="text-5xl text-center font-paralucent-demibold -sm:text-[36px] mx-10 -desktop:mt-24">
 			<span class="bg-clip-text text-transparent bg-gradient-to-r from-primary to-[#F3C111]">
 				Calculate
 			</span>{' '}
@@ -149,7 +149,7 @@
 
 		<div
 			style="background: linear-gradient(180deg, #000000 0%, rgba(0, 0, 0, 0.2) 125.15%) padding-box, linear-gradient(179.91deg, rgba(255, 59, 16, 0.4) 11.58%, rgba(255, 59, 16, 0) 99.92%) border-box"
-			class="relative bg-gradient-to-b from-black to-[#00000033] w-full h-[550px] mt-[25px] rounded-[28px] pt-[46px] flex flex-col border-2 border-transparent pb-[20px]"
+			class="relative bg-gradient-to-b from-black to-[#00000033] w-full desktop:h-[550px] mt-[25px] rounded-[28px] pt-[46px] flex flex-col border-2 border-transparent pb-[20px]"
 		>
 			<!-- Mobile btc coin -->
 			<div
@@ -166,7 +166,7 @@
 			<div class="flex desktop:pr-[25px] flex-grow">
 				<div class="flex-grow flex-shrink pt-[66px] relative overflow-hidden">
 					<div
-						class="desktop:w-[600px] -desktop:pb-24 -desktop:w-full h-full overflow-hidden pl-[30px] desktop:pr-4"
+						class="desktop:w-[600px] -desktop:pb-24 -desktop:w-full h-full overflow-hidden pl-[30px] desktop:pr-4 -desktop:px-2"
 					>
 						<HomepageBigChart />
 					</div>
