@@ -5,26 +5,22 @@
 
 	import ResizeObserver from 'resize-observer-polyfill';
 	import { browser } from '$app/environment';
-	import { goto, invalidate } from '$app/navigation';
-	import { getContext, onMount, setContext } from 'svelte';
+	import { invalidate } from '$app/navigation';
+	import { onMount, setContext } from 'svelte';
 
-	import Nav from '$lib/comps/Nav.svelte';
 	import { page } from '$app/stores';
 	import { no_reroute_routes } from '$lib';
-	import { auth_email, auth_user } from '$lib/stores/user';
+	import { auth_email } from '$lib/stores/user';
 	import { SvelteToast } from '@zerodevx/svelte-toast';
 	import { failure, fetch_global_data } from '$lib/utils/index.js';
 	import { MetaTags } from 'svelte-meta-tags';
 	import { refresh_coinstats_coin_list } from '$lib/utils';
 	import MobileMenu from '$lib/comps/mobile/MobileMenu.svelte';
-	import type { SupabaseClient } from '@supabase/supabase-js';
 	import { displayLogoutPopup, innerWidth, mobileMenuOpen } from '$lib/stores/ui.js';
 	import SignOutPopup from '$lib/comps/popups/SignOutPopup.svelte';
 	import { signOut } from '$lib/utils/user.js';
 
 	// const supabase = getContext<SupabaseClient>('supabase');
-
-	$: console.log($auth_user);
 
 	// Redirected here once the user has bought and they will add the sessionId as a query parameter
 

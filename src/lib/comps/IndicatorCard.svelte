@@ -6,10 +6,6 @@
 		get_data_label,
 		success
 	} from '$lib/utils';
-	import IndicatorHigh from './indicator/IndicatorHigh.svelte';
-	import IndicatorHighest from './indicator/IndicatorHighest.svelte';
-	import IndicatorLow from './indicator/IndicatorLow.svelte';
-	import IndicatorMedium from './indicator/IndicatorMedium.svelte';
 	import TintedSecondaryButton from './TintedSecondaryButton.svelte';
 	import { page } from '$app/stores';
 	import { aped_score, cfgi_summary } from '$lib/stores';
@@ -40,10 +36,10 @@
 	$: iconIdx = get_data_index(percentage);
 
 	const icons = [
-		[IndicatorLow, 'indicator-meme-4.png'],
-		[IndicatorMedium, 'indicator-meme-3.png'],
-		[IndicatorHigh, 'indicator-meme-2.png'],
-		[IndicatorHighest, 'indicator-meme-1.png']
+		'indicator-meme-4.png',
+		'indicator-meme-3.png',
+		'indicator-meme-2.png',
+		'indicator-meme-1.png'
 	];
 
 	cfgi_summary.subscribe((data) => {
@@ -187,17 +183,15 @@
 		'border-2 border-transparent'} {!onHomepage && 'border border-[#FFFFFF1A]'}"
 >
 	<div class="relative max-h-[220px] w-full">
-		<div class="inset-x-0 grid place-items-center">
-			<div class="-translate-y-14">
-				<Gauge percentage={$cfgi_summary ? percentage : 0} />
-			</div>
+		<div class="inset-x-0 grid place-items-center px-2 mt-4">
+			<Gauge percentage={$cfgi_summary ? percentage : 0} />
 		</div>
 
 		<div class="inset-x-0 absolute bottom-4 flex justify-center items-center">
 			<div class="relative">
 				<img
 					class:opacity-0={!$cfgi_summary}
-					src="/images/{icons[iconIdx][1]}"
+					src="/images/{icons[iconIdx]}"
 					alt=""
 					class="max-w-[92px] max-h-[124px]"
 				/>

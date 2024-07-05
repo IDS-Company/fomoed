@@ -23,15 +23,11 @@
 	let ctx: CanvasRenderingContext2D;
 
 	function chart_init() {
-		console.log('chart_init');
-
 		if (!$coin_data?.length || !trend_chart_canvas) {
 			return;
 		}
 
 		const formatted_data = $coin_data.filter((d) => d.price && d.cfgi);
-
-		console.log(formatted_data);
 
 		// const prices_data = formatted_data.map((d) => d.price);
 		const cfgi_data = formatted_data.map((c) => c.cfgi);
@@ -60,8 +56,6 @@
 			labels: formatted_data.map((d) => dayjs(d.date).format('DD MMM YYYY')),
 			datasets: [cfgiData]
 		};
-
-		console.log(chart_data);
 
 		const options: _DeepPartialObject<
 			CoreChartOptions<'bar'> &

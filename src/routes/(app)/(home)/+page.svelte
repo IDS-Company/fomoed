@@ -200,7 +200,7 @@
 			/>
 		</div>
 
-		<div class="relative">
+		<div class="relative z-0">
 			<div class="-desktop:text-center desktop:max-w-[570px] -1120:max-w-[430px] -desktop:mx-auto">
 				<h2
 					class="text-[64px] -desktop:text-[36px] -desktop:leading-[42px] leading-[75px] font-paralucent-demibold"

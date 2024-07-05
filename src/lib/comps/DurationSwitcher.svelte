@@ -1,15 +1,19 @@
 <script>
-	import { coinstats_selected_coin } from "$lib/stores";
-	import { fetch_token_data } from "$lib/utils";
-	import { CfgiPeriods } from "$lib/utils/cfgi_data";
+	import { coinstats_selected_coin } from '$lib/stores';
+	import { fetch_token_data } from '$lib/utils';
+	import { CfgiPeriods } from '$lib/utils/cfgi_data';
 
 	const options = CfgiPeriods;
 
 	export let selected = options[0];
 
 	$: if ($coinstats_selected_coin && selected) {
-		console.log(selected.value);
-		fetch_token_data($coinstats_selected_coin.symbol, $coinstats_selected_coin.slug, selected.value, $coinstats_selected_coin.name);
+		fetch_token_data(
+			$coinstats_selected_coin.symbol,
+			$coinstats_selected_coin.slug,
+			selected.value,
+			$coinstats_selected_coin.name
+		);
 	}
 </script>
 

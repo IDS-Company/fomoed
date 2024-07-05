@@ -23,8 +23,7 @@
 
 <svg
 	bind:this={svg}
-	width={332}
-	height={332}
+	width="100%"
 	viewBox="0 0 303 164"
 	fill="none"
 	xmlns="http://www.w3.org/2000/svg"

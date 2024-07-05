@@ -20,7 +20,7 @@ export function get_data_index(data: number) {
 }
 
 export function get_data_color(data: number) {
-	return data <= 25 ? '#f02834' : data <= 50 ? '#f07d29' : data <= 75 ? '#99cb81' : '#34b348';
+	return data <= 25 ? '#FF3B10' : data <= 50 ? '#EA9924' : data <= 75 ? '#399F57' : '#05A5A6';
 }
 
 export function get_data_label(data: number) {
@@ -258,8 +258,6 @@ coinstats_coin_list.subscribe((coins) => {
 });
 
 coinstats_selected_coin.subscribe(async (coin) => {
-	console.log('here');
-
 	if (coin) {
 		if (get(coin_data) && get(coin_data)[0].symbol === coin.symbol) {
 			return;

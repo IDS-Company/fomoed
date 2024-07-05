@@ -28,8 +28,6 @@
 				? $coinstats_coin_list.map((t) => t.symbol)
 				: free_tokens;
 	}
-
-	$: console.log(enabledSymbols);
 </script>
 
 <div class="relative">
