@@ -6,6 +6,8 @@
 	import InputLabel from '../InputLabel.svelte';
 
 	const dispatch = createEventDispatcher();
+
+	let email = '';
 </script>
 
 <div>
@@ -18,12 +20,12 @@
 		<InputLabel forId="email">Email</InputLabel>
 
 		<div class="mt-2">
-			<TextInput id="email" placeholder="example@mail.com" />
+			<TextInput id="email" placeholder="example@mail.com" bind:value={email} />
 		</div>
 	</div>
 
 	<div class="pt-[30px] -desktop:pt-5">
-		<MainButton>Get the link</MainButton>
+		<MainButton disabled={!email}>Get the link</MainButton>
 	</div>
 
 	<div class="pt-3 -desktop:pt-5">

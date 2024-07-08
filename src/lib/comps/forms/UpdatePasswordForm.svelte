@@ -1,6 +1,9 @@
 <script lang="ts">
 	import MainButton from '../buttons/MainButton.svelte';
 	import TextInput from '../TextInput.svelte';
+
+	let password = '';
+	let confirmPassword = '';
 </script>
 
 <div>
@@ -13,17 +16,19 @@
 		<div class="flex text-[#FFFFFF99] mt-3">
 			<label for="password" class="font-satoshi font-medium flex-grow mb-2"> New Password </label>
 		</div>
-		<TextInput id="password" placeholder="••••••••" hidden />
+		<TextInput bind:value={password} id="password" hidden />
 
 		<div class="flex text-[#FFFFFF99] mt-3">
 			<label for="confirm-password" class="font-satoshi font-medium flex-grow mb-2">
 				Confirm Password
 			</label>
 		</div>
-		<TextInput id="confirm-password" placeholder="••••••••" hidden />
+		<TextInput bind:value={confirmPassword} id="confirm-password" hidden />
 	</div>
 
 	<div class="pt-[30px]">
-		<MainButton>Confirm new password</MainButton>
+		<MainButton disabled={!password || !confirmPassword || password !== confirmPassword}>
+			Confirm new password
+		</MainButton>
 	</div>
 </div>

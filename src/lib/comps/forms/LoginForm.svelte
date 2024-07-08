@@ -6,6 +6,9 @@
 	import InputLabel from '../InputLabel.svelte';
 
 	const dispatch = createEventDispatcher();
+
+	let email = '';
+	let password = '';
 </script>
 
 <div>
@@ -27,7 +30,7 @@
 	<div class="pt-5">
 		<InputLabel forId="email">Email</InputLabel>
 		<div class="mt-3">
-			<TextInput id="email" placeholder="example@mail.com" />
+			<TextInput bind:value={email} id="email" placeholder="example@mail.com" />
 		</div>
 
 		<div class="flex mt-3 items-center">
@@ -39,11 +42,11 @@
 				Forgot your password?
 			</button>
 		</div>
-		<TextInput id="password" placeholder="••••••••" hidden />
+		<TextInput bind:value={password} id="password" hidden />
 	</div>
 
 	<div class="pt-[30px] -desktop:pt-[20px]">
-		<MainButton>Sign In</MainButton>
+		<MainButton disabled={!email || !password}>Sign In</MainButton>
 	</div>
 
 	<div class="pt-3 -desktop:text-center -desktop:text-xs">

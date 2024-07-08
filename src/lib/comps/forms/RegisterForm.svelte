@@ -5,6 +5,10 @@
 	import InputLabel from '../InputLabel.svelte';
 
 	const dispatch = createEventDispatcher();
+
+	let username = '';
+	let email = '';
+	let password = '';
 </script>
 
 <div>
@@ -16,22 +20,22 @@
 	<div class="pt-5">
 		<InputLabel forId="username">Username</InputLabel>
 		<div class="mt-2">
-			<TextInput id="username" placeholder="fomoed00" />
+			<TextInput bind:value={username} id="username" placeholder="fomoed00" />
 		</div>
 
 		<InputLabel forId="email">Email</InputLabel>
 		<div class="mt-2">
-			<TextInput id="email" placeholder="example@mail.com" />
+			<TextInput bind:value={email} id="email" placeholder="example@mail.com" />
 		</div>
 
 		<InputLabel forId="password">Password</InputLabel>
 		<div class="mt-2">
-			<TextInput id="password" placeholder="••••••••" hidden />
+			<TextInput bind:value={password} id="password" hidden />
 		</div>
 	</div>
 
 	<div class="pt-[30px] -desktop:pt-5">
-		<MainButton>Register now</MainButton>
+		<MainButton disabled={!username || !email || !password}>Register now</MainButton>
 	</div>
 
 	<div class="pt-3 -desktop:text-center -desktop:text-xs -desktop:pt-5">

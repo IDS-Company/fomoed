@@ -15,7 +15,9 @@
 		<BorderedProfileImage />
 	</div>
 
-	<div class="pt-[6px] text-[18px] font-paralucent-demibold">{$auth_user?.username}</div>
+	<div class="pt-[6px] text-[18px] font-paralucent-demibold">
+		{$auth_user?.username || $auth_email?.substring(0, 8) + '...'}
+	</div>
 	<div class="text-[#FFFFFF99] text-xs">{$auth_email}</div>
 
 	<div class="pt-4">

@@ -1,5 +1,5 @@
 <script>
-	import { auth_user } from '$lib/stores/user';
+	import { auth_email, auth_user } from '$lib/stores/user';
 	import ProfileDropdown from './ProfileDropdown.svelte';
 
 	let expanded = false;
@@ -31,7 +31,7 @@
 		<img src="/images/indicator-meme-5.png" width={17} height={13} alt="Arrow right" />
 	</div>
 
-	<div class="uppercase">{$auth_user?.username || ''}</div>
+	<div class="uppercase">{$auth_user?.username || $auth_email?.substring(0, 8) + '...'}</div>
 </button>
 
 {#if expanded}

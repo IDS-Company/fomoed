@@ -103,10 +103,12 @@ export type ICoinCfgiPriceData = {
  */
 
 export const no_reroute_routes = [
+	'/(app)/auth/sent/create-account',
+	'/(app)/auth/sent/password-reset',
 	'/(app)/auth/error',
 	'/(app)/auth',
 	'/(app)/plans',
-	'/(app)',
+	'/(app)/(home)',
 	'/(share_config)'
 ];
 

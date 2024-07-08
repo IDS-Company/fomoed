@@ -5,7 +5,7 @@
 
 	import ResizeObserver from 'resize-observer-polyfill';
 	import { browser } from '$app/environment';
-	import { invalidate } from '$app/navigation';
+	import { goto, invalidate } from '$app/navigation';
 	import { onMount, setContext } from 'svelte';
 
 	import { page } from '$app/stores';
@@ -41,8 +41,7 @@
 
 				if ($page.route.id && !no_reroute_routes.includes($page.route.id)) {
 					setTimeout(() => {
-						console.log('Redirecting to /auth');
-						// goto('/auth', { invalidateAll: true });
+						goto('/auth', { invalidateAll: true });
 					});
 				}
 			} else {
