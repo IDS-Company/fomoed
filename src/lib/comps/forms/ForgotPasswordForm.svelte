@@ -1,9 +1,10 @@
 <script lang="ts">
 	import { createEventDispatcher } from 'svelte';
-	import MainButton from '../buttons/MainButton.svelte';
+	import MainButton from '$lib/comps/buttons/MainButton.svelte';
 
-	import TextInput from '../TextInput.svelte';
-	import InputLabel from '../InputLabel.svelte';
+	import TextInput from '$lib/comps/TextInput.svelte';
+	import InputLabel from '$lib/comps/InputLabel.svelte';
+	import TextButton from '$lib/comps/TextButton.svelte';
 
 	const dispatch = createEventDispatcher();
 
@@ -28,10 +29,7 @@
 		<MainButton disabled={!email}>Get the link</MainButton>
 	</div>
 
-	<div class="pt-3 -desktop:pt-5">
-		<button
-			on:click={() => dispatch('click-login-link')}
-			class="text-primary text-center block w-full -desktop:text-xs">Return to login</button
-		>
+	<div class="pt-3 -desktop:pt-5 text-center -desktop:text-xs">
+		<TextButton on:click={() => dispatch('click-login-link')}>Return to login</TextButton>
 	</div>
 </div>

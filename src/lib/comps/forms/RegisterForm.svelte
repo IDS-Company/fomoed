@@ -3,6 +3,7 @@
 	import MainButton from '../buttons/MainButton.svelte';
 	import TextInput from '../TextInput.svelte';
 	import InputLabel from '../InputLabel.svelte';
+	import TextButton from '../TextButton.svelte';
 
 	const dispatch = createEventDispatcher();
 
@@ -40,6 +41,6 @@
 
 	<div class="pt-3 -desktop:text-center -desktop:text-xs -desktop:pt-5">
 		<span class="opacity-40">Already have an account? </span>
-		<button on:click={() => dispatch('click-login-link')} class="text-primary">Login</button>
+		<TextButton on:click={() => dispatch('click-login-link')}>Login</TextButton>
 	</div>
 </div>

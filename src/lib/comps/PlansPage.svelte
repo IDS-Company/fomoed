@@ -445,13 +445,13 @@
 
 			<div
 				bind:this={cardsContainer}
-				class="desktop:grid desktop:grid-cols-subgrid col-span-3 desktop:place-items-center -desktop:flex -desktop:overflow-x-scroll -desktop:gap-x-2 items-center -desktop:w-full -desktop:px-2 -desktop:snap-x -desktop:snap-mandatory no-scrollbar -desktop:mt-16 desktop:mt-8"
+				class="desktop:grid desktop:grid-cols-subgrid col-span-3 desktop:place-items-center -desktop:flex -desktop:overflow-x-scroll -desktop:gap-x-2 items-center -desktop:w-full -desktop:px-2 -xs:snap-x -xs:snap-mandatory no-scrollbar -desktop:mt-16 desktop:mt-8"
 			>
-				<div class="flex-shrink-0 snap-center">
+				<div class="--card-container">
 					<FreeCard />
 				</div>
 
-				<div class="flex-shrink-0 snap-center">
+				<div class="--card-container">
 					<PremiumCard
 						on:click-free-trial={subscribeFreeTrial}
 						on:click-subscribe={() => subscribeToPlan('Premium')}
@@ -460,7 +460,7 @@
 					/>
 				</div>
 
-				<div class="flex-shrink-0 snap-center">
+				<div class="--card-container">
 					<DegenCard
 						on:click-subscribe={() => subscribeToPlan('Degen')}
 						on:click-unsubscribe={() => unsubPlanFromCard('Degen')}
@@ -470,7 +470,7 @@
 			</div>
 		</div>
 
-		<div class="col-span-3 desktop:hidden">
+		<div class="col-span-3 xs:hidden">
 			<ScrollerDots container={cardsContainer} />
 		</div>
 	</div>
@@ -488,3 +488,9 @@
 {#if $showUnsubSuccess}
 	<UnsubscribeSuccessPopup on:click-close={() => showUnsubSuccess.set(false)} />
 {/if}
+
+<style>
+	.--card-container {
+		@apply flex-shrink-0 snap-center;
+	}
+</style>

@@ -4,6 +4,7 @@
 	import GoogleSignInButton from '$lib/comps/GoogleSignInButton.svelte';
 	import TextInput from '$lib/comps/TextInput.svelte';
 	import InputLabel from '../InputLabel.svelte';
+	import TextButton from '../TextButton.svelte';
 
 	const dispatch = createEventDispatcher();
 
@@ -37,7 +38,7 @@
 			<InputLabel forId="password">Password</InputLabel>
 			<button
 				on:click={() => dispatch('click-forgot-password')}
-				class="text-[#FFFFFF99] text-xs font-satoshi font-medium pb-2"
+				class="text-[#FFFFFF99] text-xs font-satoshi font-medium hover:underline active:brightness-50"
 			>
 				Forgot your password?
 			</button>
@@ -51,8 +52,6 @@
 
 	<div class="pt-3 -desktop:text-center -desktop:text-xs">
 		<span class="opacity-40">Don't have an account? </span>
-		<button on:click={() => dispatch('click-register-link')} class="text-primary">
-			Register now!
-		</button>
+		<TextButton on:click={() => dispatch('click-register-link')}>Register now!</TextButton>
 	</div>
 </div>

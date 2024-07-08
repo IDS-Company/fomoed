@@ -307,7 +307,9 @@
 			</div>
 			<div class="pt-[15px] text-[20px] -desktop:text-sm font-semibold">
 				Send us your thought to{' '}
-				<a href="mailto:fomoed@mail.com" class="text-primary underline"> fomoed@mail.com </a>
+				<a id="contact" href="mailto:fomoed@mail.com" class="text-primary underline">
+					fomoed@mail.com
+				</a>
 			</div>
 		</div>
 	</div>

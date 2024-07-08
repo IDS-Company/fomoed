@@ -22,10 +22,10 @@
 		/>
 	</div>
 
-	<div
+	<!-- <div
 		class="flex opacity-50 justify-center absolute bottom-0 translate-y-24 inset-x-0 items-center gap-x-2 -desktop:hidden"
 	>
 		<img src="/icons/swipe-up.svg" width={25} height={25} alt="Swipe up icon." class="opacity-80" />
 		<div class="text-xs opacity-80">More meme? Swipe up!</div>
-	</div>
+	</div> -->
 </div>
