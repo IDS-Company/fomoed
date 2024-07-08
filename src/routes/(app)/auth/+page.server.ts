@@ -51,7 +51,7 @@ export const actions: Actions = {
 				};
 			}
 
-			return redirect(303, '/auth/sent/create-account');
+			return redirect(303, '/auth/sent/create-account?email=' + email);
 		}
 	},
 	login: async ({ request, locals: { supabase } }) => {
@@ -112,7 +112,7 @@ export const actions: Actions = {
 			redirectTo: `${url.protocol}//${url.host}/auth?uid=${uuidv4()}`
 		});
 
-		return { success: true, action: 'forgot', error: null };
+		return redirect(303, '/auth/sent/password-reset?email=' + email);
 	},
 	update_password: async ({ request, locals: { supabase }, url }) => {
 		const formData = await request.formData();

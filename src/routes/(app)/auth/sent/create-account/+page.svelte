@@ -1,3 +1,9 @@
+<script>
+	import { page } from '$app/stores';
+
+	const email = $page.url.searchParams.get('email');
+</script>
+
 <div class="flex flex-col items-center text-center">
 	<img src="/icons/email-sent.svg" width={70} height={70} alt="Email sent" />
 
@@ -5,7 +11,7 @@
 
 	<div class="pt-[19px] text-[#FFFFFFCC] -desktop:text-sm -desktop:px-4">
 		We've sent you an email at
-		<span class="text-white font-extrabold"> TODO@TODO.com</span>
+		<span class="text-white font-extrabold"> {email}</span>
 		<br />
 		Check your inbox and follow the instructions to create the account.
 	</div>

@@ -29,22 +29,22 @@
 		if (form.error) {
 			failure(form.error);
 		} else {
-			if (form.action === 'signup') {
-				onMount(() => {
-					goto('/auth/sent/create-account');
-				});
-				// success(
-				// 	'Successfully created your account. Please check your email for additional instructions'
-				// );
-			}
-			if (form.action === 'forgot') {
-				onMount(() => {
-					goto('/auth/sent/password-reset');
-				});
-				// success(
-				// 	'Successfully sent password reset email. Please check your email for the confirmation link'
-				// );
-			}
+			// if (form.action === 'signup') {
+			// 	onMount(() => {
+			// 		goto('/auth/sent/create-account?email=');
+			// 	});
+			// 	// success(
+			// 	// 	'Successfully created your account. Please check your email for additional instructions'
+			// 	// );
+			// }
+			// if (form.action === 'forgot') {
+			// 	onMount(() => {
+			// 		goto('/auth/sent/password-reset?email=' + form.email);
+			// 	});
+			// 	// success(
+			// 	// 	'Successfully sent password reset email. Please check your email for the confirmation link'
+			// 	// );
+			// }
 			if (form.action === 'update_password') {
 				goto('/').then(() => {
 					success('Successfully updated password');
