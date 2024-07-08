@@ -39,6 +39,8 @@
 	import SmallCharts from '$lib/comps/SmallCharts.svelte';
 	import HomepageBtcDominanceFloating from '$lib/comps/homepage/HomepageBtcDominanceFloating.svelte';
 	import Footer from '$lib/comps/Footer.svelte';
+	import GetFreeTrialOverlay from '$lib/comps/overlays/GetFreeTrialOverlay.svelte';
+	import { fade } from 'svelte/transition';
 
 	// const memoizedTokens = memoizeDebounce(refresh_coinstats_coin_list, 1000, { maxWait: 2000 });
 
@@ -57,6 +59,8 @@
 			coinstats_selected_coin.set(coin);
 		}
 	});
+
+	let showGetFreeTrial = false;
 </script>
 
 <!-- <section class="max-w-4xl mx-auto mt-16 fear_index">
@@ -151,14 +155,18 @@
 			style="background: linear-gradient(180deg, #000000 0%, rgba(0, 0, 0, 0.2) 125.15%) padding-box, linear-gradient(179.91deg, rgba(255, 59, 16, 0.4) 11.58%, rgba(255, 59, 16, 0) 99.92%) border-box"
 			class="relative bg-gradient-to-b from-black to-[#00000033] w-full desktop:h-[550px] mt-[25px] rounded-[28px] pt-[46px] flex flex-col border-2 border-transparent pb-[20px]"
 		>
+			{#if showGetFreeTrial}
+				<GetFreeTrialOverlay />
+			{/if}
+
 			<!-- Mobile btc coin -->
 			<div
-				class="desktop:hidden bg-[url(/images/mobile/btc-coin.svg)] w-[94px] aspect-square absolute -right-6 -top-10"
+				class="desktop:hidden bg-[url(/images/mobile/btc-coin.svg)] w-[94px] aspect-square absolute -right-6 -top-10 z-20"
 			></div>
 
 			<!-- Mobile sol coin -->
 			<div
-				class="desktop:hidden bg-[url(/images/mobile/sol-coin.svg)] w-[94px] aspect-square absolute -left-4 bottom-20"
+				class="desktop:hidden bg-[url(/images/mobile/sol-coin.svg)] w-[94px] aspect-square absolute -left-4 bottom-20 z-20"
 			></div>
 
 			<SmallCharts />
@@ -171,13 +179,23 @@
 						<HomepageBigChart />
 					</div>
 
-					<HomepageCoinSwitcher bind:selectedTicker={$selectedSymbol}></HomepageCoinSwitcher>
+					<HomepageCoinSwitcher
+						on:get-free-trial={() => (showGetFreeTrial = true)}
+						bind:selectedTicker={$selectedSymbol}
+					></HomepageCoinSwitcher>
 				</div>
 
 				<div class="pt-[24px] w-[320px] relative flex-shrink-0 -desktop:hidden">
 					<div class="absolute h-[430px]">
 						<IndicatorCard onHomepage />
 					</div>
+
+					{#if showGetFreeTrial}
+						<div
+							in:fade={{ duration: 100 }}
+							class="absolute h-[42px] bg-[#0F0F0F99] -bottom-[62px] backdrop-blur-sm inset-x-[2px] rounded-b-[28px]"
+						></div>
+					{/if}
 				</div>
 			</div>
 		</div>

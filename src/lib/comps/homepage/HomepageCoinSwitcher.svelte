@@ -1,5 +1,18 @@
-<script>
+<script lang="ts">
+	import { auth_user } from '$lib/stores/user';
+	import { createEventDispatcher } from 'svelte';
+
 	export let selectedTicker = 'BTC';
+
+	const dispatch = createEventDispatcher();
+
+	function selectPremium(ticker: string) {
+		if ($auth_user?.has_valid_sub) {
+			selectedTicker = ticker;
+		} else {
+			dispatch('get-free-trial');
+		}
+	}
 </script>
 
 <div class="absolute top-0 flex justify-center w-full items-end h-full -desktop:mt-2">
@@ -15,9 +28,17 @@
 			<img src={'/icons/eth.svg'} width={35} height={35} alt="Ethereum." />
 		</button>
 
-		<img src={'/icons/tether.svg'} width={35} height={35} alt="Tether." />
-		<img src={'/icons/bnc.svg'} width={35} height={35} alt="Binance Coin." />
-		<img src={'/icons/map.svg'} width={35} height={35} alt="Don't know Coin." />
+		<button on:click={() => selectPremium('USDT')}>
+			<img src={'/icons/tether.svg'} width={35} height={35} alt="Tether." />
+		</button>
+
+		<button on:click={() => selectPremium('BNC')}>
+			<img src={'/icons/bnc.svg'} width={35} height={35} alt="Binance Coin." />
+		</button>
+
+		<button on:click={() => selectPremium('SOL')}>
+			<img src={'/icons/map.svg'} width={35} height={35} alt="Don't know Coin." />
+		</button>
 	</div>
 </div>
 
