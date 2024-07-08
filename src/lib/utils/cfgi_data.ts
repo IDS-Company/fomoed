@@ -51,24 +51,27 @@ export enum CFGI_SUPPORTED_PERIODS_ENUM {
 	MIN15 = 1,
 	HOUR1 = 2,
 	HOUR4 = 3,
-	DAY1 = 4
+	HOUR7 = '7H',
+	DAY1 = 4,
+	MONTH1 = '1M',
+	YEAR1 = '1Y'
 }
 
 export const CfgiPeriods = [
+	{
+		label: '7H',
+		value: CFGI_SUPPORTED_PERIODS_ENUM.HOUR7
+	},
 	{
 		label: '24H',
 		value: CFGI_SUPPORTED_PERIODS_ENUM.DAY1
 	},
 	{
-		label: '4H',
-		value: CFGI_SUPPORTED_PERIODS_ENUM.HOUR4
+		label: '1M',
+		value: CFGI_SUPPORTED_PERIODS_ENUM.MONTH1
 	},
 	{
-		label: '1H',
-		value: CFGI_SUPPORTED_PERIODS_ENUM.HOUR1
-	},
-	{
-		label: '15M',
-		value: CFGI_SUPPORTED_PERIODS_ENUM.MIN15
+		label: '1Y',
+		value: CFGI_SUPPORTED_PERIODS_ENUM.YEAR1
 	}
 ];

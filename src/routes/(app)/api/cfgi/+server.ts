@@ -10,6 +10,21 @@ import { free_tokens } from '$lib/stores';
 const endpoint =
 	'https://cfgi.io/api/api_request.php?api_key=API_KEY&token=TOKEN&start=START&end=END&period=PERIOD';
 
+function formatDate(date: Date) {
+	// Extract year, month, day, hours, minutes, and seconds from the date object
+	const year = date.getFullYear();
+	const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are zero-based
+	const day = String(date.getDate()).padStart(2, '0');
+	const hours = String(date.getHours()).padStart(2, '0');
+	const minutes = String(date.getMinutes()).padStart(2, '0');
+	const seconds = String(date.getSeconds()).padStart(2, '0');
+
+	// Combine the extracted values into the desired format
+	const formattedDate = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+
+	return formattedDate;
+}
+
 async function fetch_cfgi_data(
 	token_symbol: string,
 	period: CFGI_SUPPORTED_PERIODS_ENUM,
@@ -19,8 +34,8 @@ async function fetch_cfgi_data(
 	let url = endpoint;
 	url = url.replace('API_KEY', PRIVATE_CFGI_KEY);
 	url = url.replace('TOKEN', token_symbol);
-	url = url.replace('START', start.toISOString().toLocaleString());
-	url = url.replace('END', end.toISOString().toLocaleString());
+	url = url.replace('START', formatDate(start));
+	url = url.replace('END', formatDate(end));
 	url = url.replace('PERIOD', period.toString());
 
 	console.log(url);
@@ -80,27 +95,36 @@ export async function POST({ request, locals: { supabase, user } }: RequestEvent
 		// One Day is the Default
 		switch (period) {
 			case CFGI_SUPPORTED_PERIODS_ENUM.HOUR1:
-				const one_hour = 3600 * 1000;
+				const one_hour = 3600;
 				secondsBack = 1200 * one_hour;
 				break;
 			case CFGI_SUPPORTED_PERIODS_ENUM.HOUR4:
-				const four_hours = 3600 * 1000 * 4;
+				const four_hours = 3600 * 4;
 				secondsBack = 1200 * four_hours;
 				break;
 			case CFGI_SUPPORTED_PERIODS_ENUM.MIN15:
-				const min_15 = 15 * 60 * 1000;
+				const min_15 = 15 * 60;
 				secondsBack = 1200 * min_15;
 				break;
+			case CFGI_SUPPORTED_PERIODS_ENUM.HOUR7:
+				secondsBack = 3600 * 7;
+				break;
+			case CFGI_SUPPORTED_PERIODS_ENUM.MONTH1:
+				secondsBack = 3600 * 24 * 30;
+				break;
+			case CFGI_SUPPORTED_PERIODS_ENUM.YEAR1:
+				secondsBack = 3600 * 24 * 365;
+				break;
 			default:
-				const one_day = 24 * 3600 * 1000;
+				const one_day = 24 * 3600;
 				secondsBack = 1200 * one_day;
 				break;
 		}
 
 		const cfgi_data = await fetch_cfgi_data(
 			token_symbol,
-			secondsBack,
-			new Date(Date.now() - secondsBack),
+			1, // 15 min temporality
+			new Date(Date.now() - secondsBack * 1000),
 			new Date()
 		);
 
