@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { browser } from '$app/environment';
 	import {
 		coinstats_coin_list,
 		coinstats_selected_coin,

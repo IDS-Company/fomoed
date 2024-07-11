@@ -9,6 +9,7 @@
 	export let postfix = '';
 	export let value = '0';
 	export let change = 0;
+	export let hideChange = false;
 
 	const chartData = getChartData();
 	const color = '#FF3B10';
@@ -88,7 +89,7 @@
 			{prefix}{value}{postfix}
 		</div>
 
-		<div class="mt-[6px]">
+		<div class="mt-[6px]" class:opacity-0={hideChange}>
 			<ChangeBadge percentage={change} />
 		</div>
 	</div>

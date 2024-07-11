@@ -41,6 +41,7 @@
 	import Footer from '$lib/comps/Footer.svelte';
 	import GetFreeTrialOverlay from '$lib/comps/overlays/GetFreeTrialOverlay.svelte';
 	import { fade } from 'svelte/transition';
+	import { browser } from '$app/environment';
 
 	// const memoizedTokens = memoizeDebounce(refresh_coinstats_coin_list, 1000, { maxWait: 2000 });
 
@@ -51,11 +52,21 @@
 	const selectedSymbol = writable<string>('BTC');
 
 	selectedSymbol.subscribe((symbol) => {
-		if (!$coinstats_coin_list) return;
+		if (!browser) {
+			return;
+		}
+
+		console.log({ symbol });
+
+		if (!$coinstats_coin_list) {
+			console.error('Coin list not loaded yet');
+			return;
+		}
 
 		const coin = $coinstats_coin_list.find((c) => c.symbol === symbol);
 
 		if (coin) {
+			console.log('set ', coin);
 			coinstats_selected_coin.set(coin);
 		}
 	});

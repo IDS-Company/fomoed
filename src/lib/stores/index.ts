@@ -16,6 +16,9 @@ export const coinstats_coin_list = writable<CoinstatsCoinListItem[]>();
 
 export const coinstats_selected_coin = writable<{
 	price: number;
+	priceChange: number;
+	marketCap: number;
+	volume: number;
 	icon: string;
 	symbol: string;
 	name: string;

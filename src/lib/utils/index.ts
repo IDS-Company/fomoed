@@ -114,6 +114,9 @@ export async function refresh_coinstats_coin_list() {
 		coins.map((coin) => {
 			return {
 				price: coin.pu,
+				priceChange: coin.p24,
+				marketCap: coin.m,
+				volume: coin.v,
 				icon: coin.ic,
 				symbol: coin.s,
 				name: coin.n,
@@ -270,6 +273,10 @@ coinstats_selected_coin.subscribe(async (coin) => {
 			coin.name
 		);
 	}
+});
+
+coinstats_selected_coin.subscribe(async (coin) => {
+	fetch_global_data();
 });
 
 cfgi_period.subscribe(async (period) => {

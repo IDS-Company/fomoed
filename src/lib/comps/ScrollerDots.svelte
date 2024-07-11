@@ -3,6 +3,7 @@
 
 	export let container: HTMLElement;
 	export let vertical = false;
+	export let pages: number;
 
 	let page = 0;
 
@@ -10,10 +11,10 @@
 		let pageSize: number;
 
 		if (vertical) {
-			pageSize = container.scrollHeight / 3;
+			pageSize = container.scrollHeight / pages;
 			page = ~~(container.scrollTop / pageSize + 0.5);
 		} else {
-			pageSize = container.scrollWidth / 3;
+			pageSize = container.scrollWidth / pages;
 			page = ~~(container.scrollLeft / pageSize + 0.5);
 		}
 	}
@@ -30,9 +31,9 @@
 </script>
 
 <div class="flex gap-[3px] justify-center w-full items-center" class:flex-col={vertical}>
-	<div class:selected={page === 0} class="--dot"></div>
-	<div class:selected={page === 1} class="--dot"></div>
-	<div class:selected={page === 2} class="--dot"></div>
+	{#each Array(pages) as _, i}
+		<div class:selected={page === i} class="--dot"></div>
+	{/each}
 </div>
 
 <style>
