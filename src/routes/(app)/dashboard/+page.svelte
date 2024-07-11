@@ -20,13 +20,13 @@
 
 	<div class="flex-grow grid place-items-center desktop:pb-24 desktop:mx-4">
 		<div
-			class="grid grid-cols-4 gap-[7px] mx-auto h-full pb-6 w-full max-w-[1050px] desktop:max-h-[700px] desktop:grid-rows-[1fr_3fr]"
+			class="grid grid-cols-6 gap-[7px] mx-auto h-full pb-6 w-full max-w-[1050px] desktop:max-h-[700px] desktop:grid-rows-[1fr_3fr]"
 		>
 			<div
 				bind:this={smallChartsCointainer}
-				class="-desktop:flex -desktop:gap-x-2 -desktop:h-[148px] -desktop:overflow-x-scroll desktop:grid grid-cols-subgrid col-span-4 no-scrollbar -desktop:snap-x -desktop:snap-mandatory -desktop:px-3"
+				class="-desktop:flex -desktop:gap-x-2 -desktop:h-[148px] -desktop:overflow-x-scroll desktop:grid grid-cols-subgrid col-span-6 no-scrollbar -desktop:snap-x -desktop:snap-mandatory -desktop:px-3"
 			>
-				<div class="-desktop:flex-shrink-0 -desktop:w-5/6">
+				<div class="-desktop:flex-shrink-0 -desktop:w-5/6 desktop:col-span-2">
 					<DashboardCard>
 						<HomepageSmallChart
 							change={$coinstats_global_data?.marketCapChange}
@@ -39,7 +39,7 @@
 					</DashboardCard>
 				</div>
 
-				<div class="-desktop:flex-shrink-0 -desktop:w-5/6">
+				<div class="-desktop:flex-shrink-0 -desktop:w-5/6 desktop:col-span-2">
 					<DashboardCard>
 						<HomepageSmallChart
 							value={$coinstats_selected_coin?.volume.toLocaleString()}
@@ -76,46 +76,44 @@
 				</div>
 			</div>
 
-			<div class="col-span-4 mb-6 mt-2 desktop:hidden">
+			<div class="col-span-6 mb-6 mt-2 desktop:hidden">
 				<ScrollerDots pages={4} container={smallChartsCointainer}></ScrollerDots>
 			</div>
 
-			<div class="col-span-4 flex gap-[7px] -desktop:flex-col">
-				<div class="col-span-2 h-full -desktop:col-span-3 -desktop:mx-3 flex-grow">
-					<DashboardCard disablePadding>
-						<div
-							class="w-full h-full flex flex-col overflow-hidden -desktop:px-4 -desktop:py-5 desktop:px-[30px] desktop:py-[22px]"
-						>
-							<div class="desktop:flex items-center w-full">
-								<div>
-									<div class="text-[20px] font-paralucent-heavy uppercase -desktop:text-sm">
-										{$coinstats_selected_coin?.name || 'Bitcoin'}
-									</div>
-
-									<div
-										class="text-[#FFFFFFCC] text-lg font-paralucent font-medium -desktop:text-xs"
-									>
-										Crypto Fear and Greed Chart
-									</div>
+			<div class="col-span-4 h-full -desktop:col-span-3 -desktop:mx-3 flex-grow">
+				<DashboardCard disablePadding>
+					<div
+						class="w-full h-full flex flex-col overflow-hidden -desktop:px-4 -desktop:py-5 desktop:px-[30px] desktop:py-[22px]"
+					>
+						<div class="desktop:flex items-center w-full">
+							<div>
+								<div class="text-[20px] font-paralucent-heavy uppercase -desktop:text-sm">
+									{$coinstats_selected_coin?.name || 'Bitcoin'}
 								</div>
 
-								<div class="flex-grow"></div>
-
-								<div class="-desktop:mt-4">
-									<DurationSwitcher></DurationSwitcher>
+								<div class="text-[#FFFFFFCC] text-lg font-paralucent font-medium -desktop:text-xs">
+									Crypto Fear and Greed Chart
 								</div>
 							</div>
 
-							<div class="pt-[70px] flex-grow">
-								<HomepageBigChart></HomepageBigChart>
+							<div class="flex-grow"></div>
+
+							<div class="-desktop:mt-4">
+								<DurationSwitcher></DurationSwitcher>
 							</div>
 						</div>
-					</DashboardCard>
-				</div>
 
-				<div class="max-h-[500px] -desktop:col-span-3 -desktop:pb-2 -desktop:mx-3 -desktop:mt-1">
-					<IndicatorCard />
-				</div>
+						<div class="pt-[70px] flex-grow">
+							<HomepageBigChart></HomepageBigChart>
+						</div>
+					</div>
+				</DashboardCard>
+			</div>
+
+			<div
+				class="max-h-[500px] col-span-2 -desktop:col-span-3 -desktop:pb-2 -desktop:mx-3 -desktop:mt-1"
+			>
+				<IndicatorCard />
 			</div>
 		</div>
 	</div>
