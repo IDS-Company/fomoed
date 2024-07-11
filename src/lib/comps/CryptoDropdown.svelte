@@ -1,4 +1,5 @@
 <script lang="ts">
+	import SearchIcon from '$lib/icons/SearchIcon.svelte';
 	import {
 		coinstats_coin_list,
 		coinstats_selected_coin,
@@ -6,6 +7,8 @@
 		type CoinstatsCoinListItem
 	} from '$lib/stores';
 	import { auth_user } from '$lib/stores/user';
+	import { derived, writable } from 'svelte/store';
+	import { fade, slide } from 'svelte/transition';
 
 	let isOpen = false;
 
@@ -27,6 +30,23 @@
 				? $coinstats_coin_list.map((t) => t.symbol)
 				: free_tokens;
 	}
+
+	let showSearch = true;
+
+	const searchTerm = writable('');
+
+	const filteredCoinList = derived(
+		[coinstats_coin_list, searchTerm],
+		([$coinstats_coin_list, $searchTerm]) => {
+			if (!$searchTerm) return $coinstats_coin_list;
+
+			return $coinstats_coin_list.filter(
+				(coin) =>
+					coin.name.toLowerCase().includes($searchTerm.toLowerCase()) ||
+					coin.symbol.toLowerCase().includes($searchTerm.toLowerCase())
+			);
+		}
+	);
 </script>
 
 <div class="relative">
@@ -59,14 +79,34 @@
 		class:hidden={!isOpen}
 		class="absolute top-16 -desktop:top-14 bg-[#0F0D0DE5] border-[#FFFFFF1A] border rounded-[10px] h-[260px] desktop:w-[200px] overflow-hidden flex flex-col backdrop-blur-sm"
 	>
-		<div class="text-[#FFFFFFCC] py-[10px] pl-[13px] text-start text-sm -desktop:text-xs">
-			Select a Network
+		<div class="flex items-center pr-3">
+			<div
+				class="text-[#FFFFFFCC] py-[10px] pl-[13px] text-start text-sm -desktop:text-xs flex-grow select-none"
+			>
+				Select a Network
+			</div>
+
+			<button
+				on:click={() => (showSearch = !showSearch)}
+				class="w-4 h-4 opacity-50 hover:opacity-100 duration-200"
+			>
+				<SearchIcon />
+			</button>
 		</div>
+
+		{#if showSearch}
+			<input
+				type="text"
+				class="flex-grow-0 bg-[#0F0D0D] w-full text-[#FFFFFFCC] font-medium placeholder-[#FFFFFF4D] text-sm -desktop:text-xs px-4 outline-none py-2"
+				placeholder="Search..."
+				bind:value={$searchTerm}
+			/>
+		{/if}
 
 		<div class="h-px bg-[#FFFFFF1A]"></div>
 
 		<div class="overflow-y-scroll overflow-x-hidden w-full">
-			{#each $coinstats_coin_list || [] as item}
+			{#each $filteredCoinList || [] as item}
 				<button
 					on:click={() => {
 						selected = item;
@@ -76,9 +116,11 @@
 					disabled={!enabledSymbols.includes(item.symbol)}
 				>
 					<img src={item.icon} width={21} height={21} alt={item.name} />
-					<div>{item.name}</div>
+					<div class="truncate">{item.name}</div>
 				</button>
 			{/each}
 		</div>
+
+		<div class="flex-grow"></div>
 	</div>
 </div>
