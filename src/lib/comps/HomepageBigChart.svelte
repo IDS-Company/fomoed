@@ -16,6 +16,7 @@
 	import { fade } from 'svelte/transition';
 	import { sleep } from '$lib';
 	import { isDesktop } from '$lib/stores/ui';
+	import { get_data_color } from '$lib/utils';
 
 	const color = '#47A663';
 
@@ -29,7 +30,7 @@
 
 		const formatted_data = $coin_data.filter((d) => d.price && d.cfgi);
 
-		// const prices_data = formatted_data.map((d) => d.price);
+		const prices_data = formatted_data.map((d) => d.price);
 		const cfgi_data = formatted_data.map((c) => c.cfgi);
 
 		if (cfgi_trend_chart) {
@@ -40,22 +41,35 @@
 		gradient.addColorStop(0, 'rgba(71, 166, 99, 0.4)');
 		gradient.addColorStop(1, 'rgba(71, 166, 99, 0)');
 
-		const cfgiData: ChartDataset<'line'> = {
-			type: 'line',
+		const chart_bar_data: ChartDataset<'bar'> = {
+			type: 'bar',
 			data: cfgi_data,
-			backgroundColor: gradient,
+			backgroundColor: cfgi_data.map((c) => (c ? get_data_color(c) : '#0d0d0d')),
+			yAxisID: 'right-y-axis',
 			label: 'Fear and Greed Index',
-			order: 1,
-			fill: true,
-			borderColor: color,
-			borderWidth: 2,
-			pointRadius: 0
+			order: 1
+		};
+
+		const chart_line_data: ChartDataset<'line'> = {
+			type: 'line',
+			data: prices_data,
+			backgroundColor: '#2c56ff',
+			yAxisID: 'left-y-axis',
+			label: 'Price',
+			order: 2,
+			spanGaps: true,
+			tension: 0.4,
+			pointRadius: 0,
+			borderColor: '#2c56ff'
 		};
 
 		const chart_data = {
-			labels: formatted_data.map((d) => dayjs(d.date).format('DD MMM YYYY')),
-			datasets: [cfgiData]
+			labels: formatted_data.map((d) => dayjs(d.date).format('MMM YYYY')),
+			datasets: [chart_bar_data, chart_line_data]
 		};
+
+		const max_price = Math.max(...(prices_data.filter((d) => d) as number[]));
+		const max_y_index = +`${+max_price.toString()[0] + 1}${max_price.toString().slice(1)}`;
 
 		const options: _DeepPartialObject<
 			CoreChartOptions<'bar'> &
@@ -65,39 +79,52 @@
 				ScaleChartOptions<'bar'> &
 				LineControllerChartOptions
 		> = {
-			animation: {
-				duration: 0
-			},
 			responsive: true,
 			maintainAspectRatio: false,
 			scales: {
-				y: {
+				'left-y-axis': {
+					beginAtZero: false,
+					ticks: {
+						font: { family: 'Manrope', size: 10 },
+						callback: (value: number) => {
+							return `$${value}`;
+						}
+					},
+					min: Math.floor(Math.min(...(prices_data.filter((d) => d) as number[]))),
+					max: Math.ceil(max_y_index),
+					position: 'left'
+				},
+				'right-y-axis': {
 					beginAtZero: true,
 					grid: {
-						display: false // Remove background grid
+						display: true,
+						drawOnChartArea: true,
+						color: function (value: any, data: any) {
+							return value.tick.value === 0
+								? 'rgba(255, 255, 255, 0.3)'
+								: get_data_color(value.tick.value);
+						},
+						lineWidth: 0.1,
+						drawTicks: true
 					},
 					ticks: {
-						display: true
+						font: { family: 'Manrope', size: 10 },
+						stepSize: 25,
+						color: function (value: any, data: any) {
+							return value.tick.value === 0
+								? 'rgba(255, 255, 255, 0.3)'
+								: get_data_color(value.tick.value);
+						}
 					},
-					border: {
-						display: false
-					},
-					min: 0,
 					max: 100,
-					step: 20,
-					color: '#FFFFFF',
-					display: $isDesktop
+					position: 'right'
 				},
 				x: {
-					beginAtZero: true,
-					grid: {
-						display: false // Remove background grid
-					},
 					ticks: {
-						display: false
-					},
-					border: {
-						display: false
+						font: { family: 'Manrope', size: 8 },
+						autoSkip: true,
+						maxRotation: 0
+						// color: '#aaa'
 					}
 				}
 			},
@@ -107,6 +134,15 @@
 				}
 			}
 		};
+
+		if (trend_chart_canvas) {
+			cfgi_trend_chart = new Chart(trend_chart_canvas, {
+				type: 'bar',
+				// @ts-expect-error
+				data: chart_data,
+				options: options
+			});
+		}
 
 		if (trend_chart_canvas) {
 			cfgi_trend_chart = new Chart(trend_chart_canvas, {

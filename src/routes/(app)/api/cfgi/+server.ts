@@ -93,38 +93,40 @@ export async function POST({ request, locals: { supabase, user } }: RequestEvent
 		let secondsBack = 0;
 
 		// One Day is the Default
-		switch (period) {
-			case CFGI_SUPPORTED_PERIODS_ENUM.HOUR1:
-				const one_hour = 3600;
-				secondsBack = 1200 * one_hour;
-				break;
-			case CFGI_SUPPORTED_PERIODS_ENUM.HOUR4:
-				const four_hours = 3600 * 4;
-				secondsBack = 1200 * four_hours;
-				break;
-			case CFGI_SUPPORTED_PERIODS_ENUM.MIN15:
-				const min_15 = 15 * 60;
-				secondsBack = 1200 * min_15;
-				break;
-			case CFGI_SUPPORTED_PERIODS_ENUM.HOUR7:
-				secondsBack = 3600 * 7;
-				break;
-			case CFGI_SUPPORTED_PERIODS_ENUM.MONTH1:
-				secondsBack = 3600 * 24 * 30;
-				break;
-			case CFGI_SUPPORTED_PERIODS_ENUM.YEAR1:
-				secondsBack = 3600 * 24 * 365;
-				break;
-			default:
-				const one_day = 24 * 3600;
-				secondsBack = 1200 * one_day;
-				break;
-		}
+		// switch (period) {
+		// 	case CFGI_SUPPORTED_PERIODS_ENUM.HOUR1:
+		// 		const one_hour = 3600;
+		// 		secondsBack = 1200 * one_hour;
+		// 		break;
+		// 	case CFGI_SUPPORTED_PERIODS_ENUM.HOUR4:
+		// 		const four_hours = 3600 * 4;
+		// 		secondsBack = 1200 * four_hours;
+		// 		break;
+		// 	case CFGI_SUPPORTED_PERIODS_ENUM.MIN15:
+		// 		const min_15 = 15 * 60;
+		// 		secondsBack = 1200 * min_15;
+		// 		break;
+		// 	case CFGI_SUPPORTED_PERIODS_ENUM.HOUR7:
+		// 		secondsBack = 3600 * 7;
+		// 		break;
+		// 	case CFGI_SUPPORTED_PERIODS_ENUM.MONTH1:
+		// 		secondsBack = 3600 * 24 * 30;
+		// 		break;
+		// 	case CFGI_SUPPORTED_PERIODS_ENUM.YEAR1:
+		// 		secondsBack = 3600 * 24 * 365;
+		// 		break;
+		// 	default:
+		// 		const one_day = 24 * 3600;
+		// 		secondsBack = 1200 * one_day;
+		// 		break;
+		// }
+
+		const one_year = 3600 * 24 * 365;
 
 		const cfgi_data = await fetch_cfgi_data(
 			token_symbol,
-			1, // 15 min temporality
-			new Date(Date.now() - secondsBack * 1000),
+			period, // 15 min temporality
+			new Date(Date.now() - one_year * 1000),
 			new Date()
 		);
 

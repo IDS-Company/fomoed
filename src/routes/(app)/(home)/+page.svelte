@@ -174,7 +174,7 @@
 			<div class="flex desktop:pr-[25px] flex-grow">
 				<div class="flex-grow flex-shrink pt-[66px] relative overflow-hidden">
 					<div
-						class="desktop:w-[600px] -desktop:pb-24 -desktop:w-full h-full overflow-hidden pl-[30px] desktop:pr-4 -desktop:px-2"
+						class="desktop:w-[600px] -desktop:pb-24 -desktop:w-full h-full overflow-hidden pl-[30px] desktop:pr-4 -desktop:px-2 desktop:pb-24"
 					>
 						<HomepageBigChart />
 					</div>
