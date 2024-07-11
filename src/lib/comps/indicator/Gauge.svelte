@@ -11,11 +11,23 @@
 		const color = get_data_color(percentage);
 		const fillNo = (percentage / 100) * lines.length;
 
-		lines.forEach((line, i) => {
-			setTimeout(() => {
-				line.setAttribute('fill', i < fillNo ? color : '#78797A');
-			}, 10 * i);
-		});
+		setTimeout(() => {
+			lines.forEach((line, i) => {
+				setTimeout(() => {
+					if (i < fillNo) {
+						line.setAttribute('fill', 'white');
+
+						setTimeout(() => {
+							requestAnimationFrame(() => {
+								line.setAttribute('fill', color);
+							});
+						}, 50);
+					} else {
+						line.setAttribute('fill', '#78797A');
+					}
+				}, 50 * i);
+			});
+		}, 1000);
 	}
 
 	let svg: SVGElement;
