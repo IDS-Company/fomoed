@@ -80,7 +80,7 @@
 				<ScrollerDots pages={4} container={smallChartsCointainer}></ScrollerDots>
 			</div>
 
-			<div class="col-span-4 h-full -desktop:col-span-3 -desktop:mx-3 flex-grow">
+			<div class="col-span-4 -desktop:col-span-6 h-full -desktop:mx-3 flex-grow">
 				<DashboardCard disablePadding>
 					<div
 						class="w-full h-full flex flex-col overflow-hidden -desktop:px-4 -desktop:py-5 desktop:px-[30px] desktop:py-[22px]"
@@ -111,7 +111,7 @@
 			</div>
 
 			<div
-				class="max-h-[500px] col-span-2 -desktop:col-span-3 -desktop:pb-2 -desktop:mx-3 -desktop:mt-1"
+				class="max-h-[500px] col-span-2 -desktop:col-span-6 -desktop:pb-2 -desktop:mx-3 -desktop:mt-1"
 			>
 				<IndicatorCard />
 			</div>
