@@ -8,8 +8,11 @@
 	import { coinstats_global_data, coinstats_selected_coin } from '$lib/stores';
 	import ScrollerDots from '$lib/comps/ScrollerDots.svelte';
 	import Footer from '$lib/comps/Footer.svelte';
+	import GetFreeTrialOverlay from '$lib/comps/overlays/GetFreeTrialOverlay.svelte';
 
 	let smallChartsCointainer: HTMLElement;
+
+	let displaySubscriptionRequired = false;
 </script>
 
 <div
@@ -80,8 +83,14 @@
 				<ScrollerDots pages={4} container={smallChartsCointainer}></ScrollerDots>
 			</div>
 
-			<div class="col-span-4 -desktop:col-span-6 h-full -desktop:mx-3 flex-grow">
+			<div class="col-span-4 -desktop:col-span-6 h-full -desktop:mx-3 flex-grow relative">
 				<DashboardCard disablePadding>
+					{#if displaySubscriptionRequired}
+						<div class="absolute inset-px">
+							<GetFreeTrialOverlay />
+						</div>
+					{/if}
+
 					<div
 						class="w-full h-full flex flex-col overflow-hidden -desktop:px-4 -desktop:py-5 desktop:px-[30px] desktop:py-[22px]"
 					>
@@ -99,7 +108,9 @@
 							<div class="flex-grow"></div>
 
 							<div class="-desktop:mt-4">
-								<DurationSwitcher></DurationSwitcher>
+								<DurationSwitcher
+									on:show-subscription-required={() => (displaySubscriptionRequired = true)}
+								></DurationSwitcher>
 							</div>
 						</div>
 
