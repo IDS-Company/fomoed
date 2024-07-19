@@ -143,17 +143,15 @@
 				options: options
 			});
 		}
-
-		if (trend_chart_canvas) {
-			cfgi_trend_chart = new Chart(trend_chart_canvas, {
-				type: 'bar',
-				data: chart_data,
-				options: options
-			});
-		}
 	}
 
+	let trend_chart_canvas: HTMLCanvasElement;
+
 	trend_chart_loading.subscribe(async (loading) => {
+		if (!trend_chart_canvas) {
+			return;
+		}
+
 		await sleep(600);
 
 		if (!loading) {
@@ -161,8 +159,6 @@
 			chart_init();
 		}
 	});
-
-	let trend_chart_canvas: HTMLCanvasElement;
 
 	isDesktop.subscribe((desktop) => {
 		if (cfgi_trend_chart) {
