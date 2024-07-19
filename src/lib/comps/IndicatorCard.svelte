@@ -248,10 +248,10 @@
 		{:else if $has_voted && loadingIsOut}
 			<div in:fade class="flex flex-col items-center">
 				<div
-					class="text-[40px] leading-[40px] font-paralucent font-medium mt-[20px]"
+					class="text-[40px] leading-[40px] font-paralucent font-medium mt-2"
 					style:color={fomoed_score_color}
 				>
-					{$aped_score}
+					{~~$aped_score}
 				</div>
 
 				<div
@@ -260,7 +260,7 @@
 					Fomoed score
 				</div>
 
-				<div class="font-medium text-sm text-center mt-[10px] opacity-80">Share your polls on</div>
+				<div class="font-medium text-sm text-center opacity-80">Share your polls on</div>
 
 				<div class="flex gap-x-2 justify-center mt-[10px]">
 					<a href={copy_social_link('twitter', getLink())} target="_blank">
