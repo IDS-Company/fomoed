@@ -1,10 +1,10 @@
 <script lang="ts">
 	import { auth_email } from '$lib/stores/user';
 	import Navlink from './Navlink.svelte';
-	import MainButton from './buttons/MainButton.svelte';
 	import ProfileButton from '$lib/comps/ProfileButton.svelte';
 	import LoadUserData from './func/LoadUserData.svelte';
 	import LoginButton from './buttons/LoginButton.svelte';
+	import DashboardButton from './buttons/DashboardButton.svelte';
 </script>
 
 <LoadUserData />
@@ -37,7 +37,7 @@
 
 <nav class="relative flex h-[75px] items-center justify-center w-full z-10">
 	<div class="absolute h-full left-4 top-0">
-		<img src="/fomoed.svg" alt="Fomoed." class="h-full" width={110} height={23} />
+		<img src="/fomoed.svg" alt="Fomoed." class="h-full w-[110px] -sm:w-[80px]" />
 	</div>
 
 	<div class="font-paralucent font-medium flex gap-x-8 -sm:hidden">
@@ -47,11 +47,19 @@
 		<Navlink href="/dashboard">Dashboard</Navlink>
 	</div>
 
-	<div class="absolute right-4">
+	<div class="absolute right-4 items-center flex">
+		<div class="sm:hidden">
+			<DashboardButton />
+		</div>
+
 		{#if $auth_email}
-			<ProfileButton></ProfileButton>
+			<div class="ml-1">
+				<ProfileButton></ProfileButton>
+			</div>
 		{:else}
-			<LoginButton></LoginButton>
+			<div class="ml-2">
+				<LoginButton></LoginButton>
+			</div>
 		{/if}
 	</div>
 </nav>

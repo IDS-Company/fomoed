@@ -19,7 +19,7 @@
 	class="{!premium &&
 		(expanded
 			? 'bg-[#201E1E]'
-			: 'bg-[#13100F]')} max-w-max w-full gap-x-4 font-paralucent-demibold flex items-center justify-center text-[#FFFFFFCC] {!premium &&
+			: 'bg-[#13100F]')} max-w-max -sm:max-w-[130px] w-full gap-x-4 font-paralucent-demibold flex items-center justify-center text-[#FFFFFFCC] {!premium &&
 		'hover:border-[#42403F]'} text-sm duration-150 p-[5px] rounded-[11px] border-[#FFFFFF1A] border pr-5"
 	on:click={() => (expanded = !expanded)}
 >
@@ -31,7 +31,9 @@
 		<img src="/images/indicator-meme-5.png" width={17} height={13} alt="Arrow right" />
 	</div>
 
-	<div class="uppercase">{$auth_user?.username || $auth_email?.substring(0, 8) + '...'}</div>
+	<div class="uppercase truncate">
+		{$auth_user?.username || $auth_email?.substring(0, 8) + '...'}
+	</div>
 </button>
 
 {#if expanded}
