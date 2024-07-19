@@ -17,6 +17,7 @@
 	import { sleep } from '$lib';
 	import { isDesktop } from '$lib/stores/ui';
 	import { get_data_color } from '$lib/utils';
+	import { tick } from 'svelte';
 
 	const color = '#47A663';
 
@@ -64,7 +65,7 @@
 		};
 
 		const chart_data = {
-			labels: formatted_data.map((d) => dayjs(d.date).format('MMM YYYY')),
+			labels: formatted_data.map((d) => dayjs(d.date).format('DD MMM YYYY')),
 			datasets: [chart_bar_data, chart_line_data]
 		};
 
@@ -122,8 +123,7 @@
 				x: {
 					ticks: {
 						font: { family: 'Manrope', size: 8 },
-						autoSkip: true,
-						maxRotation: 0
+						autoSkip: true
 						// color: '#aaa'
 					}
 				}
@@ -147,18 +147,10 @@
 
 	let trend_chart_canvas: HTMLCanvasElement;
 
-	trend_chart_loading.subscribe(async (loading) => {
-		if (!trend_chart_canvas) {
-			return;
-		}
-
-		await sleep(600);
-
-		if (!loading) {
-			ctx = trend_chart_canvas.getContext('2d')!;
-			chart_init();
-		}
-	});
+	$: if (!$trend_chart_loading && trend_chart_canvas) {
+		ctx = trend_chart_canvas.getContext('2d')!;
+		chart_init();
+	}
 
 	isDesktop.subscribe((desktop) => {
 		if (cfgi_trend_chart) {

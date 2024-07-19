@@ -8,7 +8,7 @@ import { PRIVATE_CFGI_KEY } from '$env/static/private';
 import { free_tokens } from '$lib/stores';
 
 const endpoint =
-	'https://cfgi.io/api/api_request.php?api_key=API_KEY&token=TOKEN&start=START&end=END&period=PERIOD';
+	'https://cfgi.io/api/api_request.php?api_key=API_KEY&token=TOKEN&period=PERIOD&values=1200';
 
 function formatDate(date: Date) {
 	// Extract year, month, day, hours, minutes, and seconds from the date object

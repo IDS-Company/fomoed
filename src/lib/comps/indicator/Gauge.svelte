@@ -21,11 +21,11 @@
 							requestAnimationFrame(() => {
 								line.setAttribute('fill', color);
 							});
-						}, 50);
+						}, 25);
 					} else {
 						line.setAttribute('fill', '#78797A');
 					}
-				}, 50 * i);
+				}, 25 * i);
 			});
 		}, 1000);
 	}
