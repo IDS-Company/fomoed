@@ -32,6 +32,7 @@
 
 	$: marketSentiment = get_data_label(percentage);
 	$: color = get_data_color(percentage);
+	$: fomoed_score_color = get_data_color($aped_score);
 
 	$: iconIdx = get_data_index(percentage);
 
@@ -158,6 +159,8 @@
 		aped_score.set(ratings_mean);
 	}
 
+	$: console.log($votes);
+
 	votes.subscribe((v) => v?.length && update_mean_rating(v));
 	cfgi_summary.subscribe((cfgi) => cfgi && update_mean_rating($votes));
 
@@ -243,8 +246,21 @@
 				Loading...
 			</div>
 		{:else if $has_voted && loadingIsOut}
-			<div in:fade>
-				<div class="font-medium text-sm text-center mt-[20px] opacity-80">Share your polls on</div>
+			<div in:fade class="flex flex-col items-center">
+				<div
+					class="text-[40px] leading-[40px] font-paralucent font-medium mt-[20px]"
+					style:color={fomoed_score_color}
+				>
+					{$aped_score}
+				</div>
+
+				<div
+					class="font-paralucent max-w-max font-medium text-sm bg-gradient-to-r from-primary to-yellow text-transparent bg-clip-text"
+				>
+					Fomoed score
+				</div>
+
+				<div class="font-medium text-sm text-center mt-[10px] opacity-80">Share your polls on</div>
 
 				<div class="flex gap-x-2 justify-center mt-[10px]">
 					<a href={copy_social_link('twitter', getLink())} target="_blank">
