@@ -125,7 +125,7 @@
 
 <SocialSharePopup /> -->
 
-<main class="w-full relative overflow-hidden">
+<main class="w-full relative overflow-clip">
 	<!-- Mobile top bg image -->
 	<div
 		class="desktop:hidden absolute w-full bg-bottom -z-20 bg-[url(/background/mobile/homepage-top.png)] bg-no-repeat bg-cover h-[120vh]"

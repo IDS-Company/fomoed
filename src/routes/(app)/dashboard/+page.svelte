@@ -129,5 +129,7 @@
 		</div>
 	</div>
 
-	<Footer></Footer>
+	<div class="desktop:hidden">
+		<Footer></Footer>
+	</div>
 </div>
