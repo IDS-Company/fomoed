@@ -209,31 +209,47 @@ async function handle_subscription(
 async function handle_invoice(invoice: Stripe.Invoice | string, supabase: SupabaseClient) {
 	if (typeof invoice === 'string') {
 		invoice = await stripe.invoices.retrieve(invoice);
+		console.log('parsed invoice from a string');
 	}
 
-	if (invoice) {
-		if (invoice.status === 'paid' && invoice.amount_remaining === 0) {
-			// Handle the paid invoice status
-			if (typeof invoice.subscription === 'string') {
-				// Find the subscription
-				invoice.subscription = await stripe.subscriptions.retrieve(invoice.subscription);
-			}
-
-			if (invoice.subscription) {
-				handle_subscription(
-					invoice,
-					invoice.subscription.id,
-					invoice.subscription.items.data[0].price.id,
-					invoice.subscription.metadata,
-					invoice.subscription.current_period_start,
-					invoice.subscription.current_period_end,
-					invoice.subscription.status,
-					invoice.subscription,
-					supabase
-				);
-			}
-		}
+	if (!invoice) {
+		console.log('Not invoice');
+		return;
 	}
+
+	if (invoice.status !== 'paid') {
+		console.log('Invoice is not paid');
+		return;
+	}
+
+	if (invoice.amount_remaining !== 0) {
+		console.log('Invoice has remaining amount');
+		return;
+	}
+
+	// Handle the paid invoice status
+	if (typeof invoice.subscription === 'string') {
+		// Find the subscription
+		invoice.subscription = await stripe.subscriptions.retrieve(invoice.subscription);
+		console.log('invoice converted from a string');
+	}
+
+	if (!invoice.subscription) {
+		console.log('No subscription found');
+		return;
+	}
+
+	handle_subscription(
+		invoice,
+		invoice.subscription.id,
+		invoice.subscription.items.data[0].price.id,
+		invoice.subscription.metadata,
+		invoice.subscription.current_period_start,
+		invoice.subscription.current_period_end,
+		invoice.subscription.status,
+		invoice.subscription,
+		supabase
+	);
 }
 
 /** @type {import('./$types').RequestHandler} */
@@ -305,6 +321,7 @@ export async function POST({ request, locals: { supabase } }: RequestEvent) {
 			);
 			break;
 		case 'invoice.paid':
+			console.log('Handling Paid Invoice');
 			handle_invoice(event.data.object.id, supabase);
 			break;
 		default:
