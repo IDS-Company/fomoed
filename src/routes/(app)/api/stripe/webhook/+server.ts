@@ -294,7 +294,7 @@ export async function POST({ request, locals: { supabase } }: RequestEvent) {
 		case 'customer.subscription.created':
 			// Subscription was created
 			// Note: status will be `incomplete`
-			handle_subscription(
+			await handle_subscription(
 				event.data.object.latest_invoice,
 				event.data.object.id,
 				event.data.object.items.data[0].price.id,
@@ -309,7 +309,7 @@ export async function POST({ request, locals: { supabase } }: RequestEvent) {
 		case 'customer.subscription.updated':
 			// Subscription has been changed
 			// Get the price id
-			handle_subscription(
+			await handle_subscription(
 				event.data.object.latest_invoice,
 				event.data.object.id,
 				event.data.object.items.data[0].price.id,
@@ -322,7 +322,7 @@ export async function POST({ request, locals: { supabase } }: RequestEvent) {
 			);
 			break;
 		case 'customer.subscription.deleted':
-			handle_subscription(
+			await handle_subscription(
 				event.data.object.latest_invoice,
 				event.data.object.id,
 				event.data.object.items.data[0].price.id,

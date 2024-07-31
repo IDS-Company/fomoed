@@ -180,7 +180,7 @@ export async function fetch_token_data(
 	trend_chart_loading.set(false);
 	if (data?.length > 0) {
 		coin_data.set(data);
-		fear_and_greed_index_summary(data);
+		await fear_and_greed_index_summary(data);
 	}
 }
 
@@ -251,7 +251,7 @@ async function get_token_data(
 	period: CFGI_SUPPORTED_PERIODS_ENUM,
 	token_name: string
 ) {
-	memoizedTokenData(token_symbol, token_slug, period, token_name);
+	await memoizedTokenData(token_symbol, token_slug, period, token_name);
 }
 
 coinstats_coin_list.subscribe((coins) => {
@@ -276,7 +276,7 @@ coinstats_selected_coin.subscribe(async (coin) => {
 });
 
 coinstats_selected_coin.subscribe(async (coin) => {
-	fetch_global_data();
+	await fetch_global_data();
 });
 
 cfgi_period.subscribe(async (period) => {
