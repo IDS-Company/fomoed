@@ -129,7 +129,7 @@ async function update_user_subscription(
 		tries += 1;
 
 		if (tries < 3) {
-			return update_user_subscription(
+			return await update_user_subscription(
 				user_id,
 				subscription_id,
 				subscription_start,
@@ -153,6 +153,8 @@ async function update_user_subscription(
 			});
 			return;
 		}
+	} else {
+		console.info('Updated subscription.');
 	}
 
 	// Delete old subscriptions ? - This is a maybe
@@ -203,7 +205,7 @@ async function handle_subscription(
 	if (metadata['user_id'] && invoice.status === 'paid' && Date.now() / 1000 < current_period_end) {
 		// Update the subscription to the start and end times
 		// Maybe delete the sub here ?
-		update_user_subscription(
+		await update_user_subscription(
 			metadata['user_id'],
 			sub_id,
 			new Date(current_period_start * 1000),
@@ -251,7 +253,7 @@ async function handle_invoice(invoice: Stripe.Invoice | string, supabase: Supaba
 		return;
 	}
 
-	handle_subscription(
+	await handle_subscription(
 		invoice,
 		invoice.subscription.id,
 		invoice.subscription.items.data[0].price.id,
