@@ -47,7 +47,12 @@ async function update_user_subscription(
 		.select()
 		.eq('user_id', user_id);
 
-	if (find_subscription_error || find_user_error || !users?.[0]) {
+	if (!users?.[0]) {
+		console.error('User Not Found. Returned user list is empty.');
+		return;
+	}
+
+	if (find_subscription_error || find_user_error) {
 		console.error(
 			'⚠️ Subscription Was not Found. Subscription not Updated: ',
 			find_subscription_error,
@@ -172,37 +177,44 @@ async function handle_subscription(
 	subscription: Stripe.Subscription,
 	supabase: SupabaseClient
 ) {
-	if (prices.some((id: string) => id === price_id)) {
-		if (invoice) {
-			if (typeof invoice === 'string') {
-				// Fetch the invoice
-				invoice = await stripe.invoices.retrieve(invoice);
-			}
+	console.debug('Handle subscription called');
 
-			if (!invoice) {
-				// We must have an invoice associated with the subscription ?
-				return;
-			}
+	if (!prices.some((id: string) => id === price_id)) {
+		console.error("No matching price ID found in the prices array. Can't handle subscription");
+		return;
+	}
 
-			if (
-				metadata['user_id'] &&
-				invoice.status === 'paid' &&
-				Date.now() / 1000 < current_period_end
-			) {
-				// Update the subscription to the start and end times
-				// Maybe delete the sub here ?
-				update_user_subscription(
-					metadata['user_id'],
-					sub_id,
-					new Date(current_period_start * 1000),
-					new Date(current_period_end * 1000),
-					price_id,
-					supabase,
-					subscription.status === 'trialing',
-					subscription.cancel_at
-				);
-			}
-		}
+	if (!invoice) {
+		console.error('No invoice found');
+		return;
+	}
+
+	if (typeof invoice === 'string') {
+		// Fetch the invoice
+		invoice = await stripe.invoices.retrieve(invoice);
+	}
+
+	if (!invoice) {
+		// We must have an invoice associated with the subscription ?
+		console.error('No invoice found');
+		return;
+	}
+
+	if (metadata['user_id'] && invoice.status === 'paid' && Date.now() / 1000 < current_period_end) {
+		// Update the subscription to the start and end times
+		// Maybe delete the sub here ?
+		update_user_subscription(
+			metadata['user_id'],
+			sub_id,
+			new Date(current_period_start * 1000),
+			new Date(current_period_end * 1000),
+			price_id,
+			supabase,
+			subscription.status === 'trialing',
+			subscription.cancel_at
+		);
+	} else {
+		console.error('update_user_subscription not called');
 	}
 }
 
@@ -322,7 +334,7 @@ export async function POST({ request, locals: { supabase } }: RequestEvent) {
 			break;
 		case 'invoice.paid':
 			console.log('Handling Paid Invoice');
-			handle_invoice(event.data.object.id, supabase);
+			await handle_invoice(event.data.object.id, supabase);
 			break;
 		default:
 			// Unexpected event type
