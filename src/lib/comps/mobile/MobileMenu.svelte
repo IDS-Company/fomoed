@@ -51,10 +51,12 @@
 				</SecondaryButton>
 			</div>
 
-			<div class="mt-4 text-[#FFFFFF99] text-sm">
-				Renew on
-				<Time timestamp={$active_sub?.end_timestamp} format="MMM DD, YYYY" />
-			</div>
+			{#if $active_sub}
+				<div class="mt-4 text-[#FFFFFF99] text-sm">
+					Renew on
+					<Time timestamp={$active_sub?.current_period_end * 1000} format="MMM DD, YYYY" />
+				</div>
+			{/if}
 		</div>
 
 		<div class="flex justify-center">

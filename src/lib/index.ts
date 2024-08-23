@@ -3,6 +3,7 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 import { auth_user } from './stores/user';
 import { failure } from './utils';
+import type Stripe from 'stripe';
 
 export type CFGI_SYMBOLS =
 	| 'BTC'
@@ -120,9 +121,13 @@ export function sleep(ms: number) {
 export async function get_user(supabase: SupabaseClient) {
 	await fetch(`/api/user`)
 		.then((res) => res.json())
-		.then((res: { data: IUser & { subscriptions: ISubscription[] } }) => {
-			auth_user.set(res.data);
-		})
+		.then(
+			(res: {
+				data: IUser & { subscriptions: (Stripe.Subscription & { plan: Stripe.Plan })[] };
+			}) => {
+				auth_user.set(res.data);
+			}
+		)
 		.catch(async (err) => {
 			failure(err.message);
 			await supabase.auth.signOut();

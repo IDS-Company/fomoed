@@ -1,6 +1,6 @@
 import type { PostgrestSingleResponse } from '@supabase/supabase-js';
 import { error, json, type RequestEvent } from '@sveltejs/kit';
-import _ from 'lodash-es';
+import stripe from '../stripe/stripe';
 
 /** @type {import('./$types').RequestHandler} */
 export async function GET({ locals: { supabase, user } }: RequestEvent) {
@@ -34,24 +34,24 @@ export async function GET({ locals: { supabase, user } }: RequestEvent) {
 	if (auth_user) {
 		auth_user.has_valid_sub = false;
 
-		const { data: subscriptions, error: err }: PostgrestSingleResponse<ISubscription[]> =
-			await supabase.from('subscriptions').select().eq('user_id', auth_user.user_id);
+		// For some reason, on stripe there are multiple customers with the same email
+		// Here we are searching for all customers with the email and retrieving all their subscriptions
 
-		if (err) {
-			console.error('⚠️ Could not fetch subscriptions: ', err);
+		const user_customers = await stripe.customers.search({ query: `email:"${auth_user.email}"` });
+
+		const user_subscriptions = [];
+
+		for (const customer of user_customers.data) {
+			const customer_subs = await stripe.subscriptions.list({ customer: customer.id });
+
+			user_subscriptions.push(...customer_subs.data);
 		}
 
-		// Removes the potential of returning subscriptions that have already been unsubbed
-		const filtered_subs = _.orderBy(
-			subscriptions
-				?.filter((sub) => Date.now() < new Date(sub.end_timestamp).getTime())
-				.map((sub) => ({ ...sub, start_timestamp: new Date(sub.start_timestamp) })),
-			['start_timestamp'],
-			['desc']
-		);
+		const active_subs = user_subscriptions.filter((sub) => sub.status === 'active');
 
-		(auth_user as any).subscriptions = filtered_subs[0] ? [filtered_subs[0]] : [];
-		(auth_user as any).has_valid_sub = (auth_user as any).subscriptions.length > 0;
+		// @ts-expect-error subscriptions is an array of Stripe subscriptions
+		auth_user.subscriptions = active_subs;
+		auth_user.has_valid_sub = active_subs.length > 0;
 	}
 
 	return json({

@@ -23,10 +23,10 @@
 			<div class="text-[48px] mt-[9px] leading-[54px] font-paralucent-demibold">$50</div>
 			<div class="opacity-60 font-paralucent font-medium">/year</div>
 			<div class="pt-[12px] opacity-60 text-sm font-paralucent font-medium">
-				{#if $active_degen_sub && !$active_degen_sub.has_cancelled}
-					Renews <Time relative timestamp={$active_degen_sub.end_timestamp} />
-				{:else if $active_degen_sub && $active_degen_sub.has_cancelled}
-					Cancels <Time relative timestamp={$active_degen_sub.end_timestamp} />
+				{#if $active_degen_sub && !$active_degen_sub.cancel_at_period_end}
+					Renews <Time relative timestamp={$active_degen_sub.current_period_end * 1000} />
+				{:else if $active_degen_sub && $active_degen_sub.cancel_at_period_end}
+					Cancels <Time relative timestamp={$active_degen_sub.current_period_end * 1000} />
 				{:else}
 					Renews every 1 year
 				{/if}
@@ -44,9 +44,9 @@
 	<div class="flex-grow"></div>
 
 	<div class="px-[20px] pb-[25px]">
-		{#if $active_degen_sub && !$active_degen_sub.has_cancelled}
+		{#if $active_degen_sub && !$active_degen_sub.cancel_at_period_end}
 			<SecondaryButton on:click={() => dispatch('click-unsubscribe')}>Unsubscribe</SecondaryButton>
-		{:else if $active_degen_sub && $active_degen_sub.has_cancelled}
+		{:else if $active_degen_sub && $active_degen_sub.cancel_at_period_end}
 			<SecondaryButton {disabled} on:click={() => dispatch('click-resubscribe')}>
 				Resubscribe
 			</SecondaryButton>

@@ -24,10 +24,10 @@
 			<div class="text-[48px] mt-[9px] leading-[54px] font-paralucent-demibold">$4.99</div>
 			<div class="opacity-60 font-paralucent font-medium">/month</div>
 			<div class="pt-[12px] opacity-60 text-sm font-paralucent font-medium">
-				{#if $active_premium_sub && !$active_premium_sub.has_cancelled}
-					Renews <Time relative timestamp={$active_premium_sub.end_timestamp} />
-				{:else if $active_premium_sub && $active_premium_sub.has_cancelled}
-					Cancels <Time relative timestamp={$active_premium_sub.end_timestamp} />
+				{#if $active_premium_sub && !$active_premium_sub.cancel_at_period_end}
+					Renews <Time relative timestamp={$active_premium_sub.current_period_end * 1000} />
+				{:else if $active_premium_sub && $active_premium_sub.cancel_at_period_end}
+					Cancels <Time relative timestamp={$active_premium_sub.current_period_end * 1000} />
 				{:else}
 					Renews once a month
 				{/if}
@@ -49,9 +49,9 @@
 			<MainButton {disabled} on:click={() => dispatch('click-free-trial')}>
 				Start Free Trial
 			</MainButton>
-		{:else if $active_premium_sub && !$active_premium_sub.has_cancelled}
+		{:else if $active_premium_sub && !$active_premium_sub.cancel_at_period_end}
 			<MainButton {disabled} on:click={() => dispatch('click-unsubscribe')}>Unsubscribe</MainButton>
-		{:else if $active_premium_sub && $active_premium_sub.has_cancelled}
+		{:else if $active_premium_sub && $active_premium_sub.cancel_at_period_end}
 			<MainButton {disabled} on:click={() => dispatch('click-resubscribe')}>Resubscribe</MainButton>
 		{:else if !$active_premium_sub}
 			<MainButton {disabled} on:click={() => dispatch('click-subscribe')}>Select Plan</MainButton>

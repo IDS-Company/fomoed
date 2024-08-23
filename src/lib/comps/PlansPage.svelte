@@ -2,7 +2,7 @@
 	import { prices_store } from '$lib/stores/stripe';
 	import { goto } from '$app/navigation';
 	import { auth_user } from '$lib/stores/user';
-	import { failure, success, warning } from '$lib/utils';
+	import { failure, warning } from '$lib/utils';
 	import { getContext, onMount } from 'svelte';
 	import type { Stripe } from '@stripe/stripe-js';
 	import { browser } from '$app/environment';
@@ -31,7 +31,7 @@
 			return;
 		} else if (
 			$auth_user.subscriptions.length &&
-			$auth_user.subscriptions.some((sub) => sub.price_id === price_id)
+			$auth_user.subscriptions.some((sub) => sub.plan.id === price_id)
 		) {
 			warning('Seems you are already subscribed to a plan');
 			return;
@@ -106,15 +106,17 @@
 		if ($auth_user) {
 			await Promise.all(
 				$auth_user.subscriptions
-					.filter((sub) => sub.price_id === price_id)
+					.filter((sub) => sub.plan.id === price_id)
 					.map(async (sub) => {
+						console.log(sub);
+
 						await fetch('/api/cancel_subscription', {
 							method: 'POST',
 							headers: {
 								'Content-Type': 'application/json'
 							},
 							body: JSON.stringify({
-								subscription: sub.subscription_id
+								subscription: sub.id
 							})
 						})
 							.then((res) => res.json())
@@ -132,7 +134,7 @@
 			);
 
 			if (
-				!!$auth_user.subscriptions.filter((sub) => sub.price_id === price_id).length &&
+				!!$auth_user.subscriptions.filter((sub) => sub.plan.id === price_id).length &&
 				!implicit
 			) {
 				// success(
@@ -157,9 +159,9 @@
 		let sub_id: string;
 
 		if (planName === 'Premium') {
-			sub_id = $active_premium_sub!.subscription_id;
+			sub_id = $active_premium_sub!.id;
 		} else {
-			sub_id = $active_degen_sub!.subscription_id;
+			sub_id = $active_degen_sub!.id;
 		}
 
 		await fetch('/api/resume_subscription', {
@@ -471,7 +473,7 @@
 		</div>
 
 		<div class="col-span-3 xs:hidden">
-			<ScrollerDots container={cardsContainer} />
+			<ScrollerDots pages={3} container={cardsContainer} />
 		</div>
 	</div>
 </div>
