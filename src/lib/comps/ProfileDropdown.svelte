@@ -30,8 +30,11 @@
 
 	{#if $active_sub}
 		<div class="pt-[9px] text-[10px] text-[#FFFFFF99] mt-1">
-			Renew on
-			<Time timestamp={$active_sub?.current_period_end * 1000} format="MMM DD, YYYY" />
+			{#if $active_sub && !$active_sub.cancel_at_period_end}
+				Renews <Time relative timestamp={$active_sub.current_period_end * 1000} />
+			{:else if $active_sub && $active_sub.cancel_at_period_end}
+				Cancels <Time relative timestamp={$active_sub.current_period_end * 1000} />
+			{/if}
 		</div>
 	{/if}
 
