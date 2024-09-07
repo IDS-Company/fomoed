@@ -47,7 +47,9 @@ export async function GET({ locals: { supabase, user } }: RequestEvent) {
 			user_subscriptions.push(...customer_subs.data);
 		}
 
-		const active_subs = user_subscriptions.filter((sub) => sub.status === 'active');
+		const active_subs = user_subscriptions.filter(
+			(sub) => sub.status === 'active' || sub.status === 'trialing'
+		);
 
 		// @ts-expect-error subscriptions is an array of Stripe subscriptions
 		auth_user.subscriptions = active_subs;
