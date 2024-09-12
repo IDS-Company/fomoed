@@ -29,11 +29,13 @@
 			</div>
 
 			<div class="text-[48px] mt-[9px] leading-[54px] font-paralucent-demibold">
-				${yearlySelected ? planInfo.priceUsdYear : planInfo.priceUsdMonth}
+				${yearlySelected || !planInfo.priceUsdMonth
+					? planInfo.priceUsdYear
+					: planInfo.priceUsdMonth}
 			</div>
 
 			<div class="opacity-60 font-paralucent font-medium">
-				{#if yearlySelected}
+				{#if yearlySelected || !planInfo.priceUsdMonth}
 					/year
 				{:else}
 					/month

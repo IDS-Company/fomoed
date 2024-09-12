@@ -267,11 +267,12 @@
 					<PremiumBadge />
 				</div>
 
-				<div
+				<!-- Monthly/Yearly switch -->
+				<!-- <div
 					class="grid place-items-center mt-4 desktop:place-items-end desktop:pr-3 desktop:translate-y-10"
 				>
 					<Toggle labelLeft="Monthly" labelRight="Yearly" bind:state={yearlySelected}></Toggle>
-				</div>
+				</div> -->
 			</div>
 
 			<div
