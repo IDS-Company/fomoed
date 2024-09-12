@@ -30,8 +30,6 @@
 	import CoinSwiper from '$lib/comps/CoinSwiper.svelte';
 	import PremiumBadge from '$lib/comps/decorations/PremiumBadge.svelte';
 	import FreeCard from '$lib/comps/plan-cards/FreeCard.svelte';
-	import PremiumCard from '$lib/comps/plan-cards/PremiumCard.svelte';
-	import DegenCard from '$lib/comps/plan-cards/DegenCard.svelte';
 	import MemeSwiper from '$lib/comps/MemeSwiper.svelte';
 	import HomepageBigChart from '$lib/comps/HomepageBigChart.svelte';
 	import { writable } from 'svelte/store';
@@ -42,6 +40,9 @@
 	import GetFreeTrialOverlay from '$lib/comps/overlays/GetFreeTrialOverlay.svelte';
 	import { fade } from 'svelte/transition';
 	import { browser } from '$app/environment';
+	import PaidPlanCard from '$lib/comps/plan-cards/PaidPlanCard.svelte';
+	import { planPlus, planPro } from '$lib/plans';
+	import { active_degen_sub, active_premium_sub } from '$lib/stores/subs';
 
 	// const memoizedTokens = memoizeDebounce(refresh_coinstats_coin_list, 1000, { maxWait: 2000 });
 
@@ -307,13 +308,23 @@
 		class="pt-[52px] -desktop:pt-8 flex justify-center gap-x-[14px] items-center px-4 -desktop:flex-col gap-y-4"
 	>
 		<FreeCard />
-		<PremiumCard
+		<PaidPlanCard
+			planInfo={planPro}
+			matchingActivePlanStore={active_premium_sub}
+			yearlySelected={false}
 			on:click-free-trial={() => goto('/plans')}
 			on:click-subscribe={() => goto('/plans')}
+			on:click-unsubscribe={() => goto('/plans')}
+			on:click-resubscribe={() => goto('/plans')}
 		/>
-		<DegenCard
+		<PaidPlanCard
+			planInfo={planPlus}
+			matchingActivePlanStore={active_degen_sub}
+			yearlySelected={false}
+			on:click-free-trial={() => goto('/plans')}
 			on:click-subscribe={() => goto('/plans')}
 			on:click-unsubscribe={() => goto('/plans')}
+			on:click-resubscribe={() => goto('/plans')}
 		/>
 	</div>
 

@@ -10,14 +10,15 @@
 	import { get_user, sleep } from '$lib';
 	import PremiumBadge from './decorations/PremiumBadge.svelte';
 	import FreeCard from './plan-cards/FreeCard.svelte';
-	import PremiumCard from './plan-cards/PremiumCard.svelte';
-	import DegenCard from './plan-cards/DegenCard.svelte';
 	import AppNav from './AppNav.svelte';
 	import UnsubscribeConfirmPopup from './popups/UnsubscribeConfirmPopup.svelte';
 	import UnsubscribeSuccessPopup from './popups/UnsubscribeSuccessPopup.svelte';
 	import { writable } from 'svelte/store';
 	import { active_degen_sub, active_premium_sub, changingSubscription } from '$lib/stores/subs';
 	import ScrollerDots from './ScrollerDots.svelte';
+	import Toggle from './Toggle.svelte';
+	import PaidPlanCard from './plan-cards/PaidPlanCard.svelte';
+	import { planPlus, planPro } from '$lib/plans';
 
 	let stripeContext = getContext<{
 		getStripe: () => Stripe;
@@ -240,187 +241,9 @@
 	onMount(() => {
 		cardsContainer.scrollTo({ left: cardsContainer.scrollWidth / 3 });
 	});
+
+	let yearlySelected = false;
 </script>
-
-<!-- <section class="px-6 pt-16 mx-auto max-w-screen-2xl">
-	<header class="flex flex-col items-center justify-between pb-10 md:flex-row header">
-		<div class="start_section">
-			<div class="text-2xl font-bold sm:text-3xl title_tag">Stop Trading With Emotions</div>
-			<div
-				class="px-0 text-4xl sm:text-5xl font-extrabold leading-none py-4 sm:py-0 sm:leading-relaxed tracking-wide text-transparent title bg-gradient-to-r bg-clip-text from-[#ff3432] to-[#ff9851]"
-			>
-				Get Fomoed Premium
-			</div>
-			<div class="text-sm title_description sm:text-base">
-				Fomoed provides a toolset for effortlessly navigating the emotional rollercoaster that is
-				crypto. Have complete access to your favorite Altcoins and get precise data-based market
-				sentiment analysis
-			</div>
-
-			<div
-				class="flex flex-col items-center justify-center w-full py-4 lg:items-start md:w-auto free_trial"
-			>
-				<button
-					class="px-10 py-3 text-sm font-bold md:px-16 rounded-3xl disabled:opacity-40 whitespace-nowrap disabled:cursor-not-allowed bg-gradient-to-r text-black from-[#ff3432] to-[#ff9851]"
-					on:click={() => {
-						if (!$auth_user?.has_had_free_trial) {
-							const price = $prices_store.find(
-								(price) => price.recurring?.interval === 'month' && price.id !== 'free'
-							);
-
-							if (price) {
-								subscribeTo(price.id);
-							}
-						}
-					}}
-					disabled={$auth_user?.has_had_free_trial}
-				>
-					Start Free Trial
-				</button>
-
-				<div
-					class="flex flex-col items-center justify-center px-5 py-3 space-y-1 text-xs font-medium text-white tagline_text text-opacity-30"
-				>
-					<span>
-						${($prices_store.filter((p) => p.recurring?.interval === 'month')?.[0]?.unit_amount ||
-							499) / 100} After Trial
-					</span>
-					<span> Recurring Billing, Cancel Anytime </span>
-				</div>
-			</div>
-		</div>
-
-		<div class="block image">
-			<img src="/images/plans_graphic.png" alt="" />
-		</div>
-	</header>
-
-	<article class="w-full">
-		<div class="text-2xl font-medium text-center sm:text-3xl title">
-			Unlock a Full Suite of Professional Tools
-		</div>
-
-		<div
-			class="flex flex-col items-center justify-center py-6 space-y-3 sm:py-16 sm:flex-row sm:space-y-0 sm:space-x-3 plans_list"
-		>
-			{#each $prices_store as price}
-				<div class="w-full sm:w-1/3 {price.name === 'Premium' ? 'premium' : ''} rounded-xl">
-					<div
-						class="relative flex flex-col items-center justify-center w-full px-4 py-8 border-2 border-white border-opacity-30 price rounded-xl bg-background inner_wrapper"
-					>
-						<div
-							class="text-3xl font-bold tracking-wide text-center {price.id === 'free'
-								? 'text-white'
-								: `bg-gradient-to-r bg-clip-text text-transparent`}"
-							class:from-[#ff3432]={price.recurring?.interval === 'month'}
-							class:from-[#ffe5ce]={price.recurring?.interval === 'year'}
-							class:to-[#ff9851]={price.recurring?.interval === 'month'}
-							class:to-[#ee9843]={price.recurring?.interval === 'year'}
-						>
-							{price.name}
-						</div>
-
-						<div class="py-5 price">
-							<div class="flex items-center justify-center price_details">
-								<div class="flex items-center justify-center text-4xl font-bold price_value">
-									{price.unit_amount === 0 ? 'Free' : `$${(price.unit_amount || 0) / 100 || 0}`}
-								</div>
-								<div
-									class="flex items-center justify-center pt-2 pl-2 text-white duration text-opacity-30"
-								>
-									/{price.recurring?.interval || 'month'}
-								</div>
-							</div>
-						</div>
-
-						<div class="extra_details">
-							{#if price.unit_amount !== 0}
-								<div class="text-xs text-white text-opacity-25 extra_info">
-									billed every {price.recurring?.interval_count}
-									{price.recurring?.interval}
-								</div>
-							{/if}
-
-							{#if $auth_user?.subscriptions.some((sub) => sub.price_id === price.id)}
-								<div class="py-1 text-xs text-white text-opacity-25 timestamp">
-									{$auth_user?.subscriptions.filter((sub) => sub.price_id === price.id)?.[0]
-										?.has_cancelled
-										? 'Cancels'
-										: 'Renews'}
-									<Time
-										relative
-										timestamp={$auth_user?.subscriptions.find((sub) => sub.price_id === price.id)
-											?.end_timestamp}
-									/>
-								</div>
-							{/if}
-						</div>
-
-						<div class="flex items-center justify-center py-5 action_btn">
-							<button
-								class="w-full px-10 md:px-16 py-3 mx-auto rounded-3xl text-sm font-bold disabled:opacity-40 whitespace-nowrap disabled:cursor-not-allowed
-									{price.id === 'free' ? 'text-white bg-black' : 'bg-gradient-to-r text-black'}
-									"
-								class:from-[#ff3432]={price.recurring?.interval === 'month'}
-								class:from-[#ffe5ce]={price.recurring?.interval === 'year'}
-								class:to-[#ff9851]={price.recurring?.interval === 'month'}
-								class:to-[#ee9843]={price.recurring?.interval === 'year'}
-								on:click={async () => {
-									const found_sub = $auth_user?.subscriptions.find(
-										(sub) => sub.price_id === price.id
-									);
-
-									if (found_sub) {
-										if (found_sub.has_cancelled) {
-											await resume_subscription(found_sub.subscription_id);
-										} else {
-											await unsubscribeFrom(price.id, true);
-										}
-									} else {
-										await subscribeTo(price.id);
-									}
-								}}
-								disabled={!$auth_user?.subscriptions.length && price.id === 'free'}
-							>
-								{#if $auth_user?.subscriptions.some((sub) => sub.price_id === price.id) && price.id !== 'free'}
-									{#if $auth_user?.subscriptions.find((sub) => sub.price_id === price.id)?.has_cancelled}
-										Resume Plan
-									{:else}
-										Unsubscribe
-									{/if}
-								{:else if !$auth_user?.subscriptions.length && price.id === 'free'}
-									Current Plan
-								{:else}
-									Select Plan
-								{/if}
-							</button>
-						</div>
-
-						<div class="flex flex-col items-center justify-start w-full px-5 text-sm features">
-							{#each price.features as feature}
-								<div class="w-full py-1 text-left feature">
-									{feature}
-								</div>
-							{/each}
-						</div>
-					</div>
-				</div>
-			{/each}
-		</div>
-	</article>
-</section>
--->
-
-<!-- <style lang="postcss">
-	.premium {
-		@apply border-none relative p-[1px];
-		@apply content-none block bg-gradient-to-r from-[#ff3432] to-[#ff9851];
-
-		.inner_wrapper {
-			@apply border-none mx-auto;
-		}
-	}
-</style> -->
 
 <div
 	style="background-image: url(/background/select-plan.svg)"
@@ -430,9 +253,9 @@
 
 	<div class="flex-grow grid place-items-center pb-24">
 		<div
-			class="grid place-items-center grid-cols-3 gap-[7px] mx-auto h-full pb-6 w-full max-w-[1050px] max-h-[700px]"
+			class="grid place-items-center grid-cols-3 gap-[7px] mx-auto h-full pb-6 w-full max-w-[1050px] max-h-[760px]"
 		>
-			<div class="col-span-3">
+			<div class="col-span-3 w-full">
 				<h1
 					class="font-paralucent-demibold text-[28px] text-center -desktop:text-[22px] -desktop:mt-12"
 				>
@@ -443,18 +266,27 @@
 					<img src="/fomoed.svg" alt="Fomoed." class="w-[158px] -desktop:w-[125px]" />
 					<PremiumBadge />
 				</div>
+
+				<div
+					class="grid place-items-center mt-4 desktop:place-items-end desktop:pr-3 desktop:translate-y-10"
+				>
+					<Toggle labelLeft="Monthly" labelRight="Yearly" bind:state={yearlySelected}></Toggle>
+				</div>
 			</div>
 
 			<div
 				bind:this={cardsContainer}
-				class="desktop:grid desktop:grid-cols-subgrid col-span-3 desktop:place-items-center -desktop:flex -desktop:overflow-x-scroll -desktop:gap-x-2 items-center -desktop:w-full -desktop:px-2 -xs:snap-x -xs:snap-mandatory no-scrollbar -desktop:mt-16 desktop:mt-8"
+				class="desktop:grid desktop:grid-cols-subgrid col-span-3 desktop:place-items-center -desktop:flex -desktop:overflow-x-scroll -desktop:gap-x-2 items-center -desktop:w-full -desktop:px-2 -xs:snap-x -xs:snap-mandatory no-scrollbar -desktop:mt-[18px] desktop:mt-[20px]"
 			>
 				<div class="--card-container">
 					<FreeCard />
 				</div>
 
 				<div class="--card-container">
-					<PremiumCard
+					<PaidPlanCard
+						planInfo={planPro}
+						matchingActivePlanStore={active_premium_sub}
+						{yearlySelected}
 						on:click-free-trial={subscribeFreeTrial}
 						on:click-subscribe={() => subscribeToPlan('Premium')}
 						on:click-unsubscribe={() => unsubPlanFromCard('Premium')}
@@ -463,7 +295,10 @@
 				</div>
 
 				<div class="--card-container">
-					<DegenCard
+					<PaidPlanCard
+						planInfo={planPlus}
+						matchingActivePlanStore={active_degen_sub}
+						{yearlySelected}
 						on:click-subscribe={() => subscribeToPlan('Degen')}
 						on:click-unsubscribe={() => unsubPlanFromCard('Degen')}
 						on:click-resubscribe={() => resubscribePlan('Degen')}
