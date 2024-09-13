@@ -35,7 +35,7 @@
 			cfgi_trend_chart.destroy();
 		}
 
-		const gradient = ctx.createLinearGradient(0, 0, 0, 200);
+		const gradient = ctx.createLinearGradient(0, 0, 0, 400);
 		gradient.addColorStop(0, 'rgba(71, 166, 99, 0.4)');
 		gradient.addColorStop(1, 'rgba(71, 166, 99, 0)');
 
@@ -47,7 +47,7 @@
 			order: 1,
 			fill: true,
 			borderColor: color,
-			borderWidth: 2,
+			borderWidth: 1,
 			pointRadius: 0
 		};
 
@@ -86,8 +86,7 @@
 					min: 0,
 					max: 100,
 					step: 20,
-					color: '#FFFFFF',
-					display: $isDesktop
+					color: '#FFFFFF'
 				},
 				x: {
 					beginAtZero: true,
@@ -97,8 +96,7 @@
 						offset: false
 					},
 					ticks: {
-						display: true,
-						maxRotation: 0,
+						maxRotation: 90,
 						autoSkipPadding: 10
 					},
 					border: {
@@ -113,9 +111,6 @@
 			plugins: {
 				legend: {
 					display: false
-				},
-				customCanvasBackgroundColor: {
-					color: '#fff'
 				}
 			}
 		};
@@ -154,7 +149,7 @@
 
 <div class="relative w-full h-full">
 	{#if loading}
-		<div out:fade class="absolute inset-0">
+		<div out:fade class="absolute inset-0 grid place-items-center">
 			<LoadingAnim />
 		</div>
 	{/if}
