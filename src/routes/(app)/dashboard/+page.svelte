@@ -9,6 +9,7 @@
 	import ScrollerDots from '$lib/comps/ScrollerDots.svelte';
 	import Footer from '$lib/comps/Footer.svelte';
 	import GetFreeTrialOverlay from '$lib/comps/overlays/GetFreeTrialOverlay.svelte';
+	import SimpleGreedFearChartCard from '$lib/comps/charts/SimpleGreedAndFearChart/SimpleGreedFearChartCard.svelte';
 
 	let smallChartsCointainer: HTMLElement;
 
@@ -17,7 +18,7 @@
 
 <div
 	style="background-image: url(/background/dashboard.svg)"
-	class="desktop:absolute desktop:inset-0 desktop:overflow-hidden bg-cover desktop:flex desktop:flex-col -desktop:bg-[50%_50%]"
+	class="desktop:absolute desktop:inset-0 desktop:overflow-scroll bg-cover desktop:flex desktop:flex-col -desktop:bg-[50%_50%]"
 >
 	<AppNav showCurrencyDropdown />
 
@@ -125,6 +126,10 @@
 				class="max-h-[500px] col-span-2 -desktop:col-span-6 -desktop:pb-2 -desktop:mx-3 -desktop:mt-1"
 			>
 				<IndicatorCard />
+			</div>
+
+			<div class="col-span-6">
+				<SimpleGreedFearChartCard />
 			</div>
 		</div>
 	</div>

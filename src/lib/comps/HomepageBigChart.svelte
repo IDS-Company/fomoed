@@ -125,6 +125,10 @@
 						font: { family: 'Manrope', size: 8 },
 						autoSkip: true
 						// color: '#aaa'
+					},
+					beforeFit: function (axis: any) {
+						var l = axis.getLabels();
+						axis.ticks.push({ value: axis.max, label: l[axis.max] });
 					}
 				}
 			},

@@ -7,11 +7,13 @@
 
 	const dispatch = createEventDispatcher();
 
-	const options = CfgiPeriods;
-
+	export let options = CfgiPeriods;
 	export let selected = options[0];
 
-	$: if ($coinstats_selected_coin && selected) {
+	// Ugly hotfix
+	export let autoFetchTokenData = true;
+
+	$: if ($coinstats_selected_coin && selected && autoFetchTokenData) {
 		fetch_token_data(
 			$coinstats_selected_coin.symbol,
 			$coinstats_selected_coin.slug,
