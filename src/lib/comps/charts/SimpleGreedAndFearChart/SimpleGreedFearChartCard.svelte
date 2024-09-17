@@ -17,9 +17,9 @@
 	let selectedDuration: Option = durationOptions[0];
 </script>
 
-<div class="h-[600px] mx-3">
+<div class="h-[600px] w-full overflow-hidden">
 	<DashboardCard disablePadding>
-		<div class="flex flex-col w-full h-full py-[22px]">
+		<div class="flex flex-col h-full py-[22px] w-full">
 			<div
 				class="flex items-center w-full -desktop:flex-col -desktop:items-start px-[30px] -desktop:px-4"
 			>

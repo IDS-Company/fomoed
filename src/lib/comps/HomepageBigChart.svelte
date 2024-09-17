@@ -80,6 +80,7 @@
 				ScaleChartOptions<'bar'> &
 				LineControllerChartOptions
 		> = {
+			resizeDelay: 500,
 			responsive: true,
 			maintainAspectRatio: false,
 			scales: {

@@ -2,7 +2,7 @@
 	export let legends: { color: string; label: string }[] = [];
 </script>
 
-<div class="flex justify-center">
+<div class="flex justify-center gap-x-4 text-[#FFFFFFCC]">
 	{#each legends as legend}
 		<div class="flex gap-x-2 items-center">
 			<div style="background: {legend.color};" class="w-[11px] aspect-square"></div>

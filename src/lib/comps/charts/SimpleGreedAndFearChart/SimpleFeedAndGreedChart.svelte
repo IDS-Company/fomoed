@@ -68,6 +68,7 @@
 				duration: 0
 			},
 			responsive: true,
+			resizeDelay: 500,
 			maintainAspectRatio: false,
 			scales: {
 				y: {
@@ -147,7 +148,7 @@
 	let trend_chart_canvas: HTMLCanvasElement;
 </script>
 
-<div class="relative w-full h-full">
+<div class="relative h-full">
 	{#if loading}
 		<div out:fade class="absolute inset-0 grid place-items-center">
 			<LoadingAnim />

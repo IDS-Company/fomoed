@@ -42,8 +42,12 @@
 		"@zerodevx/svelte-toast": "^0.9.5",
 		"axios": "^1.6.8",
 		"chart.js": "^4.4.2",
+		"chartjs-adapter-dayjs-4": "^1.0.4",
+		"chartjs-chart-financial": "^0.2.1",
 		"chartjs-gauge": "^0.3.0",
 		"chartjs-gauge-v3": "^3.0.0",
+		"colormaps": "^1.1.2",
+		"dayjs": "^1.11.13",
 		"eslint": "^9.8.0",
 		"globals": "^15.8.0",
 		"lodash-es": "^4.17.21",
@@ -56,6 +60,7 @@
 		"svelte-time": "^0.8.3",
 		"type-fest": "^4.18.0",
 		"typescript-eslint": "^7.18.0",
-		"uuid": "^9.0.1"
+		"uuid": "^9.0.1",
+		"v3.0#ekr734ls6xdj5a": "link:@coinglass-api/v3.0#ekr734ls6xdj5a"
 	}
 }

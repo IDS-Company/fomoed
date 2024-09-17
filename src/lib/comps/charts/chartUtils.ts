@@ -24,3 +24,12 @@ export async function fetchCfgi(daysBack: number) {
 
 	return data;
 }
+
+export async function fetchHeatmapData(timeframe: string, exchange: string, symbol: string) {
+	const res = await fetch(
+		`/api/liquidity-heatmap?timeframe=${timeframe}&exchange=${exchange}&symbol=${symbol}`
+	);
+	const data = await res.json();
+
+	return data.data;
+}
