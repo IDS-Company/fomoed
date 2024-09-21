@@ -19,6 +19,7 @@
 	import { onMount } from 'svelte';
 	import { coinstats_selected_coin } from '$lib/stores';
 	import { auth_email, logged_in } from '$lib/stores/user';
+	import { min } from 'lodash-es';
 
 	export let daysBack: number;
 

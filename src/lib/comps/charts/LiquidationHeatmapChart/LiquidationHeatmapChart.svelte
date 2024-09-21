@@ -90,7 +90,7 @@
 				order: 12,
 				yAxisID: 'y',
 				xAxisID: 'x',
-				pointRadius: 2,
+				// pointRadius: 1,
 				pointStyle: 'rect'
 			}
 		];
@@ -129,7 +129,8 @@
 						}
 					},
 					interaction: {
-						mode: 'index'
+						mode: 'nearest',
+						intersect: false
 					},
 					plugins: {
 						legend: {
@@ -137,8 +138,8 @@
 						}
 					},
 					onResize: (chart, { width, height }) => {
-						const widthWithoutScales = width - 50;
-						const pxPerTimePoint = widthWithoutScales / n_time_points;
+						// const widthWithoutScales = width - 50;
+						const pxPerTimePoint = height / n_time_points;
 
 						chart.data.datasets[1].pointRadius = pxPerTimePoint;
 					}

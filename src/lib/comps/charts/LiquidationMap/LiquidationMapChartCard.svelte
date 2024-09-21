@@ -4,7 +4,7 @@
 	import { onMount, tick } from 'svelte';
 	import DashboardCard from '../../DashboardCard.svelte';
 	import Legend from '../Legend.svelte';
-	import LiquidationHeatmapChart from './LiquidationHeatmapChart.svelte';
+	import LiquidationMapChart from './LiquidationMapChart.svelte';
 	import {
 		defaultSelectedInstrument,
 		humanizeNumber,
@@ -20,14 +20,8 @@
 	type Option = { label: string; value: string };
 
 	const timeframeOptions: Option[] = [
-		{ label: '12 hours', value: '12h' },
-		{ label: '24 hours', value: '24h' },
-		{ label: '3 days', value: '3d' },
-		{ label: '1 week', value: '7d' },
-		{ label: '1 month', value: '30d' },
-		{ label: '3 months', value: '90d' },
-		{ label: '6 months', value: '180d' },
-		{ label: '1 year', value: '1y' }
+		{ label: '1 day', value: '1d' },
+		{ label: '7 days', value: '7d' }
 	];
 
 	let selectedTimeframe: Option = timeframeOptions[0];
@@ -46,13 +40,11 @@
 		searchTerm = searchTerm || 'BTC/USDT';
 
 		exchangeOptions = searchPairInSupportedExchanges(data, searchTerm);
-
-		console.log(exchangeOptions);
 	}
 
 	let refreshData: () => any;
-	let maxLiqValue: number;
 	let isLoading: boolean;
+	let currentPrice: number;
 
 	const pairSearchTerm = writable($selectedExchangeOption.label);
 
@@ -78,7 +70,7 @@
 		'/' +
 		$selectedExchangeOption.value.quoteAsset +
 		' ' +
-		'Liquidation Heatmap';
+		'Liquidation Map';
 </script>
 
 <div class="h-[600px] overflow-hidden">
@@ -121,42 +113,35 @@
 				</div>
 			</div>
 
-			<div class="flex flex-grow gap-x-4 px-4 mt-4">
-				<!-- Scale -->
-				<div
-					class="pt-10 w-[40px] flex flex-col items-center text-[#FFFFFF66] font-paralucent font-medium text-xs gap-y-[5px]"
-				>
-					<div class="whitespace-nowrap">{humanizeNumber(maxLiqValue)}</div>
-
-					<div
-						class="rounded-[10px] flex-grow w-full"
-						style="background: linear-gradient(180deg, #E7E60B 0%, #63C752 22.5%, #27A77D 47%, #2F5C86 75%, #44095F 100%);"
-					></div>
-
-					<div>0</div>
+			<!-- Legend and Chart -->
+			<div class="flex-grow h-full flex flex-col">
+				<div class="flex-grow-0 mt-4 -desktop:mt-6 px-[30px] -desktop:px-4">
+					<Legend
+						legends={[
+							{ color: '#21AA94', label: 'Cumulative Short Liquidation Leverage' },
+							{ color: '#F23645', label: 'Cumulative Long Liquidation Leverage' },
+							{ color: '#FF8300', label: '100x Leverage' },
+							{ color: '#FFC403', label: '50x Leverage' },
+							{ color: '#73D8DA', label: '25x Leverage' },
+							{ color: '#6EC2F0', label: '10x Leverage' }
+						]}
+					></Legend>
 				</div>
 
-				<!-- Legend and Chart -->
-				<div class="flex-grow h-full flex flex-col">
-					<div class="flex-grow-0 mt-4 -desktop:mt-6 px-[30px] -desktop:px-4">
-						<Legend
-							legends={[
-								{ color: '#440253', label: 'Liquidation Leverage' },
-								{ color: '#0DCB81', label: 'Supercharts' }
-							]}
-						></Legend>
-					</div>
+				<div class="text-sm text-center pt-1">
+					Current Price: {currentPrice}
+				</div>
 
-					<div class="flex-grow mt-4 desktop:px-[30px]">
-						<LiquidationHeatmapChart
-							bind:refreshData
-							bind:maxLiqValue
-							bind:isLoading
-							timeframe={selectedTimeframe.value}
-							exchange={$selectedExchangeOption.value.exchange}
-							symbol={$selectedExchangeOption.value.symbol}
-						/>
-					</div>
+				<div class="flex-grow desktop:px-[30px]">
+					<LiquidationMapChart
+						bind:refreshData
+						bind:isLoading
+						bind:currentPrice
+						timeframe={selectedTimeframe.value}
+						exchange={$selectedExchangeOption.value.exchange}
+						baseAsset={$selectedExchangeOption.value.baseAsset}
+						quoteAsset={$selectedExchangeOption.value.quoteAsset}
+					/>
 				</div>
 			</div>
 		</div>

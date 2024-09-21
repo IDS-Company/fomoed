@@ -11,6 +11,7 @@
 	import GetFreeTrialOverlay from '$lib/comps/overlays/GetFreeTrialOverlay.svelte';
 	import SimpleGreedFearChartCard from '$lib/comps/charts/SimpleGreedAndFearChart/SimpleGreedFearChartCard.svelte';
 	import LiquidationHeatmapChartCard from '$lib/comps/charts/LiquidationHeatmapChart/LiquidationHeatmapChartCard.svelte';
+	import LiquidationMapChartCard from '$lib/comps/charts/LiquidationMap/LiquidationMapChartCard.svelte';
 
 	let smallChartsCointainer: HTMLElement;
 
@@ -135,6 +136,10 @@
 
 			<div class="col-span-6 px-3">
 				<LiquidationHeatmapChartCard />
+			</div>
+
+			<div class="col-span-6 px-3">
+				<LiquidationMapChartCard />
 			</div>
 		</div>
 	</div>

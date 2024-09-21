@@ -6,7 +6,10 @@ import parser from '@typescript-eslint/parser';
 export default [
 	{
 		files: ['**/*.{js,mjs,cjs,ts}'],
-		rules: { '@typescript-eslint/no-floating-promises': 'error' }
+		rules: {
+			'@typescript-eslint/no-floating-promises': 'error',
+			'@typescript/no-unused-vars': false
+		}
 	},
 	{
 		languageOptions: {
