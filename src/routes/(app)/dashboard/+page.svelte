@@ -12,6 +12,14 @@
 	import SimpleGreedFearChartCard from '$lib/comps/charts/SimpleGreedAndFearChart/SimpleGreedFearChartCard.svelte';
 	import LiquidationHeatmapChartCard from '$lib/comps/charts/LiquidationHeatmapChart/LiquidationHeatmapChartCard.svelte';
 	import LiquidationMapChartCard from '$lib/comps/charts/LiquidationMap/LiquidationMapChartCard.svelte';
+	import {
+		fetchLiqMapData,
+		fetchLiqMapDataMerged,
+		getSupportedExchangeLiqMapBaseAssets,
+		getSupportedLiqMapInstrumentOptions
+	} from '$lib/comps/charts/chartUtils';
+	import { defaultSelectedInstrument } from '$ts/utils/client';
+	import Legend from '$lib/comps/charts/Legend.svelte';
 
 	let smallChartsCointainer: HTMLElement;
 
@@ -139,7 +147,48 @@
 			</div>
 
 			<div class="col-span-6 px-3">
-				<LiquidationMapChartCard />
+				<LiquidationMapChartCard
+					getTitle={(s) =>
+						`${s.value.exchange} ${s.value.baseAsset} ${s.value.quoteAsset} Liquidation Map`}
+					getInstrumentOptions={getSupportedLiqMapInstrumentOptions}
+					fetchLiqMapData={(timeframe, selAssetOption) =>
+						fetchLiqMapData(timeframe, [selAssetOption.value])}
+					defaultAssetOption={{
+						label: 'Binance BTC/USDT',
+						value: defaultSelectedInstrument
+					}}
+				>
+					<Legend
+						slot="legend"
+						legends={[
+							{ color: '#21AA94', label: 'Cumulative Short Liquidation Leverage' },
+							{ color: '#F23645', label: 'Cumulative Long Liquidation Leverage' },
+							{ color: '#FF8300', label: '100x Leverage' },
+							{ color: '#FFC403', label: '50x Leverage' },
+							{ color: '#73D8DA', label: '25x Leverage' },
+							{ color: '#6EC2F0', label: '10x Leverage' }
+						]}
+					></Legend>
+				</LiquidationMapChartCard>
+
+				<LiquidationMapChartCard
+					getTitle={(s) => `${s.value} Exchange Liquidation Map`}
+					getInstrumentOptions={getSupportedExchangeLiqMapBaseAssets}
+					fetchLiqMapData={(timeframe, selAssetOption) =>
+						fetchLiqMapDataMerged(timeframe, selAssetOption.value)}
+					defaultAssetOption={{ label: 'BTC', value: 'BTC' }}
+				>
+					<Legend
+						slot="legend"
+						legends={[
+							{ color: '#21AA94', label: 'Cumulative Short Liquidation Leverage' },
+							{ color: '#F23645', label: 'Cumulative Long Liquidation Leverage' },
+							{ color: '#FF8300', label: 'Binance' },
+							{ color: '#FFC403', label: 'OKX' },
+							{ color: '#73D8DA', label: 'Bybit' }
+						]}
+					></Legend>
+				</LiquidationMapChartCard>
 			</div>
 		</div>
 	</div>

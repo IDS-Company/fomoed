@@ -1,8 +1,4 @@
-import {
-	fetchCoinglassHeatmap,
-	fetchCoinglassLiqMap,
-	fetchPairMarkets
-} from '$ts/utils/server/coinglass';
+import { fetchCoinglassLiqMap, fetchPairMarkets } from '$ts/utils/server/coinglass';
 import { hasActiveSubscription } from '$ts/utils/server/subscription';
 import { json, type RequestEvent, error } from '@sveltejs/kit';
 

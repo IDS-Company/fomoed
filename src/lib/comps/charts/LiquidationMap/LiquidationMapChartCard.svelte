@@ -3,21 +3,22 @@
 	import DropdownNew from '$lib/comps/DropdownNew.svelte';
 	import { onMount, tick } from 'svelte';
 	import DashboardCard from '../../DashboardCard.svelte';
-	import Legend from '../Legend.svelte';
 	import LiquidationMapChart from './LiquidationMapChart.svelte';
-	import {
-		defaultSelectedInstrument,
-		humanizeNumber,
-		searchPairInSupportedExchanges,
-		type InstrumentInfo
-	} from '$ts/utils/client';
 	import IconRefresh from '$lib/icons/IconRefresh.svelte';
 	import IconButton from '$lib/comps/buttons/IconButton.svelte';
-	import { getCacheOrFetchSupportedExchangePairs } from '$ts/utils/client/api';
 	import { writable } from 'svelte/store';
 	import { browser } from '$app/environment';
+	import type { LiqMapData } from '../chartUtils';
 
-	type Option = { label: string; value: string };
+	type TAssetOptionVal = $$Generic;
+	type TAssetOption = { label: string; value: TAssetOptionVal };
+
+	export let getTitle: (selExchangeOption: Option) => string;
+	export let getInstrumentOptions: (searchTerm: string) => Promise<TAssetOption[]>;
+	export let defaultAssetOption: TAssetOption;
+	export let fetchLiqMapData: (timeframe: string, selAssetOption: Option) => Promise<LiqMapData>;
+
+	type Option = { label: string; value: any };
 
 	const timeframeOptions: Option[] = [
 		{ label: '1 day', value: '1d' },
@@ -26,51 +27,29 @@
 
 	let selectedTimeframe: Option = timeframeOptions[0];
 
-	type ExchangeOption = { label: string; value: InstrumentInfo };
-
-	let exchangeOptions: ExchangeOption[] = [];
-	let selectedExchangeOption = writable<ExchangeOption>({
-		label: 'Binance BTC/USDT',
-		value: defaultSelectedInstrument
-	});
-
-	async function loadExchangeOptions(searchTerm: string | null) {
-		const data = await getCacheOrFetchSupportedExchangePairs();
-
-		searchTerm = searchTerm || 'BTC/USDT';
-
-		exchangeOptions = searchPairInSupportedExchanges(data, searchTerm);
-	}
+	let assetOptions: Option[] = [];
+	let selAssetOption = writable<TAssetOption>(defaultAssetOption);
 
 	let refreshData: () => any;
 	let isLoading: boolean;
 	let currentPrice: number;
 
-	const pairSearchTerm = writable($selectedExchangeOption.label);
+	const pairSearchTerm = writable($selAssetOption.label);
 
-	pairSearchTerm.subscribe((val) => {
+	pairSearchTerm.subscribe(async (val) => {
 		if (!browser) {
 			return;
 		}
 
-		loadExchangeOptions(val);
+		assetOptions = await getInstrumentOptions(val);
 	});
 
 	onMount(() => {
-		selectedExchangeOption.subscribe(async (val) => {
+		selAssetOption.subscribe(async (val) => {
 			await tick();
 			refreshData();
 		});
 	});
-
-	$: title =
-		$selectedExchangeOption.value.exchange +
-		' ' +
-		$selectedExchangeOption.value.baseAsset +
-		'/' +
-		$selectedExchangeOption.value.quoteAsset +
-		' ' +
-		'Liquidation Map';
 </script>
 
 <div class="h-[600px] overflow-hidden">
@@ -80,15 +59,15 @@
 				class="flex items-center w-full -desktop:flex-col -desktop:items-start px-[30px] -desktop:px-4"
 			>
 				<div class="flex-grow font-paralucent-demibold font-light text-[20px]">
-					{title}
+					{getTitle($selAssetOption)}
 				</div>
 
 				<div class="-desktop:mt-2 flex gap-x-2">
 					<div class="w-40 z-10">
 						<Autocomplete
-							options={exchangeOptions}
+							options={assetOptions}
 							bind:inputValue={$pairSearchTerm}
-							bind:selected={$selectedExchangeOption}
+							bind:selected={$selAssetOption}
 						/>
 					</div>
 
@@ -116,16 +95,7 @@
 			<!-- Legend and Chart -->
 			<div class="flex-grow h-full flex flex-col">
 				<div class="flex-grow-0 mt-4 -desktop:mt-6 px-[30px] -desktop:px-4">
-					<Legend
-						legends={[
-							{ color: '#21AA94', label: 'Cumulative Short Liquidation Leverage' },
-							{ color: '#F23645', label: 'Cumulative Long Liquidation Leverage' },
-							{ color: '#FF8300', label: '100x Leverage' },
-							{ color: '#FFC403', label: '50x Leverage' },
-							{ color: '#73D8DA', label: '25x Leverage' },
-							{ color: '#6EC2F0', label: '10x Leverage' }
-						]}
-					></Legend>
+					<slot name="legend" />
 				</div>
 
 				<div class="text-sm text-center pt-1">
@@ -137,11 +107,7 @@
 						bind:refreshData
 						bind:isLoading
 						bind:currentPrice
-						timeframe={selectedTimeframe.value}
-						exchange={$selectedExchangeOption.value.exchange}
-						baseAsset={$selectedExchangeOption.value.baseAsset}
-						quoteAsset={$selectedExchangeOption.value.quoteAsset}
-						instrumentId={$selectedExchangeOption.value.instrumentId}
+						fetchLiqMapData={() => fetchLiqMapData(selectedTimeframe.value, $selAssetOption)}
 					/>
 				</div>
 			</div>

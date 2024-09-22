@@ -1,5 +1,10 @@
 import type { ICoinCfgiPriceData } from '$lib';
 import { coinstats_selected_coin } from '$lib/stores';
+import { searchPairInSupportedExchanges, type InstrumentInfo } from '$ts/utils/client';
+import {
+	cgSupportedExchangeLiqMapBaseAssets,
+	getCacheOrFetchSupportedExchangePairs
+} from '$ts/utils/client/api';
 import { range } from 'lodash-es';
 import { get } from 'svelte/store';
 
@@ -56,32 +61,56 @@ export type LiqMapData = {
 	maxPrice: number;
 };
 
+type FetchLiqMapDataInstrument = {
+	exchange: string;
+	instrumentId: string;
+	baseAsset: string;
+	quoteAsset: string;
+};
+
 export async function fetchLiqMapData(
 	timeframe: string,
-	exchange: string,
-	instrumentId: string,
-	baseAsset: string,
-	quoteAsset: string
+	instruments: FetchLiqMapDataInstrument[]
 ): Promise<LiqMapData> {
-	const res = await fetch(
-		`/api/liq-map?timeframe=${timeframe}&exchange=${exchange}&instrumentId=${instrumentId}&baseAsset=${baseAsset}&quoteAsset=${quoteAsset}`
-	);
-	const data_ = await res.json();
+	const combinedLiqData: Record<number, [number, number, number, null][]> = {};
+	let currentPrice = null;
 
-	console.log({ data_ });
+	console.log({ instruments });
 
-	const liquidationData = data_.data.liquidationData.data.data;
-	const pairMarketData = data_.data.pairMarketData;
+	for (const instrument of instruments) {
+		const res = await fetch(
+			`/api/liq-map?timeframe=${timeframe}&exchange=${instrument.exchange}&instrumentId=${instrument.instrumentId}&baseAsset=${instrument.baseAsset}&quoteAsset=${instrument.quoteAsset}`
+		);
+		const data_ = await res.json();
+
+		const liquidationData = data_.data.liquidationData.data.data;
+
+		for (const [price, arrays] of Object.entries(liquidationData)) {
+			const price_ = parseInt(price);
+
+			if (combinedLiqData[price_]) {
+				combinedLiqData[price_].push(...(arrays as any));
+			} else {
+				combinedLiqData[price_] = arrays as any;
+			}
+		}
+
+		// Use current price of base asset from the first exchange
+		if (currentPrice === null) {
+			// Current price is indeed 'price' and not 'indexPrice'
+			currentPrice = data_.data.pairMarketData.price;
+		}
+	}
 
 	// Add empty data for missing prices
-	const prices = Object.keys(liquidationData).map((i) => parseInt(i));
+	const prices = Object.keys(combinedLiqData).map((i) => parseInt(i));
 	const minPrice = Math.min(...prices);
 	const maxPrice = Math.max(...prices);
 
 	const sparseLiqBars = [];
 
 	// Extract liquidation bars
-	for (const [price, arrays] of Object.entries(liquidationData)) {
+	for (const [price, arrays] of Object.entries(combinedLiqData)) {
 		for (const point of arrays as any) {
 			const [price_, liqLevel, levRatio, null_] = point;
 			const liqBar: LiquidationBar = { price: price_, liqLevel, levRatio };
@@ -89,6 +118,9 @@ export async function fetchLiqMapData(
 			sparseLiqBars.push(liqBar);
 		}
 	}
+
+	// Sort the liqBars, important
+	sparseLiqBars.sort((a, b) => a.price - b.price);
 
 	// Add data for missing prices
 	const liqBars: LiquidationBar[] = [];
@@ -109,17 +141,11 @@ export async function fetchLiqMapData(
 		}
 	}
 
-	// Current price is indeed price and not indexPrice
-	const currentPrice = pairMarketData.price;
-
 	// Extract long cumulative liquidation leverage
 	// [price, leverageValue]
 	const cumulativeLongLiqLeverage: { x: number; y: number }[] = [];
 	const cumulativeShortLiqLeverage: { x: number; y: number }[] = [];
 	const lastCurrPriceIdx = liqBars.findLastIndex((i) => i.price < currentPrice) + 1;
-
-	console.log({ currentPrice });
-	console.log(liqBars[lastCurrPriceIdx]);
 
 	// Long
 	let cumulativeLongLiqLeverageAcc = 0;
@@ -148,6 +174,39 @@ export async function fetchLiqMapData(
 	};
 }
 
-// export async function fetchLiqMapDataMerged(timeframe: string, baseAsset: string) {
+export async function fetchLiqMapDataMerged(timeframe: string, baseAsset: string) {
+	const instruments: FetchLiqMapDataInstrument[] = [
+		// ['Binance', baseAsset + 'USD_PERP']
+		// ['OKX', baseAsset + '-USD-SWAP']
+		['Bybit', baseAsset + 'PERP']
+	].map((i) => ({ exchange: i[0], instrumentId: i[1], baseAsset, quoteAsset: 'USD' }));
 
-// }
+	return await fetchLiqMapData(timeframe, instruments);
+}
+
+export async function getSupportedLiqMapInstrumentOptions(
+	searchTerm: string | null
+): Promise<{ label: string; value: InstrumentInfo }[]> {
+	const data = await getCacheOrFetchSupportedExchangePairs();
+
+	searchTerm = searchTerm || 'BTC/USDT';
+
+	return searchPairInSupportedExchanges(data, searchTerm);
+}
+
+export async function getSupportedExchangeLiqMapBaseAssets(
+	searchTerm: string | null
+): Promise<{ label: string; value: string }[]> {
+	// Make sure supported futures are loaded
+	await getCacheOrFetchSupportedExchangePairs();
+
+	searchTerm = searchTerm || 'BTC';
+
+	const cgSupported = get(cgSupportedExchangeLiqMapBaseAssets);
+	const filtered = cgSupported.filter((i) =>
+		i.toLocaleLowerCase().includes(searchTerm.toLowerCase())
+	);
+	const options = filtered.map((i) => ({ label: i, value: i }));
+
+	return options;
+}

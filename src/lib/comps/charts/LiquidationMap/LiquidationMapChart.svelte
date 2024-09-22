@@ -1,21 +1,17 @@
 <script lang="ts">
-	import { fetchHeatmapData, fetchLiqMapData, type LiquidationBar } from '../chartUtils';
 	import LoadingAnim from '$lib/comps/animations/LoadingAnim.svelte';
 	import { fade } from 'svelte/transition';
 	import { Chart } from 'chart.js/auto';
 	import 'chartjs-adapter-dayjs-4/dist/chartjs-adapter-dayjs-4.esm';
 	import annotationPlugin from 'chartjs-plugin-annotation';
+	import type { LiqMapData } from '../chartUtils';
 
 	Chart.register(annotationPlugin);
 
-	export let timeframe: string;
-	export let exchange: string;
-	export let baseAsset: string;
-	export let quoteAsset: string;
-	export let instrumentId: string;
 	export let isLoading = false;
 	export let error = false;
 	export let currentPrice: number = 0;
+	export let fetchLiqMapData: () => Promise<LiqMapData>;
 
 	export async function refreshData() {
 		isLoading = true;
@@ -24,7 +20,7 @@
 			chart.destroy();
 		}
 
-		const data = await fetchLiqMapData(timeframe, exchange, instrumentId, baseAsset, quoteAsset);
+		const data = await fetchLiqMapData();
 
 		if (!data) {
 			error = true;
