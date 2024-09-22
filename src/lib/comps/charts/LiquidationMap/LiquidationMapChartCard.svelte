@@ -141,6 +141,7 @@
 						exchange={$selectedExchangeOption.value.exchange}
 						baseAsset={$selectedExchangeOption.value.baseAsset}
 						quoteAsset={$selectedExchangeOption.value.quoteAsset}
+						instrumentId={$selectedExchangeOption.value.instrumentId}
 					/>
 				</div>
 			</div>

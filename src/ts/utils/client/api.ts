@@ -20,5 +20,7 @@ export async function getCacheOrFetchSupportedExchangePairs() {
 
 	cachedSupportedPairs.set(fetched);
 
+	console.log({ fetched });
+
 	return fetched;
 }

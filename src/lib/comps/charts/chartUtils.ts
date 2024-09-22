@@ -59,13 +59,17 @@ export type LiqMapData = {
 export async function fetchLiqMapData(
 	timeframe: string,
 	exchange: string,
+	instrumentId: string,
 	baseAsset: string,
 	quoteAsset: string
 ): Promise<LiqMapData> {
 	const res = await fetch(
-		`/api/liq-map?timeframe=${timeframe}&exchange=${exchange}&baseAsset=${baseAsset}&quoteAsset=${quoteAsset}`
+		`/api/liq-map?timeframe=${timeframe}&exchange=${exchange}&instrumentId=${instrumentId}&baseAsset=${baseAsset}&quoteAsset=${quoteAsset}`
 	);
 	const data_ = await res.json();
+
+	console.log({ data_ });
+
 	const liquidationData = data_.data.liquidationData.data.data;
 	const pairMarketData = data_.data.pairMarketData;
 
@@ -143,3 +147,7 @@ export async function fetchLiqMapData(
 		maxPrice
 	};
 }
+
+// export async function fetchLiqMapDataMerged(timeframe: string, baseAsset: string) {
+
+// }

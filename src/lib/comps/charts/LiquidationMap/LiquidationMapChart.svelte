@@ -12,6 +12,7 @@
 	export let exchange: string;
 	export let baseAsset: string;
 	export let quoteAsset: string;
+	export let instrumentId: string;
 	export let isLoading = false;
 	export let error = false;
 	export let currentPrice: number = 0;
@@ -23,7 +24,7 @@
 			chart.destroy();
 		}
 
-		const data = await fetchLiqMapData(timeframe, exchange, baseAsset, quoteAsset);
+		const data = await fetchLiqMapData(timeframe, exchange, instrumentId, baseAsset, quoteAsset);
 
 		if (!data) {
 			error = true;

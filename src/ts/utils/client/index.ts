@@ -18,7 +18,7 @@ type ForeignInstrument = {
 
 export type InstrumentInfo = ForeignInstrument & { exchange: string; symbol: string };
 export const defaultSelectedInstrument: InstrumentInfo = {
-	instrumentId: 'HARDCODED',
+	instrumentId: 'BTCUSD_PERP',
 	baseAsset: 'BTC',
 	quoteAsset: 'USDT',
 	exchange: 'Binance',
