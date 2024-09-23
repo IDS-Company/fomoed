@@ -8,14 +8,11 @@
 
 	Chart.register(annotationPlugin);
 
-	export let isLoading = false;
-	export let error = false;
 	export let currentPrice: number = 0;
 	export let fetchLiqMapData: () => Promise<LiqMapData>;
+	export let isLoading;
 
 	export async function refreshData() {
-		isLoading = true;
-
 		if (chart) {
 			chart.destroy();
 		}
@@ -23,8 +20,6 @@
 		const data = await fetchLiqMapData();
 
 		if (!data) {
-			error = true;
-			isLoading = false;
 			return;
 		}
 
@@ -166,8 +161,6 @@
 				// }
 			}
 		});
-
-		isLoading = false;
 	}
 
 	let trend_chart_canvas: HTMLCanvasElement;

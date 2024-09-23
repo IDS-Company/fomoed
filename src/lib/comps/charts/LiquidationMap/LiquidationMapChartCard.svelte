@@ -44,12 +44,25 @@
 		assetOptions = await getInstrumentOptions(val);
 	});
 
+	async function safeRefreshData() {
+		isLoading = true;
+
+		await tick();
+
+		try {
+			await refreshData();
+		} catch (ex) {
+			console.error(ex);
+		} finally {
+			isLoading = false;
+		}
+	}
+
 	onMount(() => {
 		// Automatically load data on mount
-		// selAssetOption.subscribe(async (val) => {
-		// 	await tick();
-		// 	refreshData();
-		// });
+		selAssetOption.subscribe(async (val) => {
+			safeRefreshData();
+		});
 	});
 </script>
 
@@ -77,14 +90,13 @@
 							options={timeframeOptions}
 							bind:selected={selectedTimeframe}
 							on:change={async () => {
-								await tick();
-								refreshData();
+								safeRefreshData();
 							}}
 						/>
 					</div>
 
 					<div class="mr-4">
-						<IconButton disabled={isLoading} on:click={refreshData}>
+						<IconButton disabled={isLoading} on:click={safeRefreshData}>
 							<div class:animate-reverse-spin={isLoading}>
 								<IconRefresh />
 							</div>
@@ -105,8 +117,8 @@
 
 				<div class="flex-grow desktop:px-[30px]">
 					<LiquidationMapChart
+						{isLoading}
 						bind:refreshData
-						bind:isLoading
 						bind:currentPrice
 						fetchLiqMapData={() => fetchLiqMapData(selectedTimeframe.value, $selAssetOption)}
 					/>

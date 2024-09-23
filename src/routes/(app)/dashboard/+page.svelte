@@ -170,7 +170,9 @@
 						]}
 					></Legend>
 				</LiquidationMapChartCard>
+			</div>
 
+			<div class="col-span-6 px-3">
 				<LiquidationMapChartCard
 					getTitle={(s) => `${s.value} Exchange Liquidation Map`}
 					getInstrumentOptions={getSupportedExchangeLiqMapBaseAssets}

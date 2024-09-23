@@ -1,20 +1,30 @@
+import { PRIVATE_SUPABASE_SECRET } from '$env/static/private';
+import { PUBLIC_SUPABASE_URL } from '$env/static/public';
 import {
 	fetchAssetPriceUsd,
 	fetchCoinglassLiqMap,
 	fetchCoinglassSupportedPairs
 } from '$ts/utils/server/coinglass';
+import { hasActiveSubscription } from '$ts/utils/server/subscription';
+import { createServerClient } from '@supabase/ssr';
 import { type RequestEvent, error, json } from '@sveltejs/kit';
-import { cachedExLiqData } from './cached';
+import { now } from 'lodash-es';
+
+const maxCacheAgeSeconds = 120;
 
 /** @type {import('./$types').RequestHandler} */
-export async function GET({ request, locals: { supabase, user } }: RequestEvent) {
-	// if (!user) {
-	// 	return error(401, { message: 'Unauthorized' });
-	// }
+export async function GET({ request, locals: { user, supabase } }: RequestEvent) {
+	if (!user) {
+		return error(401, { message: 'Unauthorized' });
+	}
 
-	// if (!hasActiveSubscription(supabase, user.id)) {
-	// 	return error(401, { message: 'Unauthorized' });
-	// }
+	if (!hasActiveSubscription(supabase, user.id)) {
+		return error(401, { message: 'Unauthorized' });
+	}
+
+	const supabaseServer = createServerClient(PUBLIC_SUPABASE_URL, PRIVATE_SUPABASE_SECRET, {
+		cookies: {}
+	});
 
 	const url = new URL(request.url);
 	const timeframe = url.searchParams.get('timeframe');
@@ -30,7 +40,18 @@ export async function GET({ request, locals: { supabase, user } }: RequestEvent)
 
 	const currentPriceUsd = await fetchAssetPriceUsd(asset);
 
-	return json({ success: true, data: { currentPriceUsd, exLiqData: cachedExLiqData } });
+	// Load cached data
+	const cached = await supabaseServer.from('exchangeLiqMapCache').select().eq('asset', asset);
+
+	if (cached.data?.length) {
+		const row = cached.data[0];
+		const updatedAt = new Date(row.updated_at);
+		const ageSeconds = (now() - updatedAt.getTime()) / 1000;
+
+		if (ageSeconds < maxCacheAgeSeconds) {
+			return json({ success: true, data: { currentPriceUsd, exLiqData: cached.data[0].data } });
+		}
+	}
 
 	const supportedFuturePairs: Record<string, { baseAsset: string; instrumentId: string }[]> = (
 		await fetchCoinglassSupportedPairs()
@@ -61,14 +82,15 @@ export async function GET({ request, locals: { supabase, user } }: RequestEvent)
 		supportedFuturePairs[exchange] = instruments.filter((i) => i.baseAsset === asset);
 	}
 
-	// console.log(supportedFuturePairs);
-
 	type CgLiquidationMapData = Record<number, [number, number, number, null][]>;
 
 	for (const [exchange, instruments] of Object.entries(supportedFuturePairs)) {
 		for (const instrument of instruments) {
-			// Probably error here
-			console.log('Fetching instrument: ', exchange, instrument.instrumentId);
+			console.info(
+				'[Exchange Liquidation Map API] Fetching instrument:',
+				exchange,
+				instrument.instrumentId
+			);
 
 			const liquidationData: CgLiquidationMapData = (
 				await fetchCoinglassLiqMap(timeframe, exchange, instrument.instrumentId)
@@ -86,5 +108,8 @@ export async function GET({ request, locals: { supabase, user } }: RequestEvent)
 		}
 	}
 
-	return json({ success: true, data: totalExLiq });
+	// Cache retrieved data
+	await supabaseServer.from('exchangeLiqMapCache').upsert({ asset, data: totalExLiq });
+
+	return json({ success: true, data: { currentPriceUsd, exLiqData: totalExLiq } });
 }
