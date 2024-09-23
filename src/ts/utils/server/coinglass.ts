@@ -51,3 +51,13 @@ export async function fetchPairMarkets(symbol: string) {
 
 	return data;
 }
+
+export async function fetchAssetPriceUsd(symbol: string): Promise<number> {
+	const pairMarketsData = await fetchPairMarkets(symbol);
+
+	const pairMarketData = pairMarketsData.data.data.find(
+		(i: any) => i.symbol === symbol + '/' + 'USD'
+	);
+
+	return pairMarketData.price;
+}

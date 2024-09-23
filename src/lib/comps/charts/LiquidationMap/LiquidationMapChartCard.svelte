@@ -45,10 +45,11 @@
 	});
 
 	onMount(() => {
-		selAssetOption.subscribe(async (val) => {
-			await tick();
-			refreshData();
-		});
+		// Automatically load data on mount
+		// selAssetOption.subscribe(async (val) => {
+		// 	await tick();
+		// 	refreshData();
+		// });
 	});
 </script>
 

@@ -30,8 +30,6 @@
 
 		currentPrice = data.currentPrice;
 
-		console.log(data.cumulativeLongLiqLeverage);
-
 		const ctx = trend_chart_canvas.getContext('2d');
 
 		if (!ctx) {
@@ -51,28 +49,10 @@
 				datasets: [
 					{
 						type: 'bar',
-						data: data.liqBars.map((i) => ({ x: i.price, y: i.liqLevel, ...i })),
+						data: data.liqBars,
 						barThickness: 0.1,
 						order: 20,
-						backgroundColor: (data: any) => {
-							if (data.raw.levRatio === 100) {
-								return '#FF8300';
-							}
-
-							if (data.raw.levRatio === 50) {
-								return '#FFC403';
-							}
-
-							if (data.raw.levRatio === 25) {
-								return '#73D8DA';
-							}
-
-							if (data.raw.levRatio === 10) {
-								return '#6EC2F0';
-							}
-
-							return '#0000';
-						}
+						backgroundColor: (data: any) => data.raw.color
 					},
 					{
 						type: 'line',
@@ -103,7 +83,7 @@
 			options: {
 				resizeDelay: 500,
 				// parsing: false, // must be here, solves another stupid problem
-				// spanGaps: true, // for better performance
+				spanGaps: true, // for better performance
 				animation: false, // for better performance
 				responsive: true,
 				maintainAspectRatio: false,

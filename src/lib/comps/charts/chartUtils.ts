@@ -5,7 +5,7 @@ import {
 	cgSupportedExchangeLiqMapBaseAssets,
 	getCacheOrFetchSupportedExchangePairs
 } from '$ts/utils/client/api';
-import { range } from 'lodash-es';
+import { maxBy, range, sumBy } from 'lodash-es';
 import { get } from 'svelte/store';
 
 export async function fetchCfgi(daysBack: number) {
@@ -41,9 +41,9 @@ export async function fetchHeatmapData(timeframe: string, exchange: string, symb
 }
 
 export type LiquidationBar = {
-	price: number;
-	liqLevel: number;
-	levRatio: number;
+	x: number;
+	y: number;
+	color: string;
 };
 
 export type CumulativeLeveragePoint = {
@@ -68,6 +68,26 @@ type FetchLiqMapDataInstrument = {
 	quoteAsset: string;
 };
 
+function getLiqBarColorFromLevRatio(leverage: number) {
+	if (leverage === 100) {
+		return '#FF8300';
+	}
+
+	if (leverage === 50) {
+		return '#FFC403';
+	}
+
+	if (leverage === 25) {
+		return '#73D8DA';
+	}
+
+	if (leverage === 10) {
+		return '#6EC2F0';
+	}
+
+	return '#0000';
+}
+
 export async function fetchLiqMapData(
 	timeframe: string,
 	instruments: FetchLiqMapDataInstrument[]
@@ -84,6 +104,8 @@ export async function fetchLiqMapData(
 		const data_ = await res.json();
 
 		const liquidationData = data_.data.liquidationData.data.data;
+
+		console.log({ liquidationData });
 
 		for (const [price, arrays] of Object.entries(liquidationData)) {
 			const price_ = parseInt(price);
@@ -102,7 +124,6 @@ export async function fetchLiqMapData(
 		}
 	}
 
-	// Add empty data for missing prices
 	const prices = Object.keys(combinedLiqData).map((i) => parseInt(i));
 	const minPrice = Math.min(...prices);
 	const maxPrice = Math.max(...prices);
@@ -111,16 +132,23 @@ export async function fetchLiqMapData(
 
 	// Extract liquidation bars
 	for (const [price, arrays] of Object.entries(combinedLiqData)) {
+		const price_ = parseInt(price);
+
 		for (const point of arrays as any) {
-			const [price_, liqLevel, levRatio, null_] = point;
-			const liqBar: LiquidationBar = { price: price_, liqLevel, levRatio };
+			const [_, liqLevel, levRatio, null_] = point;
+
+			const liqBar: LiquidationBar = {
+				x: price_,
+				y: liqLevel,
+				color: getLiqBarColorFromLevRatio(levRatio)
+			};
 
 			sparseLiqBars.push(liqBar);
 		}
 	}
 
 	// Sort the liqBars, important
-	sparseLiqBars.sort((a, b) => a.price - b.price);
+	sparseLiqBars.sort((a, b) => a.x - b.x);
 
 	// Add data for missing prices
 	const liqBars: LiquidationBar[] = [];
@@ -130,14 +158,14 @@ export async function fetchLiqMapData(
 	for (const price of range(minPrice, maxPrice)) {
 		let pushed = false;
 
-		while (sparseLiqBars[liqBarsIdx].price === price) {
+		while (sparseLiqBars[liqBarsIdx].x === price) {
 			liqBars.push(sparseLiqBars[liqBarsIdx]);
 			liqBarsIdx++;
 			pushed = true;
 		}
 
 		if (!pushed) {
-			liqBars.push({ levRatio: 0, liqLevel: 0, price });
+			liqBars.push({ x: price, y: 0, color: '#0000' });
 		}
 	}
 
@@ -145,22 +173,22 @@ export async function fetchLiqMapData(
 	// [price, leverageValue]
 	const cumulativeLongLiqLeverage: { x: number; y: number }[] = [];
 	const cumulativeShortLiqLeverage: { x: number; y: number }[] = [];
-	const lastCurrPriceIdx = liqBars.findLastIndex((i) => i.price < currentPrice) + 1;
+	const lastCurrPriceIdx = liqBars.findLastIndex((i) => i.x < currentPrice) + 1;
 
 	// Long
 	let cumulativeLongLiqLeverageAcc = 0;
 
 	for (const liqBar of liqBars.slice(lastCurrPriceIdx, -1)) {
-		cumulativeLongLiqLeverageAcc += liqBar.liqLevel;
-		cumulativeLongLiqLeverage.push({ x: liqBar.price, y: ~~cumulativeLongLiqLeverageAcc });
+		cumulativeLongLiqLeverageAcc += liqBar.y;
+		cumulativeLongLiqLeverage.push({ x: liqBar.x, y: ~~cumulativeLongLiqLeverageAcc });
 	}
 
 	// Short
 	let cumulativeShortLiqLeverageAcc = 0;
 
 	for (const liqBar of liqBars.slice(0, lastCurrPriceIdx).toReversed()) {
-		cumulativeShortLiqLeverageAcc += liqBar.liqLevel;
-		cumulativeShortLiqLeverage.push({ x: liqBar.price, y: ~~cumulativeShortLiqLeverageAcc });
+		cumulativeShortLiqLeverageAcc += liqBar.y;
+		cumulativeShortLiqLeverage.push({ x: liqBar.x, y: ~~cumulativeShortLiqLeverageAcc });
 	}
 
 	return {
@@ -174,14 +202,79 @@ export async function fetchLiqMapData(
 	};
 }
 
-export async function fetchLiqMapDataMerged(timeframe: string, baseAsset: string) {
-	const instruments: FetchLiqMapDataInstrument[] = [
-		// ['Binance', baseAsset + 'USD_PERP']
-		// ['OKX', baseAsset + '-USD-SWAP']
-		['Bybit', baseAsset + 'PERP']
-	].map((i) => ({ exchange: i[0], instrumentId: i[1], baseAsset, quoteAsset: 'USD' }));
+export async function fetchLiqMapDataMerged(timeframe: string, asset: string): Promise<LiqMapData> {
+	const res = await fetch(`/api/ex-liq-map?timeframe=${timeframe}&asset=${asset}`);
+	const resData = await res.json();
+	const exLiqData = resData.data.exLiqData;
+	const currentPriceUsd = parseInt(resData.data.currentPriceUsd);
 
-	return await fetchLiqMapData(timeframe, instruments);
+	const minPrices = [];
+	const maxPrices = [];
+
+	for (const ex in exLiqData) {
+		const exPrices = Object.keys(exLiqData[ex]).map((i) => parseInt(i));
+
+		console.log({ exPrices });
+
+		minPrices.push(Math.min(...exPrices));
+		maxPrices.push(Math.max(...exPrices));
+	}
+
+	const minPrice = Math.min(...minPrices);
+	const maxPrice = Math.max(...maxPrices);
+
+	const cumulativeLongLiqLeverage: { x: number; y: number }[] = [];
+	const cumulativeShortLiqLeverage: { x: number; y: number }[] = [];
+
+	let cumulativeLongLiqLeverageAcc = 0;
+	let cumulativeShortLiqLeverageAcc = 0;
+
+	for (const price of range(currentPriceUsd, maxPrice + 1)) {
+		for (const ex in exLiqData) {
+			cumulativeLongLiqLeverageAcc += exLiqData[ex][price] || 0;
+		}
+
+		cumulativeLongLiqLeverage.push({ x: price, y: cumulativeLongLiqLeverageAcc });
+	}
+
+	for (const price of range(currentPriceUsd, minPrice - 1, -1)) {
+		for (const ex in exLiqData) {
+			cumulativeShortLiqLeverageAcc += exLiqData[ex][price] || 0;
+		}
+
+		cumulativeShortLiqLeverage.push({ x: price, y: cumulativeShortLiqLeverageAcc });
+	}
+
+	const exToBarColor: Record<string, string> = {
+		Binance: '#FF8300',
+		OKX: '#FFC403',
+		Bybit: '#73D8DA'
+	};
+
+	const combinedLiqBars: LiquidationBar[] = [];
+
+	for (const price of range(minPrice, maxPrice + 1)) {
+		const liqValues = [
+			{ ex: 'Binance', liqValue: exLiqData['Binance'][price] },
+			{ ex: 'OKX', liqValue: exLiqData['OKX'][price] },
+			{ ex: 'Bybit', liqValue: exLiqData['Bybit'][price] }
+		];
+		const maxLiq = maxBy(liqValues, (i) => i.liqValue);
+		const color = maxLiq ? exToBarColor[maxLiq.ex] : '#0000';
+
+		combinedLiqBars.push({ color, x: price, y: sumBy(liqValues, (i) => i.liqValue) });
+	}
+
+	return {
+		cumulativeLongLiqLeverage,
+		cumulativeShortLiqLeverage,
+		liqBars: combinedLiqBars,
+		currentPrice: currentPriceUsd,
+		minPrice,
+		maxPrice,
+		maxCumulativeValue:
+			maxBy([...cumulativeLongLiqLeverage, ...cumulativeShortLiqLeverage], (i) => i.y)?.y || 0
+	};
 }
 
 export async function getSupportedLiqMapInstrumentOptions(
