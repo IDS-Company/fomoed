@@ -206,13 +206,6 @@ async function handle_subscription(
 	subscription: Stripe.Subscription,
 	supabase: SupabaseClient
 ) {
-	console.debug('Handle subscription called');
-
-	if (!prices.some((id: string) => id === price_id)) {
-		console.error("No matching price ID found in the prices array. Can't handle subscription");
-		return error(500);
-	}
-
 	if (!invoice) {
 		console.error('No invoice found');
 		return;
