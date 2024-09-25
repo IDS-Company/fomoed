@@ -208,8 +208,6 @@ export async function fetchLiqMapDataMerged(timeframe: string, asset: string): P
 	const exLiqData = resData.data.exLiqData;
 	const currentPriceUsd = parseInt(resData.data.currentPriceUsd);
 
-	console.log({ exLiqData });
-
 	const minPrices = [];
 	const maxPrices = [];
 

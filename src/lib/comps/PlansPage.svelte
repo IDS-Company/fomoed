@@ -8,7 +8,7 @@
 	import ScrollerDots from './ScrollerDots.svelte';
 	import Toggle from './Toggle.svelte';
 	import PaidPlanCard from './plan-cards/PaidPlanCard.svelte';
-	import { planInfoPlus, planInfoPro } from '$ts/utils/client/plans';
+	import { ClientSubscriptionManager, planInfoPlus, planInfoPro } from '$ts/utils/client/plans';
 	import { auth_user } from '$lib/stores/user';
 
 	const showUnsubSuccess = writable(false);
@@ -24,6 +24,12 @@
 	let yearlySelected = false;
 
 	$: console.log($auth_user?.subscriptions);
+
+	ClientSubscriptionManager.currentSubIsYearly.subscribe((isYearly) => {
+		if (isYearly) {
+			yearlySelected = isYearly;
+		}
+	});
 </script>
 
 <div
@@ -40,7 +46,11 @@
 				<h1
 					class="font-paralucent-demibold text-[28px] text-center -desktop:text-[22px] -desktop:mt-12"
 				>
-					Get your free trial to unlock more!
+					{#if $auth_user?.has_had_free_trial}
+						Upgrade your plan to unlock more!
+					{:else}
+						Get your free trial to unlock more!
+					{/if}
 				</h1>
 
 				<div class="mt-[9px] flex items-center justify-center gap-x-[20px]">

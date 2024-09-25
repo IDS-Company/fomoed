@@ -32,6 +32,31 @@ export const planInfoPlus = derived<typeof availablePlans, PlanInfo | undefined>
 export class ClientSubscriptionManager {
 	supabase: SupabaseClient;
 
+	static currentSubIsYearly = derived(
+		[availablePlans, active_sub],
+		([availablePlans_, activeSub_]) => {
+			if (!activeSub_) {
+				return null;
+			}
+
+			// @ts-ignore
+			const activePriceId = activeSub_.plan.id;
+
+			const monthlyPriceIds = availablePlans_.map((i) => i.priceIdMonth);
+			const yearlyPriceIds = availablePlans_.map((i) => i.priceIdYear);
+
+			if (monthlyPriceIds.includes(activePriceId)) {
+				return false;
+			}
+
+			if (yearlyPriceIds.includes(activePriceId)) {
+				return true;
+			}
+
+			return null;
+		}
+	);
+
 	constructor(supabase: SupabaseClient) {
 		this.supabase = supabase;
 	}
