@@ -210,7 +210,7 @@ async function handle_subscription(
 
 	if (!prices.some((id: string) => id === price_id)) {
 		console.error("No matching price ID found in the prices array. Can't handle subscription");
-		return;
+		return error(500);
 	}
 
 	if (!invoice) {
@@ -316,12 +316,14 @@ export async function POST({ request, locals: { supabase } }: RequestEvent) {
 		throw error(400, 'Invalid request');
 	}
 
+	let ret = null;
+
 	// * See => https://docs.stripe.com/billing/subscriptions/overview#:~:text=The%20subscription%20remains%20in%20status,and%20the%20invoice%20becomes%20void%20.
 	switch (event.type) {
 		case 'customer.subscription.created':
 			// Subscription was created
 			// Note: status will be `incomplete`
-			await handle_subscription(
+			ret = await handle_subscription(
 				event.data.object.latest_invoice,
 				event.data.object.id,
 				event.data.object.items.data[0].price.id,
@@ -336,7 +338,7 @@ export async function POST({ request, locals: { supabase } }: RequestEvent) {
 		case 'customer.subscription.updated':
 			// Subscription has been changed
 			// Get the price id
-			await handle_subscription(
+			ret = await handle_subscription(
 				event.data.object.latest_invoice,
 				event.data.object.id,
 				event.data.object.items.data[0].price.id,
@@ -349,7 +351,7 @@ export async function POST({ request, locals: { supabase } }: RequestEvent) {
 			);
 			break;
 		case 'customer.subscription.deleted':
-			await handle_subscription(
+			ret = await handle_subscription(
 				event.data.object.latest_invoice,
 				event.data.object.id,
 				event.data.object.items.data[0].price.id,
@@ -363,11 +365,15 @@ export async function POST({ request, locals: { supabase } }: RequestEvent) {
 			break;
 		case 'invoice.paid':
 			console.log('Handling Paid Invoice');
-			await handle_invoice(event.data.object.id, supabase);
+			ret = await handle_invoice(event.data.object.id, supabase);
 			break;
 		default:
 			// Unexpected event type
 			break;
+	}
+
+	if (ret) {
+		return ret;
 	}
 
 	return json({
