@@ -224,11 +224,17 @@ async function handle_subscription(
 
 	console.log(invoice);
 
-	if (metadata['user_id'] && invoice.status === 'paid' && Date.now() / 1000 < current_period_end) {
+	const userId = metadata['user_id'];
+	const isPaid = invoice.status === 'paid';
+	const periodEndInFuture = Date.now() / 1000 < current_period_end;
+
+	console.log({ userId, isPaid, periodEndInFuture });
+
+	if (userId && isPaid && periodEndInFuture) {
 		// Update the subscription to the start and end times
 		// Maybe delete the sub here ?
 		await update_user_subscription(
-			metadata['user_id'],
+			userId,
 			sub_id,
 			new Date(current_period_start * 1000),
 			new Date(current_period_end * 1000),
