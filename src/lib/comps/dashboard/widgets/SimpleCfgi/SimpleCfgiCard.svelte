@@ -2,10 +2,10 @@
 	import DashboardCard from '$lib/comps/DashboardCard.svelte';
 	import DurationSwitcher from '$lib/comps/DurationSwitcher.svelte';
 	import Legend from '$lib/comps/charts/Legend.svelte';
-	import GetFreeTrialOverlay from '$lib/comps/overlays/GetFreeTrialOverlay.svelte';
 	import PlusRequiredOverlay from '$lib/comps/overlays/PlusRequiredOverlay.svelte';
-	import { enablePlusFeatures } from '$lib/stores/subs';
-	import { auth_user } from '$lib/stores/user';
+	import { ClientSubscriptionManager } from '$ts/utils/client/plans';
+
+	const enablePlusFeatures = ClientSubscriptionManager.enablePlusFeatures;
 
 	import SimpleCfgiChart from './SimpleCfgiChart.svelte';
 

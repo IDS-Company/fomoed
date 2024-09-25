@@ -8,9 +8,9 @@ export async function GET({ request, locals: { supabase, user } }: RequestEvent)
 		return error(401, { message: 'Unauthorized' });
 	}
 
-	if ((await getActiveSubPlanName(supabase, user.id)) !== 'plus') {
-		return error(401, { message: 'Unauthorized' });
-	}
+	// if ((await getActiveSubPlanName(supabase, user.id)) !== 'plus') {
+	// 	return error(401, { message: 'Unauthorized' });
+	// }
 
 	const url = new URL(request.url);
 	const timeframe = url.searchParams.get('timeframe');

@@ -9,6 +9,8 @@ export type PlanInfo = {
 	priceUsdYear?: number;
 	priceIdMonth?: string;
 	priceIdYear?: string;
+
+	productId?: string;
 };
 
 export type SubPlanName = 'pro' | 'plus';

@@ -65,13 +65,16 @@ export class ClientSubscriptionManager {
 				return null;
 			}
 
-			const plan = availablePlans.find(
-				(i) =>
-					i.priceIdMonth === (activeSub as any).plan.id ||
-					i.priceIdYear === (activeSub as any).plan.id
-			);
+			const plan = availablePlans.find((i) => i.productId === (activeSub as any).plan.product);
 
 			return plan || null;
+		}
+	);
+
+	static enablePlusFeatures = derived(
+		[auth_user, ClientSubscriptionManager.currentActivePlan],
+		([user, plan]) => {
+			return user?.has_trial_active || plan?.name === 'Plus';
 		}
 	);
 

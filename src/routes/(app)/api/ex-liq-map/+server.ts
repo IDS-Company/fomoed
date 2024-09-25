@@ -18,9 +18,9 @@ export async function GET({ request, locals: { user, supabase } }: RequestEvent)
 		return error(401, { message: 'Unauthorized' });
 	}
 
-	if ((await getActiveSubPlanName(supabase, user.id)) !== 'plus') {
-		return error(401, { message: 'Unauthorized' });
-	}
+	// if ((await getActiveSubPlanName(supabase, user.id)) !== 'plus') {
+	// 	return error(401, { message: 'Unauthorized' });
+	// }
 
 	const supabaseServer = createServerClient(PUBLIC_SUPABASE_URL, PRIVATE_SUPABASE_SECRET, {
 		cookies: {}

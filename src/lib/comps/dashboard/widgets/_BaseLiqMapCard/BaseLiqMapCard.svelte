@@ -1,7 +1,7 @@
 <script lang="ts">
-	import PlusRequiredOverlay from '$lib/comps/overlays/PlusRequiredOverlay.svelte';
+	import { ClientSubscriptionManager } from '$ts/utils/client/plans';
 
-	import { enablePlusFeatures } from '$lib/stores/subs';
+	import PlusRequiredOverlay from '$lib/comps/overlays/PlusRequiredOverlay.svelte';
 
 	import BaseLiqMapChart from './BaseLiqMapChart.svelte';
 	import DashboardCard from '$lib/comps/DashboardCard.svelte';
@@ -13,6 +13,8 @@
 	import { writable } from 'svelte/store';
 	import { browser } from '$app/environment';
 	import type { LiqMapData } from '$lib/comps/charts/chartUtils';
+
+	const enablePlusFeatures = ClientSubscriptionManager.enablePlusFeatures;
 
 	type TAssetOptionVal = $$Generic;
 	type TAssetOption = { label: string; value: TAssetOptionVal };

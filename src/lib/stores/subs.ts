@@ -10,10 +10,6 @@ export const active_sub: Readable<Stripe.Subscription | null> = derived(auth_use
 	return $auth_user.subscriptions[0];
 });
 
-export const enablePlusFeatures = derived(auth_user, (user) => {
-	return user?.has_trial_active || user?.has_active_plus_sub;
-});
-
 export const changingSubscription = writable(false);
 
 auth_user.subscribe(console.log);

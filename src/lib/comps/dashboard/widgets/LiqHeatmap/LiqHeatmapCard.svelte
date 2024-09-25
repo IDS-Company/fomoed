@@ -16,8 +16,10 @@
 	import LiqHeatmapChart from './LiqHeatmapChart.svelte';
 	import Legend from '$lib/comps/charts/Legend.svelte';
 	import DashboardCard from '$lib/comps/DashboardCard.svelte';
-	import { enablePlusFeatures } from '$lib/stores/subs';
 	import PlusRequiredOverlay from '$lib/comps/overlays/PlusRequiredOverlay.svelte';
+	import { ClientSubscriptionManager } from '$ts/utils/client/plans';
+
+	const enablePlusFeatures = ClientSubscriptionManager.enablePlusFeatures;
 
 	type Option = { label: string; value: string };
 

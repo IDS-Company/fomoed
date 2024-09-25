@@ -47,11 +47,13 @@ export async function GET({ request }: RequestEvent) {
 		if (price.recurring?.interval === 'month') {
 			planInfo.priceIdMonth = price.id;
 			planInfo.priceUsdMonth = priceUsd || 0;
+			planInfo.productId = price.product as string;
 		}
 
 		if (price.recurring?.interval === 'year') {
 			planInfo.priceIdYear = price.id;
 			planInfo.priceUsdYear = priceUsd || 0;
+			planInfo.productId = price.product as string;
 		}
 	}
 
