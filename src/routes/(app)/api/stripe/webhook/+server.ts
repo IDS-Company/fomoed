@@ -5,6 +5,7 @@ import { PRIVATE_STRIPE_WEBHOOK_SECRET } from '$env/static/private';
 import prices from '$lib/prices';
 import type { PostgrestSingleResponse, SupabaseClient } from '@supabase/supabase-js';
 import type { SubPlanName } from '$lib/types';
+import { getUserByEmail } from '$ts/utils/server/user';
 
 function toBuffer(ab: ArrayBuffer): Buffer {
 	const buf = Buffer.alloc(ab.byteLength);
@@ -222,9 +223,13 @@ async function handle_subscription(
 		return;
 	}
 
-	console.log(invoice);
+	if (!invoice.customer_email) {
+		return error(400, 'customer_email is missing!');
+	}
 
-	const userId = metadata['user_id'];
+	const user = await getUserByEmail(supabase, invoice.customer_email);
+
+	const userId = user.user_id;
 	const isPaid = invoice.status === 'paid';
 	const periodEndInFuture = Date.now() / 1000 < current_period_end;
 
@@ -352,6 +357,9 @@ export async function POST({ request, locals: { supabase } }: RequestEvent) {
 			);
 			break;
 		case 'customer.subscription.deleted':
+			// This does not correctly set the subscription end when cancelled manually
+			// through stripe UI.
+
 			ret = await handle_subscription(
 				event.data.object.latest_invoice,
 				event.data.object.id,

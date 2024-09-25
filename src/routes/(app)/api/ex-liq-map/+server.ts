@@ -5,7 +5,7 @@ import {
 	fetchCoinglassLiqMap,
 	fetchCoinglassSupportedPairs
 } from '$ts/utils/server/coinglass';
-import { hasActiveSubscription } from '$ts/utils/server/subscription';
+import { getActiveSubPlanName, hasActiveSubscription } from '$ts/utils/server/subscription';
 import { createServerClient } from '@supabase/ssr';
 import { type RequestEvent, error, json } from '@sveltejs/kit';
 import { now } from 'lodash-es';
@@ -18,9 +18,7 @@ export async function GET({ request, locals: { user, supabase } }: RequestEvent)
 		return error(401, { message: 'Unauthorized' });
 	}
 
-	const hasActiveSub = await hasActiveSubscription(supabase, user.id);
-
-	if (!hasActiveSub) {
+	if ((await getActiveSubPlanName(supabase, user.id)) !== 'plus') {
 		return error(401, { message: 'Unauthorized' });
 	}
 

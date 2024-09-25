@@ -166,7 +166,7 @@
 	{/if}
 
 	<canvas
-		class:opacity-0={isLoading}
+		class:opacity-0={isLoading || error}
 		bind:this={trend_chart_canvas}
 		style="background-image: linear-gradient(#440253, #440253)"
 	/>

@@ -6,6 +6,9 @@
 	import { active_sub } from '$lib/stores/subs';
 	import BorderedProfileImage from './BorderedProfileImage.svelte';
 	import { displayLogoutPopup } from '$lib/stores/ui';
+	import { ClientSubscriptionManager } from '$ts/utils/client/plans';
+
+	$: currentActivePlan = ClientSubscriptionManager.currentActivePlan;
 </script>
 
 <div
@@ -30,6 +33,8 @@
 
 	{#if $active_sub}
 		<div class="pt-[9px] text-[10px] text-[#FFFFFF99] mt-1">
+			<span>{$currentActivePlan?.name} plan </span>
+
 			{#if $active_sub && !$active_sub.cancel_at_period_end}
 				Renews <Time relative timestamp={$active_sub.current_period_end * 1000} />
 			{:else if $active_sub && $active_sub.cancel_at_period_end}

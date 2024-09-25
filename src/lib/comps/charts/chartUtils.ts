@@ -1,5 +1,6 @@
 import type { ICoinCfgiPriceData } from '$lib';
 import { coinstats_selected_coin } from '$lib/stores';
+import { failure } from '$lib/utils';
 import { searchPairInSupportedExchanges, type InstrumentInfo } from '$ts/utils/client';
 import {
 	cgSupportedExchangeLiqMapBaseAssets,
@@ -35,6 +36,12 @@ export async function fetchHeatmapData(timeframe: string, exchange: string, symb
 	const res = await fetch(
 		`/api/liquidity-heatmap?timeframe=${timeframe}&exchange=${exchange}&symbol=${symbol}`
 	);
+
+	if (!res.ok) {
+		failure('Failed to fetch data!');
+		return null;
+	}
+
 	const data = await res.json();
 
 	return data.data;
@@ -91,16 +98,21 @@ function getLiqBarColorFromLevRatio(leverage: number) {
 export async function fetchLiqMapData(
 	timeframe: string,
 	instruments: FetchLiqMapDataInstrument[]
-): Promise<LiqMapData> {
+): Promise<LiqMapData | null> {
 	const combinedLiqData: Record<number, [number, number, number, null][]> = {};
 	let currentPrice = null;
-
-	console.log({ instruments });
 
 	for (const instrument of instruments) {
 		const res = await fetch(
 			`/api/liq-map?timeframe=${timeframe}&exchange=${instrument.exchange}&instrumentId=${instrument.instrumentId}&baseAsset=${instrument.baseAsset}&quoteAsset=${instrument.quoteAsset}`
 		);
+
+		if (!res.ok) {
+			failure('Failed to fetch data!');
+
+			return null;
+		}
+
 		const data_ = await res.json();
 
 		const liquidationData = data_.data.liquidationData.data.data;
@@ -202,8 +214,17 @@ export async function fetchLiqMapData(
 	};
 }
 
-export async function fetchLiqMapDataMerged(timeframe: string, asset: string): Promise<LiqMapData> {
+export async function fetchLiqMapDataMerged(
+	timeframe: string,
+	asset: string
+): Promise<LiqMapData | null> {
 	const res = await fetch(`/api/ex-liq-map?timeframe=${timeframe}&asset=${asset}`);
+
+	if (!res.ok) {
+		failure('Failed to fetch data!');
+		return null;
+	}
+
 	const resData = await res.json();
 	const exLiqData = resData.data.exLiqData;
 	const currentPriceUsd = parseInt(resData.data.currentPriceUsd);

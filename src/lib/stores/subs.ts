@@ -15,3 +15,5 @@ export const enablePlusFeatures = derived(auth_user, (user) => {
 });
 
 export const changingSubscription = writable(false);
+
+auth_user.subscribe(console.log);

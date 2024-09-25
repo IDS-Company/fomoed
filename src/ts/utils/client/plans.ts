@@ -7,6 +7,7 @@ import { stripeStore } from './stripe';
 import { active_sub, changingSubscription } from '$lib/stores/subs';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import { get_user, sleep } from '$lib';
+import type { Readable } from 'svelte/motion';
 
 export const availablePlans = autoFetchStore<PlanInfo[]>(async () => {
 	const res = await fetch('/api/plans');
@@ -54,6 +55,23 @@ export class ClientSubscriptionManager {
 			}
 
 			return null;
+		}
+	);
+
+	static currentActivePlan: Readable<PlanInfo | null> = derived(
+		[availablePlans, active_sub],
+		([availablePlans, activeSub]) => {
+			if (!availablePlans || !activeSub) {
+				return null;
+			}
+
+			const plan = availablePlans.find(
+				(i) =>
+					i.priceIdMonth === (activeSub as any).plan.id ||
+					i.priceIdYear === (activeSub as any).plan.id
+			);
+
+			return plan || null;
 		}
 	);
 

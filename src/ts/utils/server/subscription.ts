@@ -1,3 +1,4 @@
+import type { ISubscription } from '$lib/local';
 import type { SubPlanName } from '$lib/types';
 import type { PostgrestSingleResponse, SupabaseClient } from '@supabase/supabase-js';
 
@@ -27,11 +28,19 @@ export async function hasActiveSubscription(supabase: SupabaseClient, userId: st
 export async function getActiveSubPlanName(
 	supabase: SupabaseClient,
 	userId: string
-): Promise<SubPlanName> {
+): Promise<SubPlanName | null> {
+	// Not sure if a user can have multiple subscriptions,
+	// therefore all subscriptions are checked and the highest
+	// level is returned.
 	const subs = await getActiveSubs(supabase, userId);
 
-	console.log('subs');
-	console.log(subs[0]);
+	if (subs.find((i) => i.plan_name === 'plus')) {
+		return 'plus';
+	}
 
-	return 'plus';
+	if (subs.find((i) => i.plan_name === 'pro')) {
+		return 'pro';
+	}
+
+	return null;
 }
