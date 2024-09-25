@@ -1,5 +1,5 @@
 import { fetchCoinglassLiqMap, fetchPairMarkets } from '$ts/utils/server/coinglass';
-import { hasActiveSubscription } from '$ts/utils/server/subscription';
+import { getActiveSubPlanName, hasActiveSubscription } from '$ts/utils/server/subscription';
 import { json, type RequestEvent, error } from '@sveltejs/kit';
 
 /** @type {import('./$types').RequestHandler} */
@@ -8,9 +8,7 @@ export async function GET({ request, locals: { supabase, user } }: RequestEvent)
 		return error(401, { message: 'Unauthorized' });
 	}
 
-	const hasActiveSub = await hasActiveSubscription(supabase, user.id);
-
-	if (!hasActiveSub) {
+	if ((await getActiveSubPlanName(supabase, user.id)) !== 'plus') {
 		return error(401, { message: 'Unauthorized' });
 	}
 

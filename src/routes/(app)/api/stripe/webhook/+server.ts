@@ -4,6 +4,7 @@ import { Stripe } from 'stripe';
 import { PRIVATE_STRIPE_WEBHOOK_SECRET } from '$env/static/private';
 import prices from '$lib/prices';
 import type { PostgrestSingleResponse, SupabaseClient } from '@supabase/supabase-js';
+import type { SubPlanName } from '$lib/types';
 
 function toBuffer(ab: ArrayBuffer): Buffer {
 	const buf = Buffer.alloc(ab.byteLength);
@@ -12,6 +13,20 @@ function toBuffer(ab: ArrayBuffer): Buffer {
 		buf[i] = view[i];
 	}
 	return buf;
+}
+
+async function getPlanNameFromPriceId(priceId: string): Promise<SubPlanName | null> {
+	const price = await stripe.prices.retrieve(priceId);
+
+	if (price.metadata.plan_id.includes('plus')) {
+		return 'plus';
+	}
+
+	if (price.metadata.plan_id.includes('pro')) {
+		return 'pro';
+	}
+
+	return null;
 }
 
 async function update_user_subscription(
@@ -33,6 +48,16 @@ async function update_user_subscription(
 		price_id,
 		tries
 	});
+
+	const planName = await getPlanNameFromPriceId(price_id);
+
+	if (!planName) {
+		return error(
+			400,
+			'Invalid price ID. Price ID does not match any plan. Subscription not updated!'
+		);
+	}
+
 	// Find the user id
 	const {
 		data: subscriptions,
@@ -86,7 +111,8 @@ async function update_user_subscription(
 				start_timestamp: subscription_start.toISOString().toLocaleString(),
 				subscription_id: subscription_id,
 				price_id: price_id,
-				user_id: user_id
+				user_id: user_id,
+				plan_name: planName
 			}
 		]);
 
@@ -103,7 +129,8 @@ async function update_user_subscription(
 				price_id: price_id,
 				user_id: user_id,
 				has_cancelled: !!cancel_at,
-				updated_at: new Date().toISOString().toLocaleString()
+				updated_at: new Date().toISOString().toLocaleString(),
+				plan_name: planName
 			})
 			.eq('subscription_id', subscription_id);
 
