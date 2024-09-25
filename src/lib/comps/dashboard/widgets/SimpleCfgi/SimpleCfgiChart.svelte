@@ -15,11 +15,10 @@
 	import { dayjs } from 'svelte-time';
 	import { fade } from 'svelte/transition';
 	import type { _DeepPartialObject } from 'chart.js/dist/types/utils';
-	import { fetchCfgi } from '../chartUtils';
 	import { onMount } from 'svelte';
 	import { coinstats_selected_coin } from '$lib/stores';
 	import { auth_email, logged_in } from '$lib/stores/user';
-	import { min } from 'lodash-es';
+	import { fetchCfgi } from '$lib/comps/charts/chartUtils';
 
 	export let daysBack: number;
 
@@ -141,7 +140,7 @@
 		chart_init(data);
 	}
 
-	$: if ($coinstats_selected_coin && daysBack && $logged_in !== null) {
+	$: if ($coinstats_selected_coin && daysBack && $logged_in !== null && trend_chart_canvas) {
 		refreshData();
 	}
 

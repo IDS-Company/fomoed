@@ -8,7 +8,9 @@ export async function GET({ request, locals: { supabase, user } }: RequestEvent)
 		return error(401, { message: 'Unauthorized' });
 	}
 
-	if (!hasActiveSubscription(supabase, user.id)) {
+	const hasActiveSub = await hasActiveSubscription(supabase, user.id);
+
+	if (!hasActiveSub) {
 		return error(401, { message: 'Unauthorized' });
 	}
 

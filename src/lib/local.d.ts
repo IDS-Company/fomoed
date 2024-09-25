@@ -6,7 +6,9 @@ interface IUser {
 	created_at: string; // ! These will be strings that need to be converted to date
 	updated_at: string | null; // ! These will be strings that need to be converted to date
 	has_valid_sub: boolean;
+	has_active_plus_sub: boolean;
 	has_had_free_trial: boolean;
+	has_trial_active: boolean;
 }
 
 interface ISubscription {

@@ -2,9 +2,6 @@
 	import Autocomplete from '$lib/comps/Autocomplete.svelte';
 	import DropdownNew from '$lib/comps/DropdownNew.svelte';
 	import { onMount, tick } from 'svelte';
-	import DashboardCard from '../../DashboardCard.svelte';
-	import Legend from '../Legend.svelte';
-	import LiquidationHeatmapChart from './LiquidationHeatmapChart.svelte';
 	import {
 		defaultSelectedInstrument,
 		humanizeNumber,
@@ -16,6 +13,11 @@
 	import { getCacheOrFetchSupportedExchangePairs } from '$ts/utils/client/api';
 	import { writable } from 'svelte/store';
 	import { browser } from '$app/environment';
+	import LiqHeatmapChart from './LiqHeatmapChart.svelte';
+	import Legend from '$lib/comps/charts/Legend.svelte';
+	import DashboardCard from '$lib/comps/DashboardCard.svelte';
+	import { enablePlusFeatures } from '$lib/stores/subs';
+	import PlusRequiredOverlay from '$lib/comps/overlays/PlusRequiredOverlay.svelte';
 
 	type Option = { label: string; value: string };
 
@@ -67,7 +69,7 @@
 	onMount(() => {
 		selectedExchangeOption.subscribe(async (val) => {
 			await tick();
-			refreshData();
+			refreshData?.();
 		});
 	});
 
@@ -81,13 +83,22 @@
 		'Liquidation Heatmap';
 </script>
 
-<div class="h-[600px] overflow-hidden">
+<div class="h-full overflow-hidden">
 	<DashboardCard disablePadding>
+		{#if !$enablePlusFeatures}
+			<div class="absolute inset-px">
+				<PlusRequiredOverlay />
+			</div>
+		{/if}
+
 		<div class="flex flex-col w-full h-full py-[22px] px-3">
 			<div
 				class="flex items-center w-full -desktop:flex-col -desktop:items-start px-[30px] -desktop:px-4"
 			>
-				<div class="flex-grow font-paralucent-demibold font-light text-[20px]">
+				<div
+					class="flex-grow font-paralucent-demibold font-light text-[20px] z-50"
+					class:brightness-50={!$enablePlusFeatures}
+				>
 					{title}
 				</div>
 
@@ -148,14 +159,16 @@
 					</div>
 
 					<div class="flex-grow mt-4 desktop:px-[30px]">
-						<LiquidationHeatmapChart
-							bind:refreshData
-							bind:maxLiqValue
-							bind:isLoading
-							timeframe={selectedTimeframe.value}
-							exchange={$selectedExchangeOption.value.exchange}
-							symbol={$selectedExchangeOption.value.symbol}
-						/>
+						{#if $enablePlusFeatures}
+							<LiqHeatmapChart
+								bind:refreshData
+								bind:maxLiqValue
+								bind:isLoading
+								timeframe={selectedTimeframe.value}
+								exchange={$selectedExchangeOption.value.exchange}
+								symbol={$selectedExchangeOption.value.symbol}
+							/>
+						{/if}
 					</div>
 				</div>
 			</div>

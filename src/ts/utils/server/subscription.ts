@@ -14,6 +14,8 @@ export async function hasActiveSubscription(supabase: SupabaseClient, userId: st
 		(sub) => new Date(sub.end_timestamp).getTime() > Date.now()
 	);
 
+	console.log({ activeSubscriptions });
+
 	if (activeSubscriptions.length > 0) {
 		return true;
 	}

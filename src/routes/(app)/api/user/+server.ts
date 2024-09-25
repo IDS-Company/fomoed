@@ -54,6 +54,7 @@ export async function GET({ locals: { supabase, user } }: RequestEvent) {
 		// @ts-expect-error subscriptions is an array of Stripe subscriptions
 		auth_user.subscriptions = active_subs;
 		auth_user.has_valid_sub = active_subs.length > 0;
+		auth_user.has_trial_active = active_subs.find((sub) => sub.status === 'trialing') !== undefined;
 	}
 
 	return json({

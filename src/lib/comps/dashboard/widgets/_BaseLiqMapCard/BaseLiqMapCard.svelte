@@ -1,14 +1,18 @@
 <script lang="ts">
+	import PlusRequiredOverlay from '$lib/comps/overlays/PlusRequiredOverlay.svelte';
+
+	import { enablePlusFeatures } from '$lib/stores/subs';
+
+	import BaseLiqMapChart from './BaseLiqMapChart.svelte';
+	import DashboardCard from '$lib/comps/DashboardCard.svelte';
 	import Autocomplete from '$lib/comps/Autocomplete.svelte';
 	import DropdownNew from '$lib/comps/DropdownNew.svelte';
 	import { onMount, tick } from 'svelte';
-	import DashboardCard from '../../DashboardCard.svelte';
-	import LiquidationMapChart from './LiquidationMapChart.svelte';
 	import IconRefresh from '$lib/icons/IconRefresh.svelte';
 	import IconButton from '$lib/comps/buttons/IconButton.svelte';
 	import { writable } from 'svelte/store';
 	import { browser } from '$app/environment';
-	import type { LiqMapData } from '../chartUtils';
+	import type { LiqMapData } from '$lib/comps/charts/chartUtils';
 
 	type TAssetOptionVal = $$Generic;
 	type TAssetOption = { label: string; value: TAssetOptionVal };
@@ -50,7 +54,7 @@
 		await tick();
 
 		try {
-			await refreshData();
+			await refreshData?.();
 		} catch (ex) {
 			console.error(ex);
 		} finally {
@@ -66,13 +70,22 @@
 	});
 </script>
 
-<div class="h-[600px] overflow-hidden">
+<div class="h-full overflow-hidden">
 	<DashboardCard disablePadding>
+		{#if !$enablePlusFeatures}
+			<div class="absolute inset-px">
+				<PlusRequiredOverlay />
+			</div>
+		{/if}
+
 		<div class="flex flex-col w-full h-full py-[22px] px-3">
 			<div
 				class="flex items-center w-full -desktop:flex-col -desktop:items-start px-[30px] -desktop:px-4"
 			>
-				<div class="flex-grow font-paralucent-demibold font-light text-[20px]">
+				<div
+					class="flex-grow font-paralucent-demibold font-light text-[20px] z-50"
+					class:brightness-50={!$enablePlusFeatures}
+				>
 					{getTitle($selAssetOption)}
 				</div>
 
@@ -115,14 +128,16 @@
 					Current Price: {currentPrice}
 				</div>
 
-				<div class="flex-grow desktop:px-[30px]">
-					<LiquidationMapChart
-						{isLoading}
-						bind:refreshData
-						bind:currentPrice
-						fetchLiqMapData={() => fetchLiqMapData(selectedTimeframe.value, $selAssetOption)}
-					/>
-				</div>
+				{#if $enablePlusFeatures}
+					<div class="flex-grow desktop:px-[30px]">
+						<BaseLiqMapChart
+							{isLoading}
+							bind:refreshData
+							bind:currentPrice
+							fetchLiqMapData={() => fetchLiqMapData(selectedTimeframe.value, $selAssetOption)}
+						/>
+					</div>
+				{/if}
 			</div>
 		</div>
 	</DashboardCard>

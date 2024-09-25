@@ -9,17 +9,7 @@
 	import ScrollerDots from '$lib/comps/ScrollerDots.svelte';
 	import Footer from '$lib/comps/Footer.svelte';
 	import GetFreeTrialOverlay from '$lib/comps/overlays/GetFreeTrialOverlay.svelte';
-	import SimpleGreedFearChartCard from '$lib/comps/charts/SimpleGreedAndFearChart/SimpleGreedFearChartCard.svelte';
-	import LiquidationHeatmapChartCard from '$lib/comps/charts/LiquidationHeatmapChart/LiquidationHeatmapChartCard.svelte';
-	import LiquidationMapChartCard from '$lib/comps/charts/LiquidationMap/LiquidationMapChartCard.svelte';
-	import {
-		fetchLiqMapData,
-		fetchLiqMapDataMerged,
-		getSupportedExchangeLiqMapBaseAssets,
-		getSupportedLiqMapInstrumentOptions
-	} from '$lib/comps/charts/chartUtils';
-	import { defaultSelectedInstrument } from '$ts/utils/client';
-	import Legend from '$lib/comps/charts/Legend.svelte';
+	import DashboardCarousel from '$lib/comps/dashboard/DashboardCarousel.svelte';
 
 	let smallChartsCointainer: HTMLElement;
 
@@ -95,41 +85,7 @@
 			</div>
 
 			<div class="col-span-4 -desktop:col-span-6 h-full -desktop:mx-3 flex-grow relative">
-				<DashboardCard disablePadding>
-					{#if displaySubscriptionRequired}
-						<div class="absolute inset-px">
-							<GetFreeTrialOverlay />
-						</div>
-					{/if}
-
-					<div
-						class="w-full h-full flex flex-col overflow-hidden -desktop:px-4 -desktop:py-5 desktop:px-[30px] desktop:py-[22px]"
-					>
-						<div class="desktop:flex items-center w-full">
-							<div>
-								<div class="text-[20px] font-paralucent-heavy uppercase -desktop:text-sm">
-									{$coinstats_selected_coin?.name || 'Bitcoin'}
-								</div>
-
-								<div class="text-[#FFFFFFCC] text-lg font-paralucent font-medium -desktop:text-xs">
-									Crypto Fear and Greed Chart
-								</div>
-							</div>
-
-							<div class="flex-grow"></div>
-
-							<div class="-desktop:mt-4">
-								<DurationSwitcher
-									on:show-subscription-required={() => (displaySubscriptionRequired = true)}
-								></DurationSwitcher>
-							</div>
-						</div>
-
-						<div class="pt-[70px] flex-grow">
-							<HomepageBigChart></HomepageBigChart>
-						</div>
-					</div>
-				</DashboardCard>
+				<DashboardCarousel />
 			</div>
 
 			<div
@@ -138,15 +94,7 @@
 				<IndicatorCard />
 			</div>
 
-			<div class="col-span-6 px-3">
-				<SimpleGreedFearChartCard />
-			</div>
-
-			<div class="col-span-6 px-3">
-				<LiquidationHeatmapChartCard />
-			</div>
-
-			<div class="col-span-6 px-3">
+			<!-- <div class="col-span-6 px-3">
 				<LiquidationMapChartCard
 					getTitle={(s) =>
 						`${s.value.exchange} ${s.value.baseAsset} ${s.value.quoteAsset} Liquidation Map`}
@@ -191,7 +139,7 @@
 						]}
 					></Legend>
 				</LiquidationMapChartCard>
-			</div>
+			</div> -->
 		</div>
 	</div>
 

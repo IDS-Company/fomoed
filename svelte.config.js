@@ -22,7 +22,8 @@ const config = {
 						runtime: 'nodejs20.x'
 					}),
 		alias: {
-			$ts: './src/ts'
+			$ts: './src/ts',
+			$lib: './src/lib'
 		}
 	}
 };

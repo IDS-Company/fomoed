@@ -1,19 +1,81 @@
 <script lang="ts">
-	import { createEventDispatcher } from 'svelte';
 	import SecondaryButton from '../buttons/SecondaryButton.svelte';
-	import { changingSubscription } from '$lib/stores/subs';
+	import { active_sub, changingSubscription } from '$lib/stores/subs';
 	import Time from 'svelte-time/Time.svelte';
-	import type { PlanInfo } from '$lib/plans';
 	import type { Readable } from 'svelte/motion';
 	import type Stripe from 'stripe';
-
-	const dispatch = createEventDispatcher();
+	import type { PlanInfo } from '$lib/types/index';
+	import { getContext } from 'svelte';
+	import type { SupabaseClient } from '@supabase/supabase-js';
+	import { goto } from '$app/navigation';
+	import { auth_user } from '$lib/stores/user';
+	import { ClientSubscriptionManager } from '$ts/utils/client/plans';
+	import UnsubscribeConfirmPopup from '../popups/UnsubscribeConfirmPopup.svelte';
+	import MainButton from '../buttons/MainButton.svelte';
 
 	export let planInfo: PlanInfo;
 	export let yearlySelected: boolean;
-	export let matchingActivePlanStore: Readable<Stripe.Subscription | null>;
+
+	const supabase = getContext<SupabaseClient>('supabase');
+	const subManager = new ClientSubscriptionManager(supabase);
 
 	$: disabled = $changingSubscription;
+
+	$: _displayedPriceId = (yearlySelected ? planInfo.priceIdYear : planInfo.priceIdMonth) as string;
+	$: displayedPriceId = yearlySelected ? planInfo.priceIdYear : planInfo.priceIdMonth;
+
+	// @ts-ignore
+	$: isDisplayedPlanPriceActive = $active_sub?.plan.id === displayedPriceId;
+
+	let showUnsubConfirm = false;
+	let isLoading = false;
+
+	function ensureLoggedIn() {
+		if (!$auth_user) {
+			goto('/auth');
+			return false;
+		}
+
+		return true;
+	}
+
+	async function handleSub() {
+		if (!ensureLoggedIn()) {
+			return;
+		}
+
+		isLoading = true;
+
+		try {
+			await subManager.subscribe(_displayedPriceId);
+		} finally {
+			isLoading = false;
+		}
+	}
+
+	async function handleUnsub() {
+		showUnsubConfirm = false;
+
+		isLoading = true;
+
+		try {
+			await subManager.unsubscribe();
+		} finally {
+			isLoading = false;
+		}
+	}
+
+	async function handleResub() {
+		isLoading = true;
+
+		try {
+			await subManager.resubscribe();
+		} finally {
+			isLoading = false;
+		}
+	}
+
+	$: btnComp = planInfo.recommended ? MainButton : SecondaryButton;
 </script>
 
 <div
@@ -43,10 +105,10 @@
 			</div>
 
 			<div class="pt-[12px] opacity-60 text-sm font-paralucent font-medium">
-				{#if $matchingActivePlanStore && !$matchingActivePlanStore.cancel_at_period_end}
-					Renews <Time relative timestamp={$matchingActivePlanStore.current_period_end * 1000} />
-				{:else if $matchingActivePlanStore && $matchingActivePlanStore.cancel_at_period_end}
-					Cancels <Time relative timestamp={$matchingActivePlanStore.current_period_end * 1000} />
+				{#if $active_sub && isDisplayedPlanPriceActive && !$active_sub.cancel_at_period_end}
+					Renews <Time relative timestamp={$active_sub.current_period_end * 1000} />
+				{:else if isDisplayedPlanPriceActive && $active_sub?.cancel_at_period_end}
+					Cancels <Time relative timestamp={$active_sub.current_period_end * 1000} />
 				{:else if yearlySelected}
 					Renews every 1 year
 				{:else}
@@ -66,15 +128,27 @@
 
 	<div class="flex-grow"></div>
 
-	<div class="px-[20px] pb-[25px]">
-		{#if $matchingActivePlanStore && !$matchingActivePlanStore.cancel_at_period_end}
-			<SecondaryButton on:click={() => dispatch('click-unsubscribe')}>Unsubscribe</SecondaryButton>
-		{:else if $matchingActivePlanStore && $matchingActivePlanStore.cancel_at_period_end}
-			<SecondaryButton {disabled} on:click={() => dispatch('click-resubscribe')}>
+	<div class="px-[20px] pb-[25px] h-20">
+		{#if isDisplayedPlanPriceActive && $active_sub && !$active_sub.cancel_at_period_end}
+			<svelte:component
+				this={btnComp}
+				loading={isLoading}
+				on:click={() => (showUnsubConfirm = true)}
+			>
+				Unsubscribe
+			</svelte:component>
+		{:else if isDisplayedPlanPriceActive && $active_sub && $active_sub.cancel_at_period_end}
+			<svelte:component this={btnComp} loading={isLoading} {disabled} on:click={handleResub}>
 				Resubscribe
-			</SecondaryButton>
-		{:else if !$matchingActivePlanStore}
-			<SecondaryButton on:click={() => dispatch('click-subscribe')}>Select Plan</SecondaryButton>
+			</svelte:component>
+		{:else if !isDisplayedPlanPriceActive}
+			{@const text =
+				$auth_user?.has_had_free_trial || !planInfo.recommended
+					? 'Select Plan'
+					: 'START FREE TRIAL'}
+			<svelte:component this={btnComp} loading={isLoading} on:click={handleSub}>
+				{text}
+			</svelte:component>
 		{/if}
 	</div>
 
@@ -86,6 +160,16 @@
 		</div>
 	{/if}
 </div>
+
+{#if showUnsubConfirm}
+	<!-- TODO Fix this 0 -->
+	<UnsubscribeConfirmPopup
+		planName={planInfo.name}
+		monthlyFee={0}
+		on:click-confirm={handleUnsub}
+		on:click-cancel={() => (showUnsubConfirm = false)}
+	/>
+{/if}
 
 <style>
 	.--container {

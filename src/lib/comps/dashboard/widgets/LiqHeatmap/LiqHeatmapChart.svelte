@@ -1,12 +1,12 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { fetchHeatmapData } from '../chartUtils';
 	import LoadingAnim from '$lib/comps/animations/LoadingAnim.svelte';
 	import { fade } from 'svelte/transition';
 	import { Chart } from 'chart.js/auto';
 	import 'chartjs-adapter-dayjs-4/dist/chartjs-adapter-dayjs-4.esm';
 	import { evaluate_cmap } from '$ts/utils/client/colormap';
 	import { formatRgb } from '$ts/utils/client/colors';
+	import { fetchHeatmapData } from '$lib/comps/charts/chartUtils';
 
 	export let timeframe: string;
 	export let exchange: string;
@@ -103,7 +103,6 @@
 				options: {
 					resizeDelay: 500,
 					parsing: false, // must be here, solves another stupid problem
-					spanGaps: true, // for better performance
 					animation: false, // for better performance
 					pointRadius: 0, // for better performance
 					responsive: true,

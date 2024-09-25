@@ -6,22 +6,22 @@
 
 <div
 	in:fade={{ duration: 100 }}
-	class="bg-[#0F0F0F99] backdrop-blur-sm absolute inset-0 z-10 rounded-[28px] grid place-items-center"
+	class="bg-[#0F0F0F99] backdrop-blur-sm absolute inset-0 z-20 rounded-[28px] grid place-items-center"
 >
 	<div>
 		<div class="text-[24px] font-paralucent-demibold text-center">
-			Get your free trial to unlock more!
+			Get the next level plan to unlock more!
 		</div>
 
 		<div class="mt-2 flex justify-center space-x-3">
 			<img src="/fomoed.svg" alt="Fomoed." class="w-[158px] -desktop:w-[125px]" />
-			<PaidPlanBadge></PaidPlanBadge>
+			<PaidPlanBadge planName="Plus"></PaidPlanBadge>
 		</div>
 
 		<div class="mt-6 mx-4">
 			<a href="/plans">
 				<MainButton>
-					<span class="uppercase">Start Free Trial</span>
+					<span class="uppercase">Select Your Plan</span>
 					<img src="/icons/login-arrow.svg" width={17} height={13} alt="Arrow right" />
 				</MainButton>
 			</a>
