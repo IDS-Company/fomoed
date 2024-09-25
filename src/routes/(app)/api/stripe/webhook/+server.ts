@@ -222,6 +222,8 @@ async function handle_subscription(
 		return;
 	}
 
+	console.log(invoice);
+
 	if (metadata['user_id'] && invoice.status === 'paid' && Date.now() / 1000 < current_period_end) {
 		// Update the subscription to the start and end times
 		// Maybe delete the sub here ?
