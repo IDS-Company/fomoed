@@ -94,7 +94,12 @@ export async function GET({ request, locals: { user, supabase } }: RequestEvent)
 
 			const liquidationData: CgLiquidationMapData = (
 				await fetchCoinglassLiqMap(timeframe, exchange, instrument.instrumentId)
-			).data.data;
+			)?.data?.data;
+
+			// Sometimes data is not returned
+			if (!liquidationData) {
+				continue;
+			}
 
 			for (const [price, liquidations] of Object.entries(liquidationData)) {
 				const roundedPrice = parseInt(price);
