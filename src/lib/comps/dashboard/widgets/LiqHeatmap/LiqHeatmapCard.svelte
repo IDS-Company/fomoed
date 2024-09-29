@@ -19,7 +19,7 @@
 	import PlusRequiredOverlay from '$lib/comps/overlays/PlusRequiredOverlay.svelte';
 	import { ClientSubscriptionManager } from '$ts/utils/client/plans';
 
-	const enablePlusFeatures = ClientSubscriptionManager.enablePlusFeatures;
+	const enablePlusFeatures = ClientSubscriptionManager.enableProFeatures;
 
 	type Option = { label: string; value: string };
 

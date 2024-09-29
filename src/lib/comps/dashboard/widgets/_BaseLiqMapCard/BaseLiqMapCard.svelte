@@ -14,7 +14,7 @@
 	import { browser } from '$app/environment';
 	import type { LiqMapData } from '$lib/comps/charts/chartUtils';
 
-	const enablePlusFeatures = ClientSubscriptionManager.enablePlusFeatures;
+	const enablePlusFeatures = ClientSubscriptionManager.enableProFeatures;
 
 	type TAssetOptionVal = $$Generic;
 	type TAssetOption = { label: string; value: TAssetOptionVal };

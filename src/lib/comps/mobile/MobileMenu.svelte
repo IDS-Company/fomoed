@@ -8,6 +8,9 @@
 	import BorderedProfileImage from '../BorderedProfileImage.svelte';
 	import LoginButton from '../buttons/LoginButton.svelte';
 	import { fade } from 'svelte/transition';
+	import { ClientSubscriptionManager } from '$ts/utils/client/plans';
+
+	$: currentActivePlan = ClientSubscriptionManager.currentActivePlan;
 </script>
 
 <div
@@ -53,6 +56,8 @@
 
 			{#if $active_sub}
 				<div class="mt-4 text-[#FFFFFF99] text-sm">
+					<span>{$currentActivePlan?.name} plan </span>
+
 					{#if $active_sub && !$active_sub.cancel_at_period_end}
 						Renews <Time relative timestamp={$active_sub.current_period_end * 1000} />
 					{:else if $active_sub && $active_sub.cancel_at_period_end}

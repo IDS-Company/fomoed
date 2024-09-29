@@ -71,10 +71,10 @@ export class ClientSubscriptionManager {
 		}
 	);
 
-	static enablePlusFeatures = derived(
+	static enableProFeatures = derived(
 		[auth_user, ClientSubscriptionManager.currentActivePlan],
 		([user, plan]) => {
-			return user?.has_trial_active || plan?.name === 'Plus';
+			return user?.has_trial_active || plan?.name === 'PRO';
 		}
 	);
 
@@ -210,3 +210,8 @@ export class ClientSubscriptionManager {
 		return true;
 	}
 }
+
+// Leave this here, this makes sure the plan loads on page load
+ClientSubscriptionManager.currentActivePlan.subscribe((plan) => {
+	console.debug('Current active plan:', plan);
+});
