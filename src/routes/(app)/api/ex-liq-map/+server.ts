@@ -41,7 +41,11 @@ export async function GET({ request, locals: { user, supabase } }: RequestEvent)
 	const currentPriceUsd = await fetchAssetPriceUsd(asset);
 
 	// Load cached data
-	const cached = await supabaseServer.from('exchangeLiqMapCache').select().eq('asset', asset);
+	const cacheAssetId = asset + '-' + timeframe;
+	const cached = await supabaseServer
+		.from('exchangeLiqMapCache')
+		.select()
+		.eq('asset', cacheAssetId);
 
 	if (cached.data?.length) {
 		const row = cached.data[0];
@@ -114,7 +118,9 @@ export async function GET({ request, locals: { user, supabase } }: RequestEvent)
 	}
 
 	// Cache retrieved data
-	await supabaseServer.from('exchangeLiqMapCache').upsert({ asset, data: totalExLiq });
+	await supabaseServer
+		.from('exchangeLiqMapCache')
+		.upsert({ asset: cacheAssetId, data: totalExLiq });
 
 	return json({ success: true, data: { currentPriceUsd, exLiqData: totalExLiq } });
 }

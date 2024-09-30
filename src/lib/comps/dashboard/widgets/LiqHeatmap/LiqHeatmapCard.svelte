@@ -3,21 +3,20 @@
 	import DropdownNew from '$lib/comps/DropdownNew.svelte';
 	import { onMount, tick } from 'svelte';
 	import {
-		defaultSelectedInstrument,
 		humanizeNumber,
-		searchPairInSupportedExchanges,
+		supportedExchangePairsToOptions,
 		type InstrumentInfo
 	} from '$ts/utils/client';
 	import IconRefresh from '$lib/icons/IconRefresh.svelte';
 	import IconButton from '$lib/comps/buttons/IconButton.svelte';
 	import { getCacheOrFetchSupportedExchangePairs } from '$ts/utils/client/api';
 	import { writable } from 'svelte/store';
-	import { browser } from '$app/environment';
 	import LiqHeatmapChart from './LiqHeatmapChart.svelte';
 	import Legend from '$lib/comps/charts/Legend.svelte';
 	import DashboardCard from '$lib/comps/DashboardCard.svelte';
 	import PlusRequiredOverlay from '$lib/comps/overlays/PlusRequiredOverlay.svelte';
 	import { ClientSubscriptionManager } from '$ts/utils/client/plans';
+	import { coinstats_selected_coin } from '$lib/stores';
 
 	const enablePlusFeatures = ClientSubscriptionManager.enableProFeatures;
 
@@ -39,48 +38,46 @@
 	type ExchangeOption = { label: string; value: InstrumentInfo };
 
 	let exchangeOptions: ExchangeOption[] = [];
-	let selectedExchangeOption = writable<ExchangeOption>({
-		label: 'Binance BTC/USDT',
-		value: defaultSelectedInstrument
-	});
+	let selectedExchangeOption = writable<ExchangeOption | null>();
 
-	async function loadExchangeOptions(searchTerm: string | null) {
-		const data = await getCacheOrFetchSupportedExchangePairs();
+	async function loadExchangeOptions() {
+		const suppExchangePairs = await getCacheOrFetchSupportedExchangePairs();
+		const options = supportedExchangePairsToOptions(suppExchangePairs);
 
-		searchTerm = searchTerm || 'BTC/USDT';
+		// Filter by selected coin
+		const symbol = $coinstats_selected_coin?.symbol || 'BTC';
+		const filtered = options.filter((o) => o.value.baseAsset === symbol);
 
-		exchangeOptions = searchPairInSupportedExchanges(data, searchTerm);
+		exchangeOptions = filtered;
+		selectedExchangeOption.set(filtered[0]);
+		pairSearchTerm.set(filtered[0].label);
 
-		console.log(exchangeOptions);
+		console.log({ exchangeOptions });
 	}
 
 	let refreshData: () => any;
 	let maxLiqValue: number;
 	let isLoading: boolean;
 
-	const pairSearchTerm = writable($selectedExchangeOption.label);
+	const pairSearchTerm = writable($selectedExchangeOption?.label || '');
 
-	pairSearchTerm.subscribe((val) => {
-		if (!browser) {
-			return;
-		}
-
-		loadExchangeOptions(val);
-	});
-
-	onMount(() => {
+	onMount(async () => {
 		selectedExchangeOption.subscribe(async (val) => {
 			await tick();
 			refreshData?.();
 		});
 	});
 
+	coinstats_selected_coin.subscribe(() => {
+		loadExchangeOptions();
+	});
+
 	$: title =
-		$selectedExchangeOption.value.exchange +
+		$selectedExchangeOption?.value.exchange +
 		' ' +
-		$selectedExchangeOption.value.baseAsset +
+		$selectedExchangeOption?.value.baseAsset +
 		'/' +
-		$selectedExchangeOption.value.quoteAsset +
+		$selectedExchangeOption?.value.quoteAsset +
 		' ' +
 		'Liquidation Heatmap';
 </script>
@@ -101,16 +98,18 @@
 					class="flex-grow font-paralucent-demibold font-light text-[20px] z-50"
 					class:brightness-50={!$enablePlusFeatures}
 				>
-					{title}
+					{($selectedExchangeOption && title) || ''}
 				</div>
 
 				<div class="-desktop:mt-2 flex gap-x-2">
 					<div class="w-40 z-10">
-						<Autocomplete
-							options={exchangeOptions}
-							bind:inputValue={$pairSearchTerm}
-							bind:selected={$selectedExchangeOption}
-						/>
+						{#if $selectedExchangeOption}
+							<Autocomplete
+								options={exchangeOptions}
+								bind:inputValue={$pairSearchTerm}
+								bind:selected={$selectedExchangeOption}
+							/>
+						{/if}
 					</div>
 
 					<div class="w-32 z-10">
@@ -161,7 +160,7 @@
 					</div>
 
 					<div class="flex-grow mt-4 desktop:px-[30px]">
-						{#if $enablePlusFeatures}
+						{#if $enablePlusFeatures && $selectedExchangeOption}
 							<LiqHeatmapChart
 								bind:refreshData
 								bind:maxLiqValue

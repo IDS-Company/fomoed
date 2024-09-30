@@ -1,3 +1,5 @@
+import type { SupportedPairsData } from './api';
+
 export function humanizeNumber(num: number) {
 	if (num < 1000) {
 		return num.toString(); // Less than 1000, return the number as it is
@@ -10,7 +12,7 @@ export function humanizeNumber(num: number) {
 	}
 }
 
-type ForeignInstrument = {
+export type ForeignInstrument = {
 	instrumentId: string;
 	baseAsset: string;
 	quoteAsset: string;
@@ -25,40 +27,25 @@ export const defaultSelectedInstrument: InstrumentInfo = {
 	symbol: 'BTCUSDT'
 };
 
-export function searchPairInSupportedExchanges(
-	supportedExchanges: Record<string, ForeignInstrument[]>,
-	searchTerm: string
-): { label: string; value: InstrumentInfo }[] {
-	const labelToInstrument: { label: string; value: InstrumentInfo }[] = [];
-	const addedLabels: string[] = [];
+export function supportedExchangePairsToOptions(supportedExchangePairs: SupportedPairsData) {
+	const options: { label: string; value: InstrumentInfo }[] = [];
 
-	for (const [exchangeName, instruments] of Object.entries(supportedExchanges)) {
-		for (const instrument of instruments) {
-			// if (!instrument.instrumentId.includes('_PERP')) {
-			// 	continue;
-			// }
-
-			const label = exchangeName + ' ' + instrument.baseAsset + '/' + instrument.quoteAsset;
-
-			if (addedLabels.includes(label)) {
-				continue;
-			}
-
-			labelToInstrument.push({
-				label,
+	for (const [exchangeName, instruments] of Object.entries(supportedExchangePairs)) {
+		for (const instrument of instruments as any) {
+			options.push({
+				label: exchangeName + ' ' + instrument.baseAsset + '/' + instrument.quoteAsset,
 				value: {
 					...instrument,
 					exchange: exchangeName,
 					symbol: instrument.baseAsset + instrument.quoteAsset
 				}
 			});
-			addedLabels.push(label);
 		}
 	}
 
-	const filtered = labelToInstrument.filter((i) =>
-		i.label.toLowerCase().includes(searchTerm.toLowerCase())
-	);
+	return options;
+}
 
-	return filtered;
+export function isLettersOnly(str: string) {
+	return /^[a-zA-Z]+$/.test(str);
 }

@@ -13,10 +13,6 @@
 	getInstrumentOptions={getSupportedLiqMapInstrumentOptions}
 	fetchLiqMapData={(timeframe, selAssetOption) =>
 		fetchLiqMapData(timeframe, [selAssetOption.value])}
-	defaultAssetOption={{
-		label: 'Binance BTC/USDT',
-		value: defaultSelectedInstrument
-	}}
 >
 	<Legend
 		slot="legend"

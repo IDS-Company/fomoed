@@ -1,7 +1,7 @@
 import type { ICoinCfgiPriceData } from '$lib';
 import { coinstats_selected_coin } from '$lib/stores';
 import { failure } from '$lib/utils';
-import { searchPairInSupportedExchanges, type InstrumentInfo } from '$ts/utils/client';
+import { supportedExchangePairsToOptions, type InstrumentInfo } from '$ts/utils/client';
 import {
 	cgSupportedExchangeLiqMapBaseAssets,
 	getCacheOrFetchSupportedExchangePairs
@@ -296,14 +296,16 @@ export async function fetchLiqMapDataMerged(
 	};
 }
 
-export async function getSupportedLiqMapInstrumentOptions(
-	searchTerm: string | null
-): Promise<{ label: string; value: InstrumentInfo }[]> {
+export async function getSupportedLiqMapInstrumentOptions(): Promise<
+	{ label: string; value: InstrumentInfo }[]
+> {
 	const data = await getCacheOrFetchSupportedExchangePairs();
+	const options = supportedExchangePairsToOptions(data);
 
-	searchTerm = searchTerm || 'BTC/USDT';
+	const symbol = get(coinstats_selected_coin).symbol;
+	const filtered = options.filter((i) => i.value.baseAsset === symbol);
 
-	return searchPairInSupportedExchanges(data, searchTerm);
+	return filtered;
 }
 
 export async function getSupportedExchangeLiqMapBaseAssets(

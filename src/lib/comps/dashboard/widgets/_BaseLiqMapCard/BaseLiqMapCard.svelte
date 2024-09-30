@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { coinstats_selected_coin } from '$lib/stores';
+
 	import { ClientSubscriptionManager } from '$ts/utils/client/plans';
 
 	import PlusRequiredOverlay from '$lib/comps/overlays/PlusRequiredOverlay.svelte';
@@ -20,9 +22,11 @@
 	type TAssetOption = { label: string; value: TAssetOptionVal };
 
 	export let getTitle: (selExchangeOption: Option) => string;
-	export let getInstrumentOptions: (searchTerm: string) => Promise<TAssetOption[]>;
-	export let defaultAssetOption: TAssetOption;
-	export let fetchLiqMapData: (timeframe: string, selAssetOption: Option) => Promise<LiqMapData>;
+	export let getInstrumentOptions: () => Promise<TAssetOption[]>;
+	export let fetchLiqMapData: (
+		timeframe: string,
+		selAssetOption: Option
+	) => Promise<LiqMapData | null>;
 
 	type Option = { label: string; value: any };
 
@@ -34,20 +38,22 @@
 	let selectedTimeframe: Option = timeframeOptions[0];
 
 	let assetOptions: Option[] = [];
-	let selAssetOption = writable<TAssetOption>(defaultAssetOption);
+	let selAssetOption = writable<TAssetOption | null>(null);
 
 	let refreshData: () => any;
 	let isLoading: boolean;
 	let currentPrice: number;
 
-	const pairSearchTerm = writable($selAssetOption.label);
+	const pairSearchTerm = writable($selAssetOption?.label || '');
 
-	pairSearchTerm.subscribe(async (val) => {
-		if (!browser) {
-			return;
-		}
+	async function loadAssetOptions() {
+		assetOptions = await getInstrumentOptions();
+		selAssetOption.set(assetOptions[0]);
+		pairSearchTerm.set(assetOptions[0].label);
+	}
 
-		assetOptions = await getInstrumentOptions(val);
+	coinstats_selected_coin.subscribe(() => {
+		browser && loadAssetOptions();
 	});
 
 	async function safeRefreshData() {
@@ -88,16 +94,18 @@
 					class="flex-grow font-paralucent-demibold font-light text-[20px] z-50"
 					class:brightness-50={!$enablePlusFeatures}
 				>
-					{getTitle($selAssetOption)}
+					{($selAssetOption && getTitle($selAssetOption)) || ''}
 				</div>
 
 				<div class="-desktop:mt-2 flex gap-x-2">
 					<div class="w-40 z-10">
-						<Autocomplete
-							options={assetOptions}
-							bind:inputValue={$pairSearchTerm}
-							bind:selected={$selAssetOption}
-						/>
+						{#if $selAssetOption}
+							<Autocomplete
+								options={assetOptions}
+								bind:inputValue={$pairSearchTerm}
+								bind:selected={$selAssetOption}
+							/>
+						{/if}
 					</div>
 
 					<div class="w-32 z-10">
@@ -132,12 +140,14 @@
 
 				{#if $enablePlusFeatures}
 					<div class="flex-grow desktop:px-[30px]">
-						<BaseLiqMapChart
-							{isLoading}
-							bind:refreshData
-							bind:currentPrice
-							fetchLiqMapData={() => fetchLiqMapData(selectedTimeframe.value, $selAssetOption)}
-						/>
+						{#if $selAssetOption}
+							<BaseLiqMapChart
+								{isLoading}
+								bind:refreshData
+								bind:currentPrice
+								fetchLiqMapData={() => fetchLiqMapData(selectedTimeframe.value, $selAssetOption)}
+							/>
+						{/if}
 					</div>
 				{/if}
 			</div>

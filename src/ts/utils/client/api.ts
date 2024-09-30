@@ -1,4 +1,5 @@
 import { derived, get, writable } from 'svelte/store';
+import type { ForeignInstrument } from '.';
 
 async function fetchSupportedExchangePairs() {
 	const res = await fetch('/api/supported-exchange-pairs');
@@ -7,8 +8,8 @@ async function fetchSupportedExchangePairs() {
 	return data.data;
 }
 
-export type SupportedPair = { instrumentId: string; baseAsset: string; quoteAsset: string };
-export type SupportedPairsData = Record<string, SupportedPair[]>;
+type ExchangeName = string;
+export type SupportedPairsData = Record<ExchangeName, ForeignInstrument[]>;
 
 const cachedSupportedPairs = writable<SupportedPairsData | null>(null);
 
@@ -32,7 +33,7 @@ export const cgSupportedExchangeLiqMapBaseAssets = derived<typeof cachedSupporte
 	}
 );
 
-export async function getCacheOrFetchSupportedExchangePairs() {
+export async function getCacheOrFetchSupportedExchangePairs(): Promise<SupportedPairsData> {
 	const cached = get(cachedSupportedPairs);
 
 	if (cached) {
@@ -42,8 +43,6 @@ export async function getCacheOrFetchSupportedExchangePairs() {
 	const fetched = await fetchSupportedExchangePairs();
 
 	cachedSupportedPairs.set(fetched);
-
-	console.log({ fetched });
 
 	return fetched;
 }

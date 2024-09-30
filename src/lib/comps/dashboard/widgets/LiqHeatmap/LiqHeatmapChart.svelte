@@ -7,6 +7,7 @@
 	import { evaluate_cmap } from '$ts/utils/client/colormap';
 	import { formatRgb } from '$ts/utils/client/colors';
 	import { fetchHeatmapData } from '$lib/comps/charts/chartUtils';
+	import { failure } from '$lib/utils';
 
 	export let timeframe: string;
 	export let exchange: string;
@@ -17,6 +18,7 @@
 
 	export async function refreshData() {
 		isLoading = true;
+		error = false;
 
 		if (chart) {
 			chart.destroy();
@@ -25,6 +27,7 @@
 		const data = await fetchHeatmapData(timeframe, exchange, symbol);
 
 		if (!data) {
+			failure('Failed to fetch data');
 			error = true;
 			isLoading = false;
 			return;

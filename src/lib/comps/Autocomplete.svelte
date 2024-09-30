@@ -1,6 +1,7 @@
 <script lang="ts">
 	import AutocompleteSearch from '$lib/icons/AutocompleteSearch.svelte';
 	import DropdownArrow from '$lib/icons/DropdownArrow.svelte';
+	import { cloneDeep } from 'lodash-es';
 
 	type Option = { label: string; value: any };
 
@@ -11,11 +12,12 @@
 	let hasFocus = false;
 	let startedTyping = false;
 
-	$: if (hasFocus) {
-		startedTyping = false;
-	}
+	$: displayedOptions = startedTyping
+		? options.filter((option) => option.label.toLowerCase().includes(inputValue.toLowerCase()))
+		: cloneDeep(options);
 
-	let filteredOptions = options;
+	$: console.log({ startedTyping });
+	$: console.log({ options });
 </script>
 
 <div
@@ -31,13 +33,10 @@
 		placeholder="Search"
 		on:focusin={() => {
 			hasFocus = true;
-			filteredOptions = options;
+			startedTyping = false;
 		}}
 		on:input={() => {
 			startedTyping = true;
-			filteredOptions = options.filter((o) =>
-				o.label.toLowerCase().includes(inputValue.toLowerCase())
-			);
 		}}
 	/>
 
@@ -52,7 +51,7 @@
 			class="absolute top-0 left-0 translate-y-16 border border-[#FFFFFF1A] bg-[#0F0D0DE5] rounded-xl w-full h-[200px]"
 		>
 			<div class="overflow-y-scroll py-3 h-full">
-				{#each filteredOptions as option}
+				{#each displayedOptions as option}
 					<div>
 						<button
 							on:click={() => {
