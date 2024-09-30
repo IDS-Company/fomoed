@@ -5,6 +5,8 @@
 	import PlusRequiredOverlay from '$lib/comps/overlays/PlusRequiredOverlay.svelte';
 	import { ClientSubscriptionManager } from '$ts/utils/client/plans';
 
+	export let hideCard = false;
+
 	const enablePlusFeatures = ClientSubscriptionManager.enableProFeatures;
 
 	import SimpleCfgiChart from './SimpleCfgiChart.svelte';
@@ -23,7 +25,7 @@
 </script>
 
 <div class="h-full w-full overflow-hidden">
-	<DashboardCard disablePadding>
+	<DashboardCard disablePadding {hideCard}>
 		{#if !$enablePlusFeatures}
 			<div class="absolute inset-px">
 				<PlusRequiredOverlay />

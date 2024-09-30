@@ -18,6 +18,8 @@
 	import { ClientSubscriptionManager } from '$ts/utils/client/plans';
 	import { coinstats_selected_coin } from '$lib/stores';
 
+	export let hideCard = false;
+
 	const enablePlusFeatures = ClientSubscriptionManager.enableProFeatures;
 
 	type Option = { label: string; value: string };
@@ -82,27 +84,27 @@
 		'Liquidation Heatmap';
 </script>
 
-<div class="h-full overflow-hidden">
-	<DashboardCard disablePadding>
+<div class="h-full w-full overflow-hidden">
+	<DashboardCard disablePadding {hideCard}>
 		{#if !$enablePlusFeatures}
 			<div class="absolute inset-px">
 				<PlusRequiredOverlay />
 			</div>
 		{/if}
 
-		<div class="flex flex-col w-full h-full py-[22px] px-3">
+		<div class="flex flex-col w-full h-full py-[22px] px-3 -desktop:px-1">
 			<div
 				class="flex items-center w-full -desktop:flex-col -desktop:items-start px-[30px] -desktop:px-4"
 			>
 				<div
-					class="flex-grow font-paralucent-demibold font-light text-[20px] z-50"
+					class="flex-grow font-paralucent-demibold font-light text-[20px] z-50 -desktop:text-base -desktop:pb-2"
 					class:brightness-50={!$enablePlusFeatures}
 				>
 					{($selectedExchangeOption && title) || ''}
 				</div>
 
 				<div class="-desktop:mt-2 flex gap-x-2">
-					<div class="w-40 z-10">
+					<div class="w-40 z-10 -desktop:w-32">
 						{#if $selectedExchangeOption}
 							<Autocomplete
 								options={exchangeOptions}

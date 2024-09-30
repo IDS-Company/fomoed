@@ -10,6 +10,7 @@
 	import Footer from '$lib/comps/Footer.svelte';
 	import GetFreeTrialOverlay from '$lib/comps/overlays/GetFreeTrialOverlay.svelte';
 	import DashboardCarousel from '$lib/comps/dashboard/DashboardCarousel.svelte';
+	import FullScreenModal from '$lib/comps/FullScreenModal.svelte';
 
 	let smallChartsCointainer: HTMLElement;
 

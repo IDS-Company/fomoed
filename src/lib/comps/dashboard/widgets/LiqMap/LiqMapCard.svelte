@@ -4,11 +4,13 @@
 		getSupportedLiqMapInstrumentOptions
 	} from '$lib/comps/charts/chartUtils';
 	import Legend from '$lib/comps/charts/Legend.svelte';
-	import { defaultSelectedInstrument } from '$ts/utils/client';
 	import BaseLiqMapCard from '../_BaseLiqMapCard/BaseLiqMapCard.svelte';
+
+	export let hideCard = false;
 </script>
 
 <BaseLiqMapCard
+	{hideCard}
 	getTitle={(s) => `${s.value.exchange} ${s.value.baseAsset} ${s.value.quoteAsset} Liquidation Map`}
 	getInstrumentOptions={getSupportedLiqMapInstrumentOptions}
 	fetchLiqMapData={(timeframe, selAssetOption) =>

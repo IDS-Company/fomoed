@@ -1,10 +1,7 @@
 <script lang="ts">
 	import { coinstats_selected_coin } from '$lib/stores';
-
 	import { ClientSubscriptionManager } from '$ts/utils/client/plans';
-
 	import PlusRequiredOverlay from '$lib/comps/overlays/PlusRequiredOverlay.svelte';
-
 	import BaseLiqMapChart from './BaseLiqMapChart.svelte';
 	import DashboardCard from '$lib/comps/DashboardCard.svelte';
 	import Autocomplete from '$lib/comps/Autocomplete.svelte';
@@ -15,6 +12,8 @@
 	import { writable } from 'svelte/store';
 	import { browser } from '$app/environment';
 	import type { LiqMapData } from '$lib/comps/charts/chartUtils';
+
+	export let hideCard = false;
 
 	const enablePlusFeatures = ClientSubscriptionManager.enableProFeatures;
 
@@ -79,7 +78,7 @@
 </script>
 
 <div class="h-full overflow-hidden">
-	<DashboardCard disablePadding>
+	<DashboardCard disablePadding {hideCard}>
 		{#if !$enablePlusFeatures}
 			<div class="absolute inset-px">
 				<PlusRequiredOverlay />
@@ -91,14 +90,14 @@
 				class="flex items-center w-full -desktop:flex-col -desktop:items-start px-[30px] -desktop:px-4"
 			>
 				<div
-					class="flex-grow font-paralucent-demibold font-light text-[20px] z-50"
+					class="flex-grow font-paralucent-demibold font-light text-[20px] z-50 -desktop:text-base -desktop:pb-2"
 					class:brightness-50={!$enablePlusFeatures}
 				>
 					{($selAssetOption && getTitle($selAssetOption)) || ''}
 				</div>
 
 				<div class="-desktop:mt-2 flex gap-x-2">
-					<div class="w-40 z-10">
+					<div class="w-40 z-10 -desktop:w-32">
 						{#if $selAssetOption}
 							<Autocomplete
 								options={assetOptions}

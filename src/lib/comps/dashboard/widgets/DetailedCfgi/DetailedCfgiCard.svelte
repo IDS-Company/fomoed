@@ -5,10 +5,12 @@
 	import GetFreeTrialOverlay from '$lib/comps/overlays/GetFreeTrialOverlay.svelte';
 	import { coinstats_selected_coin } from '$lib/stores';
 
+	export let hideCard = false;
+
 	let showSubRequired = false;
 </script>
 
-<DashboardCard disablePadding>
+<DashboardCard disablePadding {hideCard}>
 	{#if showSubRequired}
 		<div class="absolute inset-px">
 			<GetFreeTrialOverlay />

@@ -1,6 +1,8 @@
 <script>
 	import CarouselArrowLeft from '$lib/icons/CarouselArrowLeft.svelte';
 	import CarouselArrowRight from '$lib/icons/CarouselArrowRight.svelte';
+	import IconExpand from '$lib/icons/IconExpand.svelte';
+	import FullScreenModal from '../FullScreenModal.svelte';
 	import DetailedCfgiCard from './widgets/DetailedCfgi/DetailedCfgiCard.svelte';
 	import ExchangeLiqMapCard from './widgets/ExchangeLiqMap/ExchangeLiqMapCard.svelte';
 	import LiqHeatmapCard from './widgets/LiqHeatmap/LiqHeatmapCard.svelte';
@@ -8,6 +10,7 @@
 	import SimpleCfgiCard from './widgets/SimpleCfgi/SimpleCfgiCard.svelte';
 
 	let page = 0;
+	let isFullscreen = false;
 
 	function goLeft() {
 		page = page === 0 ? components.length - 1 : page - 1;
@@ -26,7 +29,7 @@
 	];
 </script>
 
-<div class="w-full h-full relative">
+<div class="w-full h-full relative -desktop:min-h-[600px]">
 	<svelte:component this={components[page]} />
 
 	<div class="absolute inset-0 flex items-center h-full z-30 pointer-events-none">
@@ -40,7 +43,20 @@
 			>
 		</div>
 	</div>
+
+	<button
+		class="absolute bottom-4 left-4 opacity-50 hover:opacity-100 duration-200"
+		on:click={() => (isFullscreen = true)}
+	>
+		<IconExpand></IconExpand>
+	</button>
 </div>
+
+{#if isFullscreen}
+	<FullScreenModal on:close={() => (isFullscreen = false)}>
+		<svelte:component this={components[page]} hideCard />
+	</FullScreenModal>
+{/if}
 
 <style>
 	button {

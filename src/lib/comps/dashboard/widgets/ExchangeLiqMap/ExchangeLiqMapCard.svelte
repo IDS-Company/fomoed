@@ -11,6 +11,8 @@
 	import BaseLiqMapChart from '../_BaseLiqMapCard/BaseLiqMapChart.svelte';
 	import { fetchLiqMapDataMerged } from '$lib/comps/charts/chartUtils';
 
+	export let hideCard = false;
+
 	const enablePlusFeatures = ClientSubscriptionManager.enableProFeatures;
 
 	type Option = { label: string; value: any };
@@ -45,27 +47,27 @@
 	});
 </script>
 
-<div class="h-full overflow-hidden">
-	<DashboardCard disablePadding>
+<div class="h-full w-full overflow-hidden">
+	<DashboardCard disablePadding {hideCard}>
 		{#if !$enablePlusFeatures}
 			<div class="absolute inset-px">
 				<PlusRequiredOverlay />
 			</div>
 		{/if}
 
-		<div class="flex flex-col w-full h-full py-[22px] px-3">
+		<div class="flex flex-col w-full h-full py-[22px] px-3 -desktop:px-1">
 			<div
 				class="flex items-center w-full -desktop:flex-col -desktop:items-start px-[30px] -desktop:px-4"
 			>
 				<div
-					class="flex-grow font-paralucent-demibold font-light text-[20px] z-50"
+					class="flex-grow font-paralucent-demibold font-light text-[20px] z-50 -desktop:text-base -desktop:pb-2"
 					class:brightness-50={!$enablePlusFeatures}
 				>
 					{$coinstats_selected_coin.symbol} Exchange Liquidation Map
 				</div>
 
-				<div class="-desktop:mt-2 flex gap-x-2">
-					<div class="w-32 z-10">
+				<div class="-desktop:mt-2 flex gap-x-1">
+					<div class="z-10">
 						<DropdownNew
 							options={timeframeOptions}
 							bind:selected={selectedTimeframe}
@@ -74,6 +76,8 @@
 							}}
 						/>
 					</div>
+
+					<div class="-desktop:flex-grow"></div>
 
 					<div class="mr-4">
 						<IconButton disabled={isLoading} on:click={safeRefreshData}>
