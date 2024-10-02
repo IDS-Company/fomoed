@@ -27,11 +27,22 @@ export const defaultSelectedInstrument: InstrumentInfo = {
 	symbol: 'BTCUSDT'
 };
 
-export function supportedExchangePairsToOptions(supportedExchangePairs: SupportedPairsData) {
+function isInstrumentIdAnOption(instrumendId: string) {
+	return !isLettersOnly(instrumendId);
+}
+
+export function supportedExchangePairsToOptions(
+	supportedExchangePairs: SupportedPairsData,
+	excludeOptions: boolean = true
+) {
 	const options: { label: string; value: InstrumentInfo }[] = [];
 
 	for (const [exchangeName, instruments] of Object.entries(supportedExchangePairs)) {
 		for (const instrument of instruments as any) {
+			if (excludeOptions && isInstrumentIdAnOption(instrument.instrumentId)) {
+				continue;
+			}
+
 			options.push({
 				label: exchangeName + ' ' + instrument.baseAsset + '/' + instrument.quoteAsset,
 				value: {
