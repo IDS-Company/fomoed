@@ -65,6 +65,7 @@
 
 	onMount(async () => {
 		selectedExchangeOption.subscribe(async (val) => {
+			console.log(val?.value);
 			await tick();
 			refreshData?.();
 		});
@@ -169,7 +170,7 @@
 								bind:isLoading
 								timeframe={selectedTimeframe.value}
 								exchange={$selectedExchangeOption.value.exchange}
-								symbol={$selectedExchangeOption.value.symbol}
+								symbol={$selectedExchangeOption.value.instrumentId}
 							/>
 						{/if}
 					</div>
