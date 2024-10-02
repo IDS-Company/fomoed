@@ -15,9 +15,8 @@
 	import { dayjs } from 'svelte-time';
 	import { fade } from 'svelte/transition';
 	import type { _DeepPartialObject } from 'chart.js/dist/types/utils';
-	import { onMount } from 'svelte';
 	import { coinstats_selected_coin } from '$lib/stores';
-	import { auth_email, logged_in } from '$lib/stores/user';
+	import { logged_in } from '$lib/stores/user';
 	import { fetchCfgi } from '$lib/comps/charts/chartUtils';
 
 	export let daysBack: number;
@@ -136,11 +135,16 @@
 			loading = false;
 		}
 
+		// Component could already be unmounted
+		if (!trend_chart_canvas) {
+			return;
+		}
+
 		ctx = trend_chart_canvas.getContext('2d')!;
 		chart_init(data);
 	}
 
-	$: if ($coinstats_selected_coin && daysBack && $logged_in !== null && trend_chart_canvas) {
+	$: if ($coinstats_selected_coin && daysBack && $logged_in !== null) {
 		refreshData();
 	}
 
