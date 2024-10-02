@@ -4,8 +4,7 @@
 	export let container: HTMLElement;
 	export let vertical = false;
 	export let pages: number;
-
-	let page = 0;
+	export let page = 0;
 
 	function onScroll() {
 		let pageSize: number;

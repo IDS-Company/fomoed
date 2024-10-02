@@ -7,6 +7,7 @@
 	import ScrollerDots from '$lib/comps/ScrollerDots.svelte';
 	import Footer from '$lib/comps/Footer.svelte';
 	import DashboardCarousel from '$lib/comps/dashboard/DashboardCarousel.svelte';
+	import { isDesktop } from '$lib/stores/ui';
 
 	let smallChartsCointainer: HTMLElement;
 </script>
@@ -17,7 +18,10 @@
 >
 	<AppNav showCurrencyDropdown />
 
-	<div class="flex-grow grid place-items-center desktop:pb-24 desktop:mx-4">
+	<div
+		class="flex-grow grid place-items-center desktop:pb-24 desktop:mx-4 duration-200"
+		class:opacity-0={$isDesktop === null}
+	>
 		<div
 			class="grid grid-cols-6 gap-[7px] mx-auto h-full pb-6 w-full max-w-[1050px] desktop:max-h-[700px] desktop:grid-rows-[1fr_3fr]"
 		>
@@ -80,7 +84,7 @@
 			</div>
 
 			<div class="col-span-6 grid grid-cols-subgrid">
-				<div class="col-span-4 -desktop:col-span-6 h-full -desktop:px-3 flex-grow relative">
+				<div class="col-span-4 -desktop:col-span-6 h-full flex-grow relative">
 					<DashboardCarousel />
 				</div>
 

@@ -28,7 +28,7 @@
 	let loading: boolean;
 </script>
 
-<div class="h-full w-full overflow-hidden">
+<div class="h-full w-full overflow-hidden relative">
 	<DashboardCard isChartCard {hideCard}>
 		{#if !$enablePlusFeatures}
 			<div class="absolute inset-px">
