@@ -39,9 +39,6 @@ export async function GET({ request, locals: { supabase, user } }: RequestEvent)
 		return error(400, 'instrumentId parameter must be specified!');
 	}
 
-	console.log('liq map');
-	console.log({ timeframe, exchange, instrumentId });
-
 	const liquidationData = await fetchCoinglassLiqMap(timeframe, exchange, instrumentId);
 	const pairMarketsData = await fetchPairMarkets(baseAsset);
 
@@ -49,11 +46,9 @@ export async function GET({ request, locals: { supabase, user } }: RequestEvent)
 		(i: any) => i.symbol === baseAsset + '/' + quoteAsset
 	);
 
-	console.log('liquidation data');
-	// console.log(liquidationData);
-
-	console.log('pair market data');
-	console.log(pairMarketsData.data.data[0]);
+	if (liquidationData.success === false) {
+		return error(500, { message: 'External server error: ' + liquidationData.msg });
+	}
 
 	return json({ data: { liquidationData, pairMarketData } });
 }
