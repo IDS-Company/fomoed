@@ -17,7 +17,7 @@
 	import { sleep } from '$lib';
 	import { isDesktop } from '$lib/stores/ui';
 	import { get_data_color } from '$lib/utils';
-	import { tick } from 'svelte';
+	import { onDestroy, tick } from 'svelte';
 
 	const color = '#47A663';
 
@@ -158,12 +158,16 @@
 		chart_init();
 	}
 
-	isDesktop.subscribe((desktop) => {
+	const resizeUnsub = isDesktop.subscribe((desktop) => {
 		if (cfgi_trend_chart) {
 			// @ts-ignore
 			cfgi_trend_chart.options.scales.y.display = desktop;
 			cfgi_trend_chart.update();
 		}
+	});
+
+	onDestroy(() => {
+		resizeUnsub();
 	});
 </script>
 
