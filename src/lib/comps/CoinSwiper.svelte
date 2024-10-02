@@ -1,33 +1,12 @@
 <div class="relative h-[500px] -sm:h-[250px] flex items-center">
 	<!-- Glow -->
-	<div class="absolute w-screen grid place-items-center h-full transitionColor">
-		<svg
-			class=""
-			width="100%"
-			height="100%"
-			viewBox="0 0 638 593"
-			fill="none"
-			xmlns="http://www.w3.org/2000/svg"
-		>
-			<g opacity="0.5" filter="url(#filter0_f_6_1395)">
-				<ellipse cx="319" cy="296.5" rx="134" ry="111.5" fill="currentColor" />
-			</g>
-			<defs>
-				<filter
-					id="filter0_f_6_1395"
-					x="0.5"
-					y="0.5"
-					width="637"
-					height="592"
-					filterUnits="userSpaceOnUse"
-					color-interpolation-filters="sRGB"
-				>
-					<feFlood flood-opacity="0" result="BackgroundimgFix" />
-					<feBlend mode="normal" in="SourceGraphic" in2="BackgroundimgFix" result="shape" />
-					<feGaussianBlur stdDeviation="92.25" result="effect1_foregroundBlur_6_1395" />
-				</filter>
-			</defs>
-		</svg>
+	<div class="absolute w-screen grid place-items-center h-full">
+		<div class="w-full h-[400px] transitionColor overflow-hidden -z-10">
+			<div
+				class="h-full transitionColor"
+				style="background: radial-gradient(#0009, black 75%);"
+			></div>
+		</div>
 	</div>
 
 	<!-- Coins -->
@@ -99,23 +78,23 @@
 
 	@keyframes transitionColor {
 		0% {
-			color: #27a17b;
+			background-color: #27a17b;
 		}
 
 		20% {
-			color: #f0b90b;
+			background-color: #f0b90b;
 		}
 
 		40% {
-			color: #c44fe2;
+			background-color: #c44fe2;
 		}
 
 		60% {
-			color: #f9aa4b;
+			background-color: #f9aa4b;
 		}
 
 		80% {
-			color: #627eea;
+			background-color: #627eea;
 		}
 	}
 </style>

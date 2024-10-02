@@ -59,12 +59,12 @@
 
 	<!-- Mobile bnb coin -->
 	<div
-		class="desktop:hidden bg-[url(/images/mobile/bnb-coin-bg.svg)] w-[94px] aspect-square absolute left-0 top-20"
+		class="desktop:hidden bg-[url(/images/mobile/bnb-coin-bg.svg)] w-[94px] h-[94px] absolute left-0 top-20"
 	></div>
 
 	<!-- Mobile ether coin -->
 	<div
-		class="desktop:hidden bg-[url(/images/mobile/eth-coin-bg.svg)] w-[94px] aspect-square absolute -right-6 top-[600px] -z-10"
+		class="desktop:hidden bg-[url(/images/mobile/eth-coin-bg.svg)] w-[94px] h-[94px] absolute -right-6 top-[600px] -z-10"
 	></div>
 
 	<div class="h-full max-w-[980px] mx-auto desktop:min-h-screen px-4 flex flex-col justify-center">
@@ -93,12 +93,12 @@
 
 			<!-- Mobile btc coin -->
 			<div
-				class="desktop:hidden bg-[url(/images/mobile/btc-coin.svg)] w-[94px] aspect-square absolute -right-6 -top-10 z-20"
+				class="desktop:hidden bg-[url(/images/mobile/btc-coin.svg)] w-[94px] h-[94px] absolute -right-6 -top-10 z-20"
 			></div>
 
 			<!-- Mobile sol coin -->
 			<div
-				class="desktop:hidden bg-[url(/images/mobile/sol-coin.svg)] w-[94px] aspect-square absolute -left-4 bottom-20 z-20"
+				class="desktop:hidden bg-[url(/images/mobile/sol-coin.svg)] w-[94px] h-[94px] absolute -left-4 bottom-20 z-20"
 			></div>
 
 			<SmallCharts />

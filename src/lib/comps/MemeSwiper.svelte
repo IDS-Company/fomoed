@@ -1,17 +1,17 @@
 <div class="relative">
 	<div
 		style="background: linear-gradient( #0F0F0F, #0F0F0F) padding-box, linear-gradient(180deg, rgba(255, 59, 16, 0.3) 0%, rgba(255, 205, 132, 0.3) 56.72%, rgba(255, 255, 255, 0.18) 100%) border-box"
-		class="absolute w-[350px] aspect-square border-2 border-transparent rounded-[20px] rotate-[6.03deg] translate-y-16 -translate-x-6 scale-[0.8]"
+		class="absolute w-[350px] h-[350px] border-2 border-transparent rounded-[20px] rotate-[6.03deg] translate-y-16 -translate-x-6 scale-[0.8]"
 	></div>
 
 	<div
 		style="background: linear-gradient( #0F0F0F, #0F0F0F) padding-box, linear-gradient(180deg, rgba(255, 59, 16, 0.3) 0%, rgba(255, 205, 132, 0.3) 56.72%, rgba(255, 255, 255, 0.18) 100%) border-box"
-		class="absolute w-[350px] aspect-square border-2 border-transparent rounded-[20px] rotate-[0.82deg] translate-y-6 translate-x-4 scale-90"
+		class="absolute w-[350px] h-[350px] border-2 border-transparent rounded-[20px] rotate-[0.82deg] translate-y-6 translate-x-4 scale-90"
 	></div>
 
 	<div
 		style="background: linear-gradient( #0F0F0F, #0F0F0F) padding-box, linear-gradient(90deg, #FF3B10 0%, #F3C111 71.5%) border-box"
-		class="w-[350px] aspect-square border-[1.5px] border-transparent rounded-[20px] rotate-[-7.12deg] overflow-hidden"
+		class="w-[350px] h-[350px] border-[1.5px] border-transparent rounded-[20px] rotate-[-7.12deg] overflow-hidden"
 	>
 		<img
 			src="/images/trouble.png"
