@@ -89,7 +89,7 @@
 				</div>
 
 				<div
-					class="desktop:max-h-[500px] col-span-2 -desktop:col-span-6 -desktop:pb-2 -desktop:px-3 -desktop:order-first desktop:h-[450px]"
+					class="desktop:max-h-[500px] col-span-2 -desktop:col-span-6 -desktop:pb-2 -desktop:px-3 -desktop:order-first desktop:h-[450px] -desktop:h-[450px]"
 				>
 					<IndicatorCard />
 				</div>

@@ -185,7 +185,7 @@
 		: 'rounded-[26px]'} backdrop-blur-xl flex flex-col {onHomepage &&
 		'border-2 border-transparent'} {!onHomepage && 'border border-[#FFFFFF1A]'}"
 >
-	<div class="mx-auto">
+	<div class="mx-auto h-full flex flex-col">
 		<div class="relative max-h-[220px] w-full">
 			<div class="inset-x-0 grid place-items-center px-2 mt-4">
 				<Gauge percentage={$cfgi_summary ? percentage : 0} />

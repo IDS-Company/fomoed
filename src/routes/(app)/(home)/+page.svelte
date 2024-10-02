@@ -133,7 +133,7 @@
 		</div>
 	</div>
 
-	<div class="desktop:hidden px-4 mt-4">
+	<div class="desktop:hidden px-4 mt-4 h-[450px]">
 		<IndicatorCard />
 	</div>
 
