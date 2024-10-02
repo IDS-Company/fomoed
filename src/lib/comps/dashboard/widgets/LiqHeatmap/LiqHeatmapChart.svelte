@@ -1,7 +1,5 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import LoadingAnim from '$lib/comps/animations/LoadingAnim.svelte';
-	import { fade } from 'svelte/transition';
 	import { Chart } from 'chart.js/auto';
 	import 'chartjs-adapter-dayjs-4/dist/chartjs-adapter-dayjs-4.esm';
 	import { evaluate_cmap } from '$ts/utils/client/colormap';
@@ -12,11 +10,11 @@
 	export let exchange: string;
 	export let symbol: string;
 	export let maxLiqValue = 0;
-	export let isLoading = false;
+	export let loading = false;
 	export let error = false;
 
 	export async function refreshData() {
-		isLoading = true;
+		loading = true;
 		error = false;
 
 		if (chart) {
@@ -27,7 +25,7 @@
 
 		if (!data) {
 			error = true;
-			isLoading = false;
+			loading = false;
 			return;
 		}
 
@@ -151,7 +149,7 @@
 			});
 		}
 
-		isLoading = false;
+		loading = false;
 	}
 
 	onMount(async () => {
@@ -164,14 +162,8 @@
 </script>
 
 <div class="relative h-full">
-	{#if isLoading}
-		<div out:fade class="absolute inset-0 grid place-items-center">
-			<LoadingAnim />
-		</div>
-	{/if}
-
 	<canvas
-		class:opacity-0={isLoading || error}
+		class:opacity-0={loading || error}
 		bind:this={trend_chart_canvas}
 		style="background-image: linear-gradient(#440253, #440253)"
 	/>

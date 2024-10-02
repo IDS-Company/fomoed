@@ -10,6 +10,7 @@
 	export let hideCard = false;
 
 	let showSubRequired = false;
+	let loading: boolean;
 </script>
 
 <DashboardCard isChartCard {hideCard}>
@@ -35,8 +36,8 @@
 		</div>
 
 		<div class="pt-4 flex-grow">
-			<InCardChartContainer>
-				<HomepageBigChart></HomepageBigChart>
+			<InCardChartContainer {loading}>
+				<HomepageBigChart bind:loading></HomepageBigChart>
 			</InCardChartContainer>
 		</div>
 	</div>

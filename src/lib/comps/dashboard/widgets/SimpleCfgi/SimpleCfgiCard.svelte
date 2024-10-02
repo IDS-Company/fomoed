@@ -25,6 +25,7 @@
 	];
 
 	let selectedDuration: Option = durationOptions[0];
+	let loading: boolean;
 </script>
 
 <div class="h-full w-full overflow-hidden">
@@ -58,8 +59,8 @@
 			</div>
 
 			<div class="flex-grow desktop:px-[30px]">
-				<InCardChartContainer>
-					<SimpleCfgiChart daysBack={selectedDuration.value} />
+				<InCardChartContainer {loading}>
+					<SimpleCfgiChart bind:loading daysBack={selectedDuration.value} />
 				</InCardChartContainer>
 			</div>
 		</div>

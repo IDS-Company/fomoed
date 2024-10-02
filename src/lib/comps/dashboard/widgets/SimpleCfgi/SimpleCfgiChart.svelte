@@ -1,7 +1,5 @@
 <script lang="ts">
-	import { sleep, type ICoinCfgiPriceData } from '$lib';
-	import LoadingAnim from '$lib/comps/animations/LoadingAnim.svelte';
-	import { isDesktop } from '$lib/stores/ui';
+	import { type ICoinCfgiPriceData } from '$lib';
 	import {
 		Chart,
 		type ChartDataset,
@@ -13,13 +11,13 @@
 		type ScaleChartOptions
 	} from 'chart.js';
 	import { dayjs } from 'svelte-time';
-	import { fade } from 'svelte/transition';
 	import type { _DeepPartialObject } from 'chart.js/dist/types/utils';
 	import { coinstats_selected_coin } from '$lib/stores';
 	import { logged_in } from '$lib/stores/user';
 	import { fetchCfgi } from '$lib/comps/charts/chartUtils';
 
 	export let daysBack: number;
+	export let loading = true;
 
 	const color = '#47A663';
 
@@ -152,16 +150,9 @@
 		refreshData();
 	}
 
-	let loading = true;
 	let trend_chart_canvas: HTMLCanvasElement;
 </script>
 
 <div class="relative h-full">
-	{#if loading}
-		<div out:fade class="absolute inset-0 grid place-items-center">
-			<LoadingAnim />
-		</div>
-	{/if}
-
-	<canvas class:opacity-0={loading} bind:this={trend_chart_canvas} />
+	<canvas bind:this={trend_chart_canvas} />
 </div>

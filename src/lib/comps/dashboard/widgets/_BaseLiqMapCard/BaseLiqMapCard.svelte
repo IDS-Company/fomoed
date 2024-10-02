@@ -43,7 +43,7 @@
 	let selAssetOption = writable<TAssetOption | null>(null);
 
 	let refreshData: () => any;
-	let isLoading: boolean;
+	let loading: boolean;
 	let currentPrice: number;
 
 	const pairSearchTerm = writable($selAssetOption?.label || '');
@@ -59,7 +59,7 @@
 	});
 
 	async function safeRefreshData() {
-		isLoading = true;
+		loading = true;
 
 		await tick();
 
@@ -68,7 +68,7 @@
 		} catch (ex) {
 			console.error(ex);
 		} finally {
-			isLoading = false;
+			loading = false;
 		}
 	}
 
@@ -118,8 +118,8 @@
 				</div>
 
 				<div class="-desktop:order-2 place-self-end">
-					<IconButton disabled={isLoading} on:click={safeRefreshData}>
-						<div class:animate-reverse-spin={isLoading}>
+					<IconButton disabled={loading} on:click={safeRefreshData}>
+						<div class:animate-reverse-spin={loading}>
 							<IconRefresh />
 						</div>
 					</IconButton>
@@ -137,10 +137,9 @@
 				</div>
 
 				{#if $enablePlusFeatures}
-					<InCardChartContainer>
+					<InCardChartContainer {loading}>
 						{#if $selAssetOption}
 							<BaseLiqMapChart
-								{isLoading}
 								bind:refreshData
 								bind:currentPrice
 								fetchLiqMapData={() => fetchLiqMapData(selectedTimeframe.value, $selAssetOption)}

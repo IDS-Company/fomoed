@@ -5,10 +5,10 @@
 	const dispatch = createEventDispatcher();
 </script>
 
-<div class="fixed inset-0 p-4 z-50">
+<div class="fixed inset-0 desktop:p-4 z-50 overflow-hidden">
 	<div
-		class="
-		px-[30px] py-[22px] bg-[#0f0d0d] rounded-[26px] border border-white border-opacity-10 grid place-items-center w-full h-full overflow-scroll relative"
+		class="-desktop:px-2 -desktop:pb-2 -desktop:pt-14
+		desktop:px-[30px] desktop:py-[22px] bg-[#0f0d0d] desktop:rounded-[26px] desktop:border border-white border-opacity-10 grid place-items-center w-full h-full relative overscroll-none"
 	>
 		<div class="aspect-square absolute top-4 right-4">
 			<button
@@ -19,6 +19,8 @@
 			</button>
 		</div>
 
-		<slot />
+		<div class="h-full w-full">
+			<slot />
+		</div>
 	</div>
 </div>

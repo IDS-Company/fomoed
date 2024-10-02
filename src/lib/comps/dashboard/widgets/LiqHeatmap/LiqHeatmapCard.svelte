@@ -60,7 +60,7 @@
 
 	let refreshData: () => any;
 	let maxLiqValue: number;
-	let isLoading: boolean;
+	let loading: boolean;
 
 	const pairSearchTerm = writable($selectedExchangeOption?.label || '');
 
@@ -118,8 +118,8 @@
 				</div>
 
 				<div class="-desktop:order-2 place-self-end">
-					<IconButton disabled={isLoading} on:click={refreshData}>
-						<div class:animate-reverse-spin={isLoading}>
+					<IconButton disabled={loading} on:click={refreshData}>
+						<div class:animate-reverse-spin={loading}>
 							<IconRefresh />
 						</div>
 					</IconButton>
@@ -136,7 +136,7 @@
 			</div>
 
 			<div class="flex-grow gap-x-4">
-				<InCardChartContainer>
+				<InCardChartContainer {loading}>
 					<div class="flex gap-x-4 h-full px-[30px]">
 						<div
 							class="w-[40px] flex flex-col items-center text-[#FFFFFF66] font-paralucent font-medium text-xs gap-y-[5px]"
@@ -156,7 +156,7 @@
 								<LiqHeatmapChart
 									bind:refreshData
 									bind:maxLiqValue
-									bind:isLoading
+									bind:loading
 									timeframe={selectedTimeframe.value}
 									exchange={$selectedExchangeOption.value.exchange}
 									symbol={$selectedExchangeOption.value.instrumentId}

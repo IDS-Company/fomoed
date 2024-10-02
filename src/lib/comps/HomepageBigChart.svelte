@@ -18,6 +18,11 @@
 	import { get_data_color } from '$lib/utils';
 	import { onDestroy, tick } from 'svelte';
 
+	export let showLoadingAnim = false;
+	export let loading = false;
+
+	$: loading = $trend_chart_loading;
+
 	let cfgi_trend_chart: Chart;
 	let ctx: CanvasRenderingContext2D;
 
@@ -177,14 +182,14 @@
 </script>
 
 <div class="relative h-full">
-	{#if $trend_chart_loading}
+	{#if $trend_chart_loading && showLoadingAnim}
 		<div out:fade class="absolute inset-0">
 			<LoadingAnim />
 		</div>
 	{/if}
 
 	<canvas
-		class:opacity-0={$trend_chart_loading}
+		class:opacity-0={$trend_chart_loading && showLoadingAnim}
 		bind:this={trend_chart_canvas}
 		width="400"
 		class="h-[150px] -desktop:h-[300px]"

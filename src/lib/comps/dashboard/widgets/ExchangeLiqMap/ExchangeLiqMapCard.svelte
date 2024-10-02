@@ -28,11 +28,11 @@
 	let selectedTimeframe: Option = timeframeOptions[0];
 
 	let refreshData: () => any;
-	let isLoading: boolean;
+	let loading: boolean;
 	let currentPrice: number;
 
 	async function safeRefreshData() {
-		isLoading = true;
+		loading = true;
 
 		await tick();
 
@@ -41,7 +41,7 @@
 		} catch (ex) {
 			console.error(ex);
 		} finally {
-			isLoading = false;
+			loading = false;
 		}
 	}
 
@@ -79,8 +79,8 @@
 					<div class="-desktop:flex-grow"></div>
 
 					<div class="">
-						<IconButton disabled={isLoading} on:click={safeRefreshData}>
-							<div class:animate-reverse-spin={isLoading}>
+						<IconButton disabled={loading} on:click={safeRefreshData}>
+							<div class:animate-reverse-spin={loading}>
 								<IconRefresh />
 							</div>
 						</IconButton>
@@ -107,9 +107,8 @@
 				</div>
 
 				{#if $enablePlusFeatures}
-					<InCardChartContainer>
+					<InCardChartContainer {loading}>
 						<BaseLiqMapChart
-							{isLoading}
 							bind:refreshData
 							bind:currentPrice
 							fetchLiqMapData={() =>

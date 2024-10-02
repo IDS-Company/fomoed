@@ -1,6 +1,4 @@
 <script lang="ts">
-	import LoadingAnim from '$lib/comps/animations/LoadingAnim.svelte';
-	import { fade } from 'svelte/transition';
 	import { Chart } from 'chart.js/auto';
 	import 'chartjs-adapter-dayjs-4/dist/chartjs-adapter-dayjs-4.esm';
 	import annotationPlugin from 'chartjs-plugin-annotation';
@@ -11,7 +9,6 @@
 
 	export let currentPrice: number = 0;
 	export let fetchLiqMapData: () => Promise<LiqMapData>;
-	export let isLoading;
 
 	let refreshId = 0;
 
@@ -181,11 +178,5 @@
 </script>
 
 <div class="relative w-full h-full">
-	{#if isLoading}
-		<div out:fade class="absolute inset-0 grid place-items-center">
-			<LoadingAnim />
-		</div>
-	{/if}
-
-	<canvas class:opacity-0={isLoading} bind:this={trend_chart_canvas} />
+	<canvas bind:this={trend_chart_canvas} />
 </div>
