@@ -10,6 +10,10 @@ export async function fetchCoinglassHeatmap(range: string, exchange: string, sym
 	const res = await fetch(url, options);
 	const data = await res.json();
 
+	if (!res.ok) {
+		console.error(data);
+	}
+
 	return data;
 }
 
@@ -22,6 +26,10 @@ export async function fetchCoinglassLiqMap(range: string, exchange: string, symb
 
 	const res = await fetch(url, options);
 	const data = await res.json();
+
+	if (!res.ok) {
+		console.error(data);
+	}
 
 	return data;
 }
@@ -36,6 +44,10 @@ export async function fetchCoinglassSupportedPairs() {
 	const res = await fetch(url, options);
 	const data = await res.json();
 
+	if (!res.ok) {
+		console.error(data);
+	}
+
 	return data;
 }
 
@@ -48,6 +60,10 @@ export async function fetchPairMarkets(symbol: string) {
 
 	const res = await fetch(url, options);
 	const data = await res.json();
+
+	if (!res.ok) {
+		console.error(data);
+	}
 
 	return data;
 }
