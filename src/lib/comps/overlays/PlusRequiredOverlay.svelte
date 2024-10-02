@@ -8,7 +8,7 @@
 	in:fade={{ duration: 100 }}
 	class="bg-[#0F0F0F99] backdrop-blur-sm absolute inset-0 z-20 rounded-[28px] grid place-items-center"
 >
-	<div>
+	<div class="px-4">
 		<div class="text-[24px] font-paralucent-demibold text-center">
 			Get the next level plan to unlock more!
 		</div>
