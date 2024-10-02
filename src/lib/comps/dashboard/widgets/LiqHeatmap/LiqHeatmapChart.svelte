@@ -7,7 +7,6 @@
 	import { evaluate_cmap } from '$ts/utils/client/colormap';
 	import { formatRgb } from '$ts/utils/client/colors';
 	import { fetchHeatmapData } from '$lib/comps/charts/chartUtils';
-	import { failure } from '$lib/utils';
 
 	export let timeframe: string;
 	export let exchange: string;
@@ -27,7 +26,6 @@
 		const data = await fetchHeatmapData(timeframe, exchange, symbol);
 
 		if (!data) {
-			failure('Failed to fetch data');
 			error = true;
 			isLoading = false;
 			return;
@@ -99,6 +97,10 @@
 		];
 
 		if (trend_chart_canvas) {
+			if (chart) {
+				chart.destroy();
+			}
+
 			chart = new Chart(trend_chart_canvas, {
 				data: {
 					datasets
