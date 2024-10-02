@@ -12,7 +12,13 @@
 	export let fetchLiqMapData: () => Promise<LiqMapData>;
 	export let isLoading;
 
+	let refreshId = 0;
+
 	export async function refreshData() {
+		const localRefreshId = ++refreshId;
+
+		console.log({ localRefreshId, refreshId });
+
 		if (chart) {
 			chart.destroy();
 		}
@@ -20,6 +26,11 @@
 		const data = await fetchLiqMapData();
 
 		if (!data) {
+			return;
+		}
+
+		if (refreshId !== localRefreshId) {
+			console.log('refreshData: stale data');
 			return;
 		}
 
@@ -38,6 +49,14 @@
 		const gradientShort = ctx.createLinearGradient(0, 0, 0, 400);
 		gradientShort.addColorStop(0, '#FF3B1022');
 		gradientShort.addColorStop(1, '#FF3B1000');
+
+		if (chart) {
+			chart.destroy();
+		}
+
+		if (!trend_chart_canvas) {
+			return;
+		}
 
 		chart = new Chart(trend_chart_canvas, {
 			data: {
@@ -153,12 +172,6 @@
 						}
 					}
 				}
-				// onResize: (chart, { width, height }) => {
-				// 	const widthWithoutScales = width - 50;
-				// 	const pxPerTimePoint = widthWithoutScales / n_time_points;
-
-				// 	chart.data.datasets[1].pointRadius = pxPerTimePoint;
-				// }
 			}
 		});
 	}
