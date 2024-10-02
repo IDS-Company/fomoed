@@ -11,7 +11,7 @@
 
 <BaseLiqMapCard
 	{hideCard}
-	getTitle={(s) => `${s.value.exchange} ${s.value.baseAsset} ${s.value.quoteAsset} Liquidation Map`}
+	getTitle={(s) => `${s.value.baseAsset}/${s.value.quoteAsset}`}
 	getInstrumentOptions={getSupportedLiqMapInstrumentOptions}
 	fetchLiqMapData={(timeframe, selAssetOption) =>
 		fetchLiqMapData(timeframe, [selAssetOption.value])}

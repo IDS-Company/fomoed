@@ -14,12 +14,9 @@
 	} from 'chart.js/auto';
 	import LoadingAnim from './animations/LoadingAnim.svelte';
 	import { fade } from 'svelte/transition';
-	import { sleep } from '$lib';
 	import { isDesktop } from '$lib/stores/ui';
 	import { get_data_color } from '$lib/utils';
 	import { onDestroy, tick } from 'svelte';
-
-	const color = '#47A663';
 
 	let cfgi_trend_chart: Chart;
 	let ctx: CanvasRenderingContext2D;
@@ -80,8 +77,11 @@
 				ScaleChartOptions<'bar'> &
 				LineControllerChartOptions
 		> = {
-			animation: false,
 			resizeDelay: 500,
+			interaction: {
+				mode: 'nearest',
+				intersect: false
+			},
 			responsive: true,
 			maintainAspectRatio: false,
 			scales: {
@@ -127,11 +127,12 @@
 						font: { family: 'Manrope', size: 8 },
 						autoSkip: true
 						// color: '#aaa'
-					},
-					beforeFit: function (axis: any) {
-						var l = axis.getLabels();
-						axis.ticks.push({ value: axis.max, label: l[axis.max] });
 					}
+					// To append last tick
+					// beforeFit: function (axis: any) {
+					// 	var l = axis.getLabels();
+					// 	axis.ticks.push({ value: axis.max, label: l[axis.max] });
+					// }
 				}
 			},
 			plugins: {
@@ -153,10 +154,14 @@
 
 	let trend_chart_canvas: HTMLCanvasElement;
 
-	$: if (!$trend_chart_loading && trend_chart_canvas) {
-		ctx = trend_chart_canvas.getContext('2d')!;
-		chart_init();
-	}
+	trend_chart_loading.subscribe(async (loading) => {
+		await tick();
+
+		if (!loading && trend_chart_canvas) {
+			ctx = trend_chart_canvas.getContext('2d')!;
+			chart_init();
+		}
+	});
 
 	const resizeUnsub = isDesktop.subscribe((desktop) => {
 		if (cfgi_trend_chart) {

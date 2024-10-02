@@ -5,6 +5,7 @@
 	import 'chartjs-adapter-dayjs-4/dist/chartjs-adapter-dayjs-4.esm';
 	import annotationPlugin from 'chartjs-plugin-annotation';
 	import type { LiqMapData } from '../chartUtils';
+	import { failure } from '$lib/utils';
 
 	Chart.register(annotationPlugin);
 
@@ -17,8 +18,6 @@
 	export async function refreshData() {
 		const localRefreshId = ++refreshId;
 
-		console.log({ localRefreshId, refreshId });
-
 		if (chart) {
 			chart.destroy();
 		}
@@ -26,6 +25,7 @@
 		const data = await fetchLiqMapData();
 
 		if (!data) {
+			failure('No data.');
 			return;
 		}
 

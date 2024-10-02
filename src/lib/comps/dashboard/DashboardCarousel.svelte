@@ -29,7 +29,7 @@
 	];
 </script>
 
-<div class="w-full h-full relative -desktop:min-h-[600px]">
+<div class="w-full h-full relative -desktop:h-[700px] desktop:h-[450px]">
 	<svelte:component this={components[page]} />
 
 	<div class="absolute inset-0 flex items-center h-full z-30 pointer-events-none">

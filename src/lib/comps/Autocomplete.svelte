@@ -15,10 +15,19 @@
 	$: displayedOptions = startedTyping
 		? options.filter((option) => option.label.toLowerCase().includes(inputValue.toLowerCase()))
 		: cloneDeep(options);
+
+	function toggle() {
+		hasFocus = !hasFocus;
+		startedTyping = false;
+	}
 </script>
 
 <div
-	class="relative w-full rounded-xl border-[#FFFFFF4D] border h-full pl-[14px] flex items-center gap-x-2 bg-[#12100F]"
+	tabindex={0}
+	on:click={toggle}
+	on:keydown={toggle}
+	class="duration-200 relative w-full rounded-xl border-[#FFFFFF1A] border h-full pl-[14px] flex items-center gap-x-2 bg-[#12100F] hover:bg-[#FBFBFB1A] hover:border-[#FFFFFF1A] hover:cursor-pointer"
+	role="button"
 >
 	<div class="pb-px">
 		<AutocompleteSearch />
@@ -28,26 +37,22 @@
 		bind:value={inputValue}
 		class="w-full bg-transparent font-paralucent font-medium text-sm outline-none placeholder-[#FFFFFF80]"
 		placeholder="Search"
-		on:focusin={() => {
-			hasFocus = true;
-			startedTyping = false;
-		}}
 		on:input={() => {
 			startedTyping = true;
 		}}
 	/>
 
-	<button on:click={() => (hasFocus = !hasFocus)} class="pr-[14px]">
+	<div class="pr-[14px]">
 		<div class:rotate-180={hasFocus} class="duration-200">
 			<DropdownArrow />
 		</div>
-	</button>
+	</div>
 
 	{#if hasFocus}
 		<div
-			class="absolute top-0 left-0 translate-y-16 border border-[#FFFFFF1A] bg-[#0F0D0DE5] rounded-xl w-full h-[200px]"
+			class="absolute top-0 left-0 translate-y-16 border border-[#FFFFFF1A] bg-[#0F0D0DE5] rounded-xl w-full h-[300px]"
 		>
-			<div class="overflow-y-scroll py-3 h-full">
+			<div class="overflow-y-scroll py-3 h-full" data-simplebar>
 				{#each displayedOptions as option}
 					<div>
 						<button

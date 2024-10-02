@@ -17,6 +17,9 @@
 	import PlusRequiredOverlay from '$lib/comps/overlays/PlusRequiredOverlay.svelte';
 	import { ClientSubscriptionManager } from '$ts/utils/client/plans';
 	import { coinstats_selected_coin } from '$lib/stores';
+	import InCardChartContainer from '$lib/comps/InCardChartContainer.svelte';
+	import DashboardCardTitle from '$lib/comps/DashboardCardTitle.svelte';
+	import DashboardCardHeader from '$lib/comps/DashboardCardHeader.svelte';
 
 	export let hideCard = false;
 
@@ -74,36 +77,25 @@
 	});
 
 	$: title =
-		$selectedExchangeOption?.value.exchange +
-		' ' +
-		$selectedExchangeOption?.value.baseAsset +
+		($selectedExchangeOption?.value.baseAsset || $coinstats_selected_coin.symbol) +
 		'/' +
-		$selectedExchangeOption?.value.quoteAsset +
-		' ' +
-		'Liquidation Heatmap';
+		($selectedExchangeOption?.value.quoteAsset || 'USDT');
 </script>
 
 <div class="h-full w-full overflow-hidden">
-	<DashboardCard disablePadding {hideCard}>
+	<DashboardCard isChartCard {hideCard}>
 		{#if !$enablePlusFeatures}
 			<div class="absolute inset-px">
 				<PlusRequiredOverlay />
 			</div>
 		{/if}
 
-		<div class="flex flex-col w-full h-full py-[22px] px-3 -desktop:px-1">
-			<div
-				class="flex items-center w-full -desktop:flex-col -desktop:items-start px-[30px] -desktop:px-4"
-			>
-				<div
-					class="flex-grow font-paralucent-demibold font-light text-[20px] z-50 -desktop:text-base -desktop:pb-2"
-					class:brightness-50={!$enablePlusFeatures}
-				>
-					{($selectedExchangeOption && title) || ''}
-				</div>
+		<div class="flex flex-col w-full h-full">
+			<DashboardCardHeader>
+				<DashboardCardTitle {title} subtitle="Liquidation Heatmap"></DashboardCardTitle>
 
-				<div class="-desktop:mt-2 flex gap-x-2">
-					<div class="w-40 z-10 -desktop:w-32">
+				<div class="col-span-2 -desktop:order-3 flex gap-x-2">
+					<div class="desktop:w-56 z-10 -desktop:w-32 h-14 -desktop:order-3 -desktop:flex-grow">
 						{#if $selectedExchangeOption}
 							<Autocomplete
 								options={exchangeOptions}
@@ -113,7 +105,7 @@
 						{/if}
 					</div>
 
-					<div class="w-32 z-10">
+					<div class="w-32 z-10 h-14 -desktop:order-4">
 						<DropdownNew
 							options={timeframeOptions}
 							bind:selected={selectedTimeframe}
@@ -123,56 +115,56 @@
 							}}
 						/>
 					</div>
-
-					<div class="mr-4">
-						<IconButton disabled={isLoading} on:click={refreshData}>
-							<div class:animate-reverse-spin={isLoading}>
-								<IconRefresh />
-							</div>
-						</IconButton>
-					</div>
 				</div>
+
+				<div class="-desktop:order-2 place-self-end">
+					<IconButton disabled={isLoading} on:click={refreshData}>
+						<div class:animate-reverse-spin={isLoading}>
+							<IconRefresh />
+						</div>
+					</IconButton>
+				</div>
+			</DashboardCardHeader>
+
+			<div class="px-[30px] -desktop:px-4 pb-3 pt-3 desktop:pl-32">
+				<Legend
+					legends={[
+						{ color: '#440253', label: 'Liquidation Leverage' },
+						{ color: '#0DCB81', label: 'Supercharts' }
+					]}
+				></Legend>
 			</div>
 
-			<div class="flex flex-grow gap-x-4 px-4 mt-4">
-				<!-- Scale -->
-				<div
-					class="pt-10 w-[40px] flex flex-col items-center text-[#FFFFFF66] font-paralucent font-medium text-xs gap-y-[5px]"
-				>
-					<div class="whitespace-nowrap">{humanizeNumber(maxLiqValue)}</div>
+			<div class="flex-grow gap-x-4">
+				<InCardChartContainer>
+					<div class="flex gap-x-4 h-full px-[30px]">
+						<div
+							class="w-[40px] flex flex-col items-center text-[#FFFFFF66] font-paralucent font-medium text-xs gap-y-[5px]"
+						>
+							<div class="whitespace-nowrap">{humanizeNumber(maxLiqValue)}</div>
 
-					<div
-						class="rounded-[10px] flex-grow w-full"
-						style="background: linear-gradient(180deg, #E7E60B 0%, #63C752 22.5%, #27A77D 47%, #2F5C86 75%, #44095F 100%);"
-					></div>
+							<div
+								class="rounded-[10px] flex-grow w-full"
+								style="background: linear-gradient(180deg, #E7E60B 0%, #63C752 22.5%, #27A77D 47%, #2F5C86 75%, #44095F 100%);"
+							></div>
 
-					<div>0</div>
-				</div>
+							<div>0</div>
+						</div>
 
-				<!-- Legend and Chart -->
-				<div class="flex-grow h-full flex flex-col">
-					<div class="flex-grow-0 mt-4 -desktop:mt-6 px-[30px] -desktop:px-4">
-						<Legend
-							legends={[
-								{ color: '#440253', label: 'Liquidation Leverage' },
-								{ color: '#0DCB81', label: 'Supercharts' }
-							]}
-						></Legend>
+						<div class="flex-grow h-full">
+							{#if $enablePlusFeatures && $selectedExchangeOption}
+								<LiqHeatmapChart
+									bind:refreshData
+									bind:maxLiqValue
+									bind:isLoading
+									timeframe={selectedTimeframe.value}
+									exchange={$selectedExchangeOption.value.exchange}
+									symbol={$selectedExchangeOption.value.instrumentId}
+								/>
+							{/if}
+						</div>
 					</div>
-
-					<div class="flex-grow mt-4 desktop:px-[30px]">
-						{#if $enablePlusFeatures && $selectedExchangeOption}
-							<LiqHeatmapChart
-								bind:refreshData
-								bind:maxLiqValue
-								bind:isLoading
-								timeframe={selectedTimeframe.value}
-								exchange={$selectedExchangeOption.value.exchange}
-								symbol={$selectedExchangeOption.value.instrumentId}
-							/>
-						{/if}
-					</div>
-				</div>
+				</InCardChartContainer>
 			</div>
 		</div>
 	</DashboardCard>

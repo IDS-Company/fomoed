@@ -64,11 +64,15 @@
 				LineControllerChartOptions
 		> = {
 			animation: {
-				duration: 0
+				duration: 500
 			},
 			responsive: true,
 			resizeDelay: 500,
 			maintainAspectRatio: false,
+			interaction: {
+				mode: 'nearest',
+				intersect: false
+			},
 			scales: {
 				y: {
 					beginAtZero: true,

@@ -1,20 +1,14 @@
 <script lang="ts">
 	import AppNav from '$lib/comps/AppNav.svelte';
 	import DashboardCard from '$lib/comps/DashboardCard.svelte';
-	import DurationSwitcher from '$lib/comps/DurationSwitcher.svelte';
-	import HomepageBigChart from '$lib/comps/HomepageBigChart.svelte';
 	import HomepageSmallChart from '$lib/comps/HomepageSmallChart.svelte';
 	import IndicatorCard from '$lib/comps/IndicatorCard.svelte';
 	import { coinstats_global_data, coinstats_selected_coin } from '$lib/stores';
 	import ScrollerDots from '$lib/comps/ScrollerDots.svelte';
 	import Footer from '$lib/comps/Footer.svelte';
-	import GetFreeTrialOverlay from '$lib/comps/overlays/GetFreeTrialOverlay.svelte';
 	import DashboardCarousel from '$lib/comps/dashboard/DashboardCarousel.svelte';
-	import FullScreenModal from '$lib/comps/FullScreenModal.svelte';
 
 	let smallChartsCointainer: HTMLElement;
-
-	let displaySubscriptionRequired = false;
 </script>
 
 <div
@@ -81,66 +75,21 @@
 				</div>
 			</div>
 
-			<div class="col-span-6 mb-6 mt-2 desktop:hidden">
+			<div class="col-span-6 mb-6 -desktop:mb-2 mt-2 desktop:hidden">
 				<ScrollerDots pages={4} container={smallChartsCointainer}></ScrollerDots>
 			</div>
 
-			<div class="col-span-4 -desktop:col-span-6 h-full -desktop:mx-3 flex-grow relative">
-				<DashboardCarousel />
-			</div>
+			<div class="col-span-6 grid grid-cols-subgrid">
+				<div class="col-span-4 -desktop:col-span-6 h-full -desktop:px-3 flex-grow relative">
+					<DashboardCarousel />
+				</div>
 
-			<div
-				class="max-h-[500px] col-span-2 -desktop:col-span-6 -desktop:pb-2 -desktop:mx-3 -desktop:mt-1"
-			>
-				<IndicatorCard />
-			</div>
-
-			<!-- <div class="col-span-6 px-3">
-				<LiquidationMapChartCard
-					getTitle={(s) =>
-						`${s.value.exchange} ${s.value.baseAsset} ${s.value.quoteAsset} Liquidation Map`}
-					getInstrumentOptions={getSupportedLiqMapInstrumentOptions}
-					fetchLiqMapData={(timeframe, selAssetOption) =>
-						fetchLiqMapData(timeframe, [selAssetOption.value])}
-					defaultAssetOption={{
-						label: 'Binance BTC/USDT',
-						value: defaultSelectedInstrument
-					}}
+				<div
+					class="desktop:max-h-[500px] col-span-2 -desktop:col-span-6 -desktop:pb-2 -desktop:px-3 -desktop:order-first desktop:h-[450px]"
 				>
-					<Legend
-						slot="legend"
-						legends={[
-							{ color: '#21AA94', label: 'Cumulative Short Liquidation Leverage' },
-							{ color: '#F23645', label: 'Cumulative Long Liquidation Leverage' },
-							{ color: '#FF8300', label: '100x Leverage' },
-							{ color: '#FFC403', label: '50x Leverage' },
-							{ color: '#73D8DA', label: '25x Leverage' },
-							{ color: '#6EC2F0', label: '10x Leverage' }
-						]}
-					></Legend>
-				</LiquidationMapChartCard>
+					<IndicatorCard />
+				</div>
 			</div>
-
-			<div class="col-span-6 px-3">
-				<LiquidationMapChartCard
-					getTitle={(s) => `${s.value} Exchange Liquidation Map`}
-					getInstrumentOptions={getSupportedExchangeLiqMapBaseAssets}
-					fetchLiqMapData={(timeframe, selAssetOption) =>
-						fetchLiqMapDataMerged(timeframe, selAssetOption.value)}
-					defaultAssetOption={{ label: 'BTC', value: 'BTC' }}
-				>
-					<Legend
-						slot="legend"
-						legends={[
-							{ color: '#21AA94', label: 'Cumulative Short Liquidation Leverage' },
-							{ color: '#F23645', label: 'Cumulative Long Liquidation Leverage' },
-							{ color: '#FF8300', label: 'Binance' },
-							{ color: '#FFC403', label: 'OKX' },
-							{ color: '#73D8DA', label: 'Bybit' }
-						]}
-					></Legend>
-				</LiquidationMapChartCard>
-			</div> -->
 		</div>
 	</div>
 

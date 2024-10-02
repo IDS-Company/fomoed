@@ -1,8 +1,11 @@
 <script lang="ts">
 	import DashboardCard from '$lib/comps/DashboardCard.svelte';
+	import DashboardCardTitle from '$lib/comps/DashboardCardTitle.svelte';
 	import DurationSwitcher from '$lib/comps/DurationSwitcher.svelte';
+	import InCardChartContainer from '$lib/comps/InCardChartContainer.svelte';
 	import Legend from '$lib/comps/charts/Legend.svelte';
 	import PlusRequiredOverlay from '$lib/comps/overlays/PlusRequiredOverlay.svelte';
+	import { coinstats_selected_coin } from '$lib/stores';
 	import { ClientSubscriptionManager } from '$ts/utils/client/plans';
 
 	export let hideCard = false;
@@ -25,25 +28,23 @@
 </script>
 
 <div class="h-full w-full overflow-hidden">
-	<DashboardCard disablePadding {hideCard}>
+	<DashboardCard isChartCard {hideCard}>
 		{#if !$enablePlusFeatures}
 			<div class="absolute inset-px">
 				<PlusRequiredOverlay />
 			</div>
 		{/if}
 
-		<div class="flex flex-col h-full py-[22px] w-full">
+		<div class="flex flex-col h-full w-full">
 			<div
 				class="flex items-center w-full -desktop:flex-col -desktop:items-start px-[30px] -desktop:px-4"
 			>
-				<div
-					class="flex-grow font-paralucent-demibold font-light text-[20px] h-full z-50"
-					class:brightness-50={!$enablePlusFeatures}
-				>
-					Crypto Fear & Greed Index Over Time
-				</div>
+				<DashboardCardTitle
+					title={$coinstats_selected_coin?.name || 'Bitcoin'}
+					subtitle="Simplified Crypto Fear and Greed Chart"
+				></DashboardCardTitle>
 
-				<div class="-desktop:mt-2">
+				<div class="-desktop:mt-3 -desktop:w-full">
 					<DurationSwitcher
 						autoFetchTokenData={false}
 						bind:selected={selectedDuration}
@@ -56,8 +57,10 @@
 				<Legend legends={[{ color: '#399F57', label: 'Crypto Fear & Greed Index' }]}></Legend>
 			</div>
 
-			<div class="flex-grow mt-4 desktop:px-[30px]">
-				<SimpleCfgiChart daysBack={selectedDuration.value} />
+			<div class="flex-grow desktop:px-[30px]">
+				<InCardChartContainer>
+					<SimpleCfgiChart daysBack={selectedDuration.value} />
+				</InCardChartContainer>
 			</div>
 		</div>
 	</DashboardCard>

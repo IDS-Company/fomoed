@@ -163,7 +163,7 @@
 	let chart: Chart;
 </script>
 
-<div class="relative w-full h-full">
+<div class="relative h-full">
 	{#if isLoading}
 		<div out:fade class="absolute inset-0 grid place-items-center">
 			<LoadingAnim />

@@ -10,6 +10,9 @@
 	import Legend from '$lib/comps/charts/Legend.svelte';
 	import BaseLiqMapChart from '../_BaseLiqMapCard/BaseLiqMapChart.svelte';
 	import { fetchLiqMapDataMerged } from '$lib/comps/charts/chartUtils';
+	import DashboardCardTitle from '$lib/comps/DashboardCardTitle.svelte';
+	import DashboardCardHeader from '$lib/comps/DashboardCardHeader.svelte';
+	import InCardChartContainer from '$lib/comps/InCardChartContainer.svelte';
 
 	export let hideCard = false;
 
@@ -48,25 +51,21 @@
 </script>
 
 <div class="h-full w-full overflow-hidden">
-	<DashboardCard disablePadding {hideCard}>
+	<DashboardCard isChartCard {hideCard}>
 		{#if !$enablePlusFeatures}
 			<div class="absolute inset-px">
 				<PlusRequiredOverlay />
 			</div>
 		{/if}
 
-		<div class="flex flex-col w-full h-full py-[22px] px-3 -desktop:px-1">
-			<div
-				class="flex items-center w-full -desktop:flex-col -desktop:items-start px-[30px] -desktop:px-4"
-			>
-				<div
-					class="flex-grow font-paralucent-demibold font-light text-[20px] z-50 -desktop:text-base -desktop:pb-2"
-					class:brightness-50={!$enablePlusFeatures}
-				>
-					{$coinstats_selected_coin.symbol} Exchange Liquidation Map
-				</div>
+		<div class="flex flex-col w-full h-full">
+			<DashboardCardHeader>
+				<DashboardCardTitle
+					title={$coinstats_selected_coin.name.toUpperCase()}
+					subtitle="Exchange Liquidation Map"
+				/>
 
-				<div class="-desktop:mt-2 flex gap-x-1">
+				<div class="-desktop:mt-2 flex gap-x-1 place-self-end">
 					<div class="z-10">
 						<DropdownNew
 							options={timeframeOptions}
@@ -79,7 +78,7 @@
 
 					<div class="-desktop:flex-grow"></div>
 
-					<div class="mr-4">
+					<div class="">
 						<IconButton disabled={isLoading} on:click={safeRefreshData}>
 							<div class:animate-reverse-spin={isLoading}>
 								<IconRefresh />
@@ -87,7 +86,7 @@
 						</IconButton>
 					</div>
 				</div>
-			</div>
+			</DashboardCardHeader>
 
 			<!-- Legend and Chart -->
 			<div class="flex-grow h-full flex flex-col">
@@ -103,12 +102,12 @@
 					></Legend>
 				</div>
 
-				<div class="text-sm text-center pt-1">
+				<div class="text-sm text-center pt-1 -desktop:text-xs">
 					Current Price: {currentPrice}
 				</div>
 
 				{#if $enablePlusFeatures}
-					<div class="flex-grow desktop:px-[30px]">
+					<InCardChartContainer>
 						<BaseLiqMapChart
 							{isLoading}
 							bind:refreshData
@@ -116,7 +115,7 @@
 							fetchLiqMapData={() =>
 								fetchLiqMapDataMerged(selectedTimeframe.value, $coinstats_selected_coin.symbol)}
 						/>
-					</div>
+					</InCardChartContainer>
 				{/if}
 			</div>
 		</div>

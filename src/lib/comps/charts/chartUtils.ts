@@ -242,6 +242,11 @@ export async function fetchLiqMapDataMerged(
 	const minPrice = Math.min(...minPrices);
 	const maxPrice = Math.max(...maxPrices);
 
+	if (minPrice === Infinity) {
+		// No data
+		return null;
+	}
+
 	const cumulativeLongLiqLeverage: { x: number; y: number }[] = [];
 	const cumulativeShortLiqLeverage: { x: number; y: number }[] = [];
 

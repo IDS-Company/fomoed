@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { coinstats_selected_coin } from '$lib/stores';
 	import { auth_user } from '$lib/stores/user';
-	import { fetch_token_data } from '$lib/utils';
+	import { get_token_data } from '$lib/utils';
 	import { CfgiPeriods, type Option } from '$lib/utils/cfgi_data';
 	import { createEventDispatcher } from 'svelte';
 
@@ -14,7 +14,9 @@
 	export let autoFetchTokenData = true;
 
 	$: if ($coinstats_selected_coin && selected && autoFetchTokenData) {
-		fetch_token_data(
+		// console.log($coinstats_selected_coin, selected, autoFetchTokenData);
+
+		get_token_data(
 			$coinstats_selected_coin.symbol,
 			$coinstats_selected_coin.slug,
 			selected.value,
@@ -36,7 +38,7 @@
 		<button
 			disabled={opt.disabled}
 			on:click={() => selectDuration(opt)}
-			class="font-paralucent font-light border border-[#FFFFFF1A] rounded-[11px] w-[44px] h-[38px] {selected ===
+			class="font-paralucent font-light border border-[#FFFFFF1A] rounded-[11px] w-[44px] h-[38px] flex-grow {selected ===
 			opt
 				? 'bg-[#FFFFFF1A]'
 				: ''}"
