@@ -53,8 +53,6 @@
 		exchangeOptions = filtered;
 		selectedExchangeOption.set(filtered[0]);
 		pairSearchTerm.set(filtered[0].label);
-
-		console.log({ exchangeOptions });
 	}
 
 	let refreshData: () => any;

@@ -15,9 +15,6 @@
 	$: displayedOptions = startedTyping
 		? options.filter((option) => option.label.toLowerCase().includes(inputValue.toLowerCase()))
 		: cloneDeep(options);
-
-	$: console.log({ startedTyping });
-	$: console.log({ options });
 </script>
 
 <div
