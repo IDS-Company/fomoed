@@ -43,7 +43,7 @@
 	type ExchangeOption = { label: string; value: InstrumentInfo };
 
 	let exchangeOptions: ExchangeOption[] = [];
-	let selectedExchangeOption = writable<ExchangeOption | null>();
+	let selectedExchangeOption = writable<ExchangeOption | null>(null);
 
 	async function loadExchangeOptions() {
 		const suppExchangePairs = await getCacheOrFetchSupportedExchangePairs();
@@ -60,7 +60,7 @@
 
 	let refreshData: () => any;
 	let maxLiqValue: number;
-	let loading: boolean;
+	let loading: boolean = true;
 
 	const pairSearchTerm = writable($selectedExchangeOption?.label || '');
 
@@ -80,6 +80,7 @@
 		($selectedExchangeOption?.value.baseAsset || $coinstats_selected_coin.symbol) +
 		'/' +
 		($selectedExchangeOption?.value.quoteAsset || 'USDT');
+	$: humanizedMaxLiqValue = humanizeNumber(maxLiqValue);
 </script>
 
 <div class="h-full w-full overflow-hidden">
@@ -96,13 +97,11 @@
 
 				<div class="col-span-2 -desktop:order-3 flex gap-x-2">
 					<div class="desktop:w-56 z-10 -desktop:w-32 h-14 -desktop:order-3 -desktop:flex-grow">
-						{#if $selectedExchangeOption}
-							<Autocomplete
-								options={exchangeOptions}
-								bind:inputValue={$pairSearchTerm}
-								bind:selected={$selectedExchangeOption}
-							/>
-						{/if}
+						<Autocomplete
+							options={exchangeOptions}
+							bind:inputValue={$pairSearchTerm}
+							bind:selected={$selectedExchangeOption}
+						/>
 					</div>
 
 					<div class="w-32 z-10 h-14 -desktop:order-4">
@@ -139,9 +138,10 @@
 				<InCardChartContainer {loading}>
 					<div class="flex gap-x-4 h-full px-[30px]">
 						<div
-							class="w-[40px] flex flex-col items-center text-[#FFFFFF66] font-paralucent font-medium text-xs gap-y-[5px]"
+							class:opacity-0={!humanizedMaxLiqValue}
+							class="w-[40px] flex flex-col items-center text-[#FFFFFF66] font-paralucent font-medium text-xs gap-y-[5px] duration-500"
 						>
-							<div class="whitespace-nowrap">{humanizeNumber(maxLiqValue)}</div>
+							<div class="whitespace-nowrap">{humanizedMaxLiqValue}</div>
 
 							<div
 								class="rounded-[10px] flex-grow w-full"

@@ -4,6 +4,7 @@
 		getSupportedLiqMapInstrumentOptions
 	} from '$lib/comps/charts/chartUtils';
 	import Legend from '$lib/comps/charts/Legend.svelte';
+	import { coinstats_selected_coin } from '$lib/stores';
 	import BaseLiqMapCard from '../_BaseLiqMapCard/BaseLiqMapCard.svelte';
 
 	export let hideCard = false;
@@ -11,7 +12,8 @@
 
 <BaseLiqMapCard
 	{hideCard}
-	getTitle={(s) => `${s.value.baseAsset}/${s.value.quoteAsset}`}
+	getTitle={(s) =>
+		`${s?.value.baseAsset || $coinstats_selected_coin.symbol}/${s?.value.quoteAsset || 'USDT'}`}
 	getInstrumentOptions={getSupportedLiqMapInstrumentOptions}
 	fetchLiqMapData={(timeframe, selAssetOption) =>
 		fetchLiqMapData(timeframe, [selAssetOption.value])}

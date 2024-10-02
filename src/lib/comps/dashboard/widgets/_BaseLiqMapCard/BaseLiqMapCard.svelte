@@ -23,7 +23,7 @@
 	type TAssetOptionVal = $$Generic;
 	type TAssetOption = { label: string; value: TAssetOptionVal };
 
-	export let getTitle: (selExchangeOption: Option) => string;
+	export let getTitle: (selExchangeOption: Option | null) => string;
 	export let getInstrumentOptions: () => Promise<TAssetOption[]>;
 	export let fetchLiqMapData: (
 		timeframe: string,
@@ -90,20 +90,15 @@
 
 		<div class="flex flex-col w-full h-full">
 			<DashboardCardHeader>
-				<DashboardCardTitle
-					title={($selAssetOption && getTitle($selAssetOption)) || ''}
-					subtitle="Liquidation Map"
-				/>
+				<DashboardCardTitle title={getTitle($selAssetOption)} subtitle="Liquidation Map" />
 
 				<div class="col-span-2 -desktop:order-3 flex gap-x-2">
 					<div class="w-40 z-10 -desktop:flex-grow desktop:w-56 h-14">
-						{#if $selAssetOption}
-							<Autocomplete
-								options={assetOptions}
-								bind:inputValue={$pairSearchTerm}
-								bind:selected={$selAssetOption}
-							/>
-						{/if}
+						<Autocomplete
+							options={assetOptions}
+							bind:inputValue={$pairSearchTerm}
+							bind:selected={$selAssetOption}
+						/>
 					</div>
 
 					<div class="w-32 z-10">

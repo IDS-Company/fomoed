@@ -6,8 +6,8 @@
 	type Option = { label: string; value: any };
 
 	export let options: Option[];
-	export let selected = options[0];
-	export let inputValue: string = selected.label;
+	export let selected: Option | null = options[0];
+	export let inputValue: string = selected?.label || '';
 
 	let hasFocus = false;
 	let startedTyping = false;
