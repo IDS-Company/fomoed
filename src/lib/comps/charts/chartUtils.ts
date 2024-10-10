@@ -192,7 +192,7 @@ export async function fetchLiqMapData(
 
 	for (const liqBar of liqBars.slice(lastCurrPriceIdx, -1)) {
 		cumulativeLongLiqLeverageAcc += liqBar.y;
-		cumulativeLongLiqLeverage.push({ x: liqBar.x, y: ~~cumulativeLongLiqLeverageAcc });
+		cumulativeLongLiqLeverage.push({ x: liqBar.x, y: Math.round(cumulativeLongLiqLeverageAcc) });
 	}
 
 	// Short
@@ -200,7 +200,7 @@ export async function fetchLiqMapData(
 
 	for (const liqBar of liqBars.slice(0, lastCurrPriceIdx).toReversed()) {
 		cumulativeShortLiqLeverageAcc += liqBar.y;
-		cumulativeShortLiqLeverage.push({ x: liqBar.x, y: ~~cumulativeShortLiqLeverageAcc });
+		cumulativeShortLiqLeverage.push({ x: liqBar.x, y: Math.round(cumulativeShortLiqLeverageAcc) });
 	}
 
 	return {
@@ -258,7 +258,7 @@ export async function fetchLiqMapDataMerged(
 			cumulativeLongLiqLeverageAcc += exLiqData[ex][price] || 0;
 		}
 
-		cumulativeLongLiqLeverage.push({ x: price, y: cumulativeLongLiqLeverageAcc });
+		cumulativeLongLiqLeverage.push({ x: price, y: Math.round(cumulativeLongLiqLeverageAcc) });
 	}
 
 	for (const price of range(currentPriceUsd, minPrice - 1, -1)) {
@@ -266,7 +266,7 @@ export async function fetchLiqMapDataMerged(
 			cumulativeShortLiqLeverageAcc += exLiqData[ex][price] || 0;
 		}
 
-		cumulativeShortLiqLeverage.push({ x: price, y: cumulativeShortLiqLeverageAcc });
+		cumulativeShortLiqLeverage.push({ x: price, y: Math.round(cumulativeShortLiqLeverageAcc) });
 	}
 
 	const exToBarColor: Record<string, string> = {
