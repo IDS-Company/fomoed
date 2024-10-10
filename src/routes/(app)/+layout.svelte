@@ -10,7 +10,7 @@
 
 	import { page } from '$app/stores';
 	import { no_reroute_routes } from '$lib';
-	import { auth_email } from '$lib/stores/user';
+	import { auth_email, logged_in } from '$lib/stores/user';
 	import { SvelteToast } from '@zerodevx/svelte-toast';
 	import { failure, fetch_global_data } from '$lib/utils/index.js';
 	import { MetaTags } from 'svelte-meta-tags';
@@ -38,6 +38,7 @@
 				 * triggering function from completing
 				 */
 				auth_email.set(null);
+				logged_in.set(false);
 
 				if ($page.route.id && !no_reroute_routes.includes($page.route.id)) {
 					setTimeout(() => {
@@ -47,7 +48,10 @@
 			} else {
 				if (newSession?.expires_at && Date.now() / 1000 < newSession?.expires_at) {
 					// Refresh the user data/information
-					browser && user?.email && auth_email.set(user?.email);
+					if (browser && user?.email) {
+						auth_email.set(user?.email);
+						logged_in.set(true);
+					}
 				}
 			}
 

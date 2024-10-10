@@ -42,6 +42,16 @@ export default {
 			},
 			boxShadow: {
 				'primary-button': '0px 0px 0px 5px #FF3B1033'
+			},
+			animation: {
+				'reverse-spin': 'reverse-spin 1s linear infinite'
+			},
+			keyframes: {
+				'reverse-spin': {
+					from: {
+						transform: 'rotate(360deg)'
+					}
+				}
 			}
 		}
 	},

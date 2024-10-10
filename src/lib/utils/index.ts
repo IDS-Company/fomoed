@@ -243,9 +243,9 @@ async function fear_and_greed_index_summary(data: ICoinCfgiPriceData[]) {
 		cfgi_summary.set({ now, previous, average: average_element });
 }
 
-const memoizedTokenData = memoizeDebounce(fetch_token_data, 1000, { maxWait: 2000 });
+const memoizedTokenData = memoizeDebounce(fetch_token_data, 0, { maxWait: 2000 });
 
-async function get_token_data(
+export async function get_token_data(
 	token_symbol: string,
 	token_slug: string,
 	period: CFGI_SUPPORTED_PERIODS_ENUM,

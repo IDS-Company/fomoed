@@ -57,12 +57,14 @@ export enum CFGI_SUPPORTED_PERIODS_ENUM {
 	YEAR1 = '1Y'
 }
 
-export type CfgiPeriod = {
+export type Option = {
 	label: string;
 	value: any;
+	disabled?: boolean;
+	requiresPremium?: boolean;
 };
 
-export const CfgiPeriods: CfgiPeriod[] = [
+export const CfgiPeriods: Option[] = [
 	{
 		label: '24H',
 		value: CFGI_SUPPORTED_PERIODS_ENUM.DAY1

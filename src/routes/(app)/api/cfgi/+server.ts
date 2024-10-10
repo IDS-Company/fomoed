@@ -7,8 +7,7 @@ import { sortBy, uniqBy } from 'lodash-es';
 import { PRIVATE_CFGI_KEY } from '$env/static/private';
 import { free_tokens } from '$lib/stores';
 
-const endpoint =
-	'https://cfgi.io/api/api_request.php?api_key=API_KEY&token=TOKEN&period=PERIOD&values=1200';
+const endpoint = 'https://cfgi.io/api/api_request.php?api_key=API_KEY&token=TOKEN&period=PERIOD';
 
 function formatDate(date: Date) {
 	// Extract year, month, day, hours, minutes, and seconds from the date object
@@ -25,38 +24,103 @@ function formatDate(date: Date) {
 	return formattedDate;
 }
 
+const maxCfgiIoReturnedDatapoints = 1200;
+
+function getMaxTemporality(start: Date, end: Date): number | null {
+	const numSeconds = (end.getTime() - start.getTime()) / 1000;
+	const numHours = numSeconds / 3600;
+
+	const num15Mins = numHours / 0.25;
+	const num4Hours = numHours / 4;
+	const numDays = numHours / 24;
+
+	if (num15Mins <= maxCfgiIoReturnedDatapoints) {
+		return 1;
+	}
+
+	if (numHours <= maxCfgiIoReturnedDatapoints) {
+		return 2;
+	}
+
+	if (num4Hours <= maxCfgiIoReturnedDatapoints) {
+		return 3;
+	}
+
+	if (numDays <= maxCfgiIoReturnedDatapoints) {
+		return 4;
+	}
+
+	return null;
+}
+
+function getMinStartDate(end: Date): number {
+	const endTs = end.getTime();
+	const startTs = endTs - 1000 * 3600 * 24 * maxCfgiIoReturnedDatapoints;
+
+	return new Date(startTs);
+}
+
 async function fetch_cfgi_data(
 	token_symbol: string,
 	period: CFGI_SUPPORTED_PERIODS_ENUM,
-	start: Date,
-	end: Date
+	start: Date | null,
+	end: Date | null
 ) {
 	let url = endpoint;
+
 	url = url.replace('API_KEY', PRIVATE_CFGI_KEY);
 	url = url.replace('TOKEN', token_symbol);
-	url = url.replace('START', formatDate(start));
-	url = url.replace('END', formatDate(end));
-	url = url.replace('PERIOD', period.toString());
 
-	console.log(url);
+	if (start && end) {
+		// Set the max temporal resolution possible to preserve the requested timeframe.
+		// If start and end dates cannot be preserved, update the start date so that maximum duration is visible.
 
-	return fetch(url)
-		.then((res) => res.text())
-		.then((res) => {
-			if (res.toString().length) {
-				const data = JSON.parse(res.toString()) as ICoinCfgiPriceData[];
-				return data
-					.map((d) => ({ ...d, symbol: token_symbol, cfgi: parseInt(d.cfgi.toString()) }))
-					.filter((d) => d.cfgi);
-			}
+		const temporality = getMaxTemporality(start, end);
+
+		if (temporality === null) {
+			start = getMinStartDate(end);
+			url = url.replace('PERIOD', 4); // 1 Day temporality
+		} else {
+			url = url.replace('PERIOD', temporality + '');
+		}
+	} else {
+		// Set temporality requested by the user
+		url = url.replace('PERIOD', period.toString());
+	}
+
+	if (start) {
+		url += '&start=' + formatDate(start);
+	}
+
+	if (end) {
+		url += '&end=' + formatDate(end);
+	}
+
+	if (!start && !end) {
+		url += '&values=1200';
+	}
+
+	url = encodeURI(url);
+
+	try {
+		const res = await fetch(url);
+		const resText = await res.text();
+
+		if (resText.toString().length) {
+			const data = JSON.parse(resText.toString()) as ICoinCfgiPriceData[];
+			return data
+				.map((d) => ({ ...d, symbol: token_symbol, cfgi: parseInt(d.cfgi.toString()) }))
+				.filter((d) => d.cfgi);
+		} else {
+			console.error('No CFGI data!');
 
 			return [];
-		})
-		.catch((err) => {
-			console.error('Our Error: ', err);
+		}
+	} catch (err) {
+		console.error('Our Error: ', err);
 
-			return [];
-		});
+		return [];
+	}
 }
 
 /** @type {import('./$types').RequestHandler} */
@@ -64,6 +128,7 @@ export async function POST({ request, locals: { supabase, user } }: RequestEvent
 	const formData = await request.json();
 	const token_symbol = formData.token_symbol;
 	const period: CFGI_SUPPORTED_PERIODS_ENUM = formData.period || CFGI_SUPPORTED_PERIODS_ENUM.DAY1;
+	const daysBack: number | null = formData.days_back | null;
 	const token_slug = formData.token_slug;
 
 	if (!token_symbol || !token_slug) {
@@ -89,46 +154,15 @@ export async function POST({ request, locals: { supabase, user } }: RequestEvent
 	}
 
 	if (cfgi_supported_tokens.includes(token_symbol.toUpperCase())) {
-		const maxBarsAvailable = 1200;
-		let secondsBack = 0;
+		let startTimestamp = null;
+		let endTimestamp = null;
 
-		// One Day is the Default
-		// switch (period) {
-		// 	case CFGI_SUPPORTED_PERIODS_ENUM.HOUR1:
-		// 		const one_hour = 3600;
-		// 		secondsBack = 1200 * one_hour;
-		// 		break;
-		// 	case CFGI_SUPPORTED_PERIODS_ENUM.HOUR4:
-		// 		const four_hours = 3600 * 4;
-		// 		secondsBack = 1200 * four_hours;
-		// 		break;
-		// 	case CFGI_SUPPORTED_PERIODS_ENUM.MIN15:
-		// 		const min_15 = 15 * 60;
-		// 		secondsBack = 1200 * min_15;
-		// 		break;
-		// 	case CFGI_SUPPORTED_PERIODS_ENUM.HOUR7:
-		// 		secondsBack = 3600 * 7;
-		// 		break;
-		// 	case CFGI_SUPPORTED_PERIODS_ENUM.MONTH1:
-		// 		secondsBack = 3600 * 24 * 30;
-		// 		break;
-		// 	case CFGI_SUPPORTED_PERIODS_ENUM.YEAR1:
-		// 		secondsBack = 3600 * 24 * 365;
-		// 		break;
-		// 	default:
-		// 		const one_day = 24 * 3600;
-		// 		secondsBack = 1200 * one_day;
-		// 		break;
-		// }
+		if (daysBack) {
+			startTimestamp = new Date(Date.now() - daysBack * 24 * 3600 * 1000);
+			endTimestamp = new Date();
+		}
 
-		const one_year = 3600 * 24 * 365;
-
-		const cfgi_data = await fetch_cfgi_data(
-			token_symbol,
-			period, // 15 min temporality
-			new Date(Date.now() - one_year * 1000),
-			new Date()
-		);
+		const cfgi_data = await fetch_cfgi_data(token_symbol, period, startTimestamp, endTimestamp);
 
 		if (cfgi_data.length) {
 			return json({
@@ -144,7 +178,8 @@ export async function POST({ request, locals: { supabase, user } }: RequestEvent
 						}))
 						.filter((d) => d.date && d.price && d.cfgi && !isNaN(d.cfgi)),
 					['date']
-				)
+				),
+				source: 'cfgi.io'
 			});
 		}
 	}
@@ -211,6 +246,7 @@ export async function POST({ request, locals: { supabase, user } }: RequestEvent
 				})
 				.filter((d) => d.price && d.date && d.cfgi && !isNaN(d.cfgi)),
 			['date']
-		)
+		),
+		soruce: 'coin-stats'
 	});
 }

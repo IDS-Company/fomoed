@@ -14,12 +14,14 @@
 	} from 'chart.js/auto';
 	import LoadingAnim from './animations/LoadingAnim.svelte';
 	import { fade } from 'svelte/transition';
-	import { sleep } from '$lib';
 	import { isDesktop } from '$lib/stores/ui';
 	import { get_data_color } from '$lib/utils';
-	import { tick } from 'svelte';
+	import { onDestroy, tick } from 'svelte';
 
-	const color = '#47A663';
+	export let showLoadingAnim = false;
+	export let loading = false;
+
+	$: loading = $trend_chart_loading;
 
 	let cfgi_trend_chart: Chart;
 	let ctx: CanvasRenderingContext2D;
@@ -80,6 +82,11 @@
 				ScaleChartOptions<'bar'> &
 				LineControllerChartOptions
 		> = {
+			resizeDelay: 500,
+			interaction: {
+				mode: 'nearest',
+				intersect: false
+			},
 			responsive: true,
 			maintainAspectRatio: false,
 			scales: {
@@ -126,6 +133,11 @@
 						autoSkip: true
 						// color: '#aaa'
 					}
+					// To append last tick
+					// beforeFit: function (axis: any) {
+					// 	var l = axis.getLabels();
+					// 	axis.ticks.push({ value: axis.max, label: l[axis.max] });
+					// }
 				}
 			},
 			plugins: {
@@ -147,29 +159,37 @@
 
 	let trend_chart_canvas: HTMLCanvasElement;
 
-	$: if (!$trend_chart_loading && trend_chart_canvas) {
-		ctx = trend_chart_canvas.getContext('2d')!;
-		chart_init();
-	}
+	trend_chart_loading.subscribe(async (loading) => {
+		await tick();
 
-	isDesktop.subscribe((desktop) => {
+		if (!loading && trend_chart_canvas) {
+			ctx = trend_chart_canvas.getContext('2d')!;
+			chart_init();
+		}
+	});
+
+	const resizeUnsub = isDesktop.subscribe((desktop) => {
 		if (cfgi_trend_chart) {
 			// @ts-ignore
 			cfgi_trend_chart.options.scales.y.display = desktop;
 			cfgi_trend_chart.update();
 		}
 	});
+
+	onDestroy(() => {
+		resizeUnsub();
+	});
 </script>
 
 <div class="relative h-full">
-	{#if $trend_chart_loading}
+	{#if $trend_chart_loading && showLoadingAnim}
 		<div out:fade class="absolute inset-0">
 			<LoadingAnim />
 		</div>
 	{/if}
 
 	<canvas
-		class:opacity-0={$trend_chart_loading}
+		class:opacity-0={$trend_chart_loading && showLoadingAnim}
 		bind:this={trend_chart_canvas}
 		width="400"
 		class="h-[150px] -desktop:h-[300px]"

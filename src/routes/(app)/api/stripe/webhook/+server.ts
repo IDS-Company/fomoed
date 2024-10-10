@@ -4,6 +4,8 @@ import { Stripe } from 'stripe';
 import { PRIVATE_STRIPE_WEBHOOK_SECRET } from '$env/static/private';
 import prices from '$lib/prices';
 import type { PostgrestSingleResponse, SupabaseClient } from '@supabase/supabase-js';
+import type { SubPlanName } from '$lib/types';
+import { getUserByEmail } from '$ts/utils/server/user';
 
 function toBuffer(ab: ArrayBuffer): Buffer {
 	const buf = Buffer.alloc(ab.byteLength);
@@ -12,6 +14,20 @@ function toBuffer(ab: ArrayBuffer): Buffer {
 		buf[i] = view[i];
 	}
 	return buf;
+}
+
+async function getPlanNameFromPriceId(priceId: string): Promise<SubPlanName | null> {
+	const price = await stripe.prices.retrieve(priceId);
+
+	if (price.metadata.plan_id.includes('plus')) {
+		return 'plus';
+	}
+
+	if (price.metadata.plan_id.includes('pro')) {
+		return 'pro';
+	}
+
+	return null;
 }
 
 async function update_user_subscription(
@@ -33,6 +49,16 @@ async function update_user_subscription(
 		price_id,
 		tries
 	});
+
+	const planName = await getPlanNameFromPriceId(price_id);
+
+	if (!planName) {
+		return error(
+			400,
+			'Invalid price ID. Price ID does not match any plan. Subscription not updated!'
+		);
+	}
+
 	// Find the user id
 	const {
 		data: subscriptions,
@@ -86,7 +112,8 @@ async function update_user_subscription(
 				start_timestamp: subscription_start.toISOString().toLocaleString(),
 				subscription_id: subscription_id,
 				price_id: price_id,
-				user_id: user_id
+				user_id: user_id,
+				plan_name: planName
 			}
 		]);
 
@@ -103,7 +130,8 @@ async function update_user_subscription(
 				price_id: price_id,
 				user_id: user_id,
 				has_cancelled: !!cancel_at,
-				updated_at: new Date().toISOString().toLocaleString()
+				updated_at: new Date().toISOString().toLocaleString(),
+				plan_name: planName
 			})
 			.eq('subscription_id', subscription_id);
 
@@ -179,13 +207,6 @@ async function handle_subscription(
 	subscription: Stripe.Subscription,
 	supabase: SupabaseClient
 ) {
-	console.debug('Handle subscription called');
-
-	if (!prices.some((id: string) => id === price_id)) {
-		console.error("No matching price ID found in the prices array. Can't handle subscription");
-		return;
-	}
-
 	if (!invoice) {
 		console.error('No invoice found');
 		return;
@@ -202,11 +223,23 @@ async function handle_subscription(
 		return;
 	}
 
-	if (metadata['user_id'] && invoice.status === 'paid' && Date.now() / 1000 < current_period_end) {
+	if (!invoice.customer_email) {
+		return error(400, 'customer_email is missing!');
+	}
+
+	const user = await getUserByEmail(supabase, invoice.customer_email);
+
+	const userId = user.user_id;
+	const isPaid = invoice.status === 'paid';
+	const periodEndInFuture = Date.now() / 1000 < current_period_end;
+
+	console.log({ userId, isPaid, periodEndInFuture });
+
+	if (userId && isPaid && periodEndInFuture) {
 		// Update the subscription to the start and end times
 		// Maybe delete the sub here ?
 		await update_user_subscription(
-			metadata['user_id'],
+			userId,
 			sub_id,
 			new Date(current_period_start * 1000),
 			new Date(current_period_end * 1000),
@@ -289,12 +322,14 @@ export async function POST({ request, locals: { supabase } }: RequestEvent) {
 		throw error(400, 'Invalid request');
 	}
 
+	let ret = null;
+
 	// * See => https://docs.stripe.com/billing/subscriptions/overview#:~:text=The%20subscription%20remains%20in%20status,and%20the%20invoice%20becomes%20void%20.
 	switch (event.type) {
 		case 'customer.subscription.created':
 			// Subscription was created
 			// Note: status will be `incomplete`
-			await handle_subscription(
+			ret = await handle_subscription(
 				event.data.object.latest_invoice,
 				event.data.object.id,
 				event.data.object.items.data[0].price.id,
@@ -309,7 +344,7 @@ export async function POST({ request, locals: { supabase } }: RequestEvent) {
 		case 'customer.subscription.updated':
 			// Subscription has been changed
 			// Get the price id
-			await handle_subscription(
+			ret = await handle_subscription(
 				event.data.object.latest_invoice,
 				event.data.object.id,
 				event.data.object.items.data[0].price.id,
@@ -322,7 +357,10 @@ export async function POST({ request, locals: { supabase } }: RequestEvent) {
 			);
 			break;
 		case 'customer.subscription.deleted':
-			await handle_subscription(
+			// This does not correctly set the subscription end when cancelled manually
+			// through stripe UI.
+
+			ret = await handle_subscription(
 				event.data.object.latest_invoice,
 				event.data.object.id,
 				event.data.object.items.data[0].price.id,
@@ -336,11 +374,15 @@ export async function POST({ request, locals: { supabase } }: RequestEvent) {
 			break;
 		case 'invoice.paid':
 			console.log('Handling Paid Invoice');
-			await handle_invoice(event.data.object.id, supabase);
+			ret = await handle_invoice(event.data.object.id, supabase);
 			break;
 		default:
 			// Unexpected event type
 			break;
+	}
+
+	if (ret) {
+		return ret;
 	}
 
 	return json({

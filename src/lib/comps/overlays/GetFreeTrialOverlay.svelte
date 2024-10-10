@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { fade } from 'svelte/transition';
 	import MainButton from '../buttons/MainButton.svelte';
-	import PremiumBadge from '../decorations/PremiumBadge.svelte';
+	import PaidPlanBadge from '../decorations/PaidPlanBadge.svelte';
 </script>
 
 <div
@@ -15,7 +15,7 @@
 
 		<div class="mt-2 flex justify-center space-x-3">
 			<img src="/fomoed.svg" alt="Fomoed." class="w-[158px] -desktop:w-[125px]" />
-			<PremiumBadge></PremiumBadge>
+			<PaidPlanBadge></PaidPlanBadge>
 		</div>
 
 		<div class="mt-6 mx-4">

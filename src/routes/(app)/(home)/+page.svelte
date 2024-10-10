@@ -1,37 +1,13 @@
 <script lang="ts">
 	import HomepageCoinSwitcher from '$lib/comps/homepage/HomepageCoinSwitcher.svelte';
-	import SymbolInfo from '$lib/comps/widgets/SymbolInfo.svelte';
-	import CFGIGaugeChart from '$lib/comps/widgets/CFGIGaugeChart.svelte';
-	import CFGITrendChart from '$lib/comps/widgets/CFGITrendChart.svelte';
-	import { onMount } from 'svelte';
-	import { fetch_token_data, get_data_label, type CFGIEnum } from '$lib/utils/index.js';
-	import {
-		cfgi_chart_loading,
-		cfgi_period,
-		cfgi_summary,
-		coin_data,
-		coinstats_coin_list,
-		coinstats_global_data,
-		coinstats_selected_coin,
-		trend_chart_loading
-	} from '$lib/stores';
-	import type { ICoinCfgiPriceData, TCoinStatsCoin } from '$lib';
-	import { CFGI_SUPPORTED_PERIODS_ENUM } from '$lib/utils/cfgi_data';
-	import { meanBy } from 'lodash-es';
-	import { memoizeDebounce } from '$lib/utils/memoizeDebounce';
-	import Sentiment from '$lib/comps/widgets/Sentiment.svelte';
-	import SocialSharePopup from '$lib/comps/SocialSharePopup.svelte';
-	import HomepageSmallChart from '$lib/comps/HomepageSmallChart.svelte';
+	import { cfgi_summary, coinstats_coin_list, coinstats_selected_coin } from '$lib/stores';
 	import IndicatorCard from '$lib/comps/IndicatorCard.svelte';
 	import VideoContainer from '$lib/comps/VideoContainer.svelte';
 	import IndicatorGraphicsCard from '$lib/comps/IndicatorGraphicsCard.svelte';
 	import SmallGreedIndicatorCard from '$lib/comps/SmallGreedIndicatorCard.svelte';
-	import FloatingCard from '$lib/comps/FloatingCard.svelte';
 	import CoinSwiper from '$lib/comps/CoinSwiper.svelte';
-	import PremiumBadge from '$lib/comps/decorations/PremiumBadge.svelte';
+	import PaidPlanBadge from '$lib/comps/decorations/PaidPlanBadge.svelte';
 	import FreeCard from '$lib/comps/plan-cards/FreeCard.svelte';
-	import PremiumCard from '$lib/comps/plan-cards/PremiumCard.svelte';
-	import DegenCard from '$lib/comps/plan-cards/DegenCard.svelte';
 	import MemeSwiper from '$lib/comps/MemeSwiper.svelte';
 	import HomepageBigChart from '$lib/comps/HomepageBigChart.svelte';
 	import { writable } from 'svelte/store';
@@ -42,12 +18,8 @@
 	import GetFreeTrialOverlay from '$lib/comps/overlays/GetFreeTrialOverlay.svelte';
 	import { fade } from 'svelte/transition';
 	import { browser } from '$app/environment';
-
-	// const memoizedTokens = memoizeDebounce(refresh_coinstats_coin_list, 1000, { maxWait: 2000 });
-
-	// function get_tokens() {
-	// 	memoizedTokens();
-	// }
+	import PaidPlanCard from '$lib/comps/plan-cards/PaidPlanCard.svelte';
+	import { planInfoPlus, planInfoPro } from '$ts/utils/client/plans';
 
 	const selectedSymbol = writable<string>('BTC');
 
@@ -74,57 +46,6 @@
 	let showGetFreeTrial = false;
 </script>
 
-<!-- <section class="max-w-4xl mx-auto mt-16 fear_index">
-	<div class="flex flex-col items-center justify-center w-full text-center top">
-		<h1 class="w-full text-3xl font-extrabold">Fear and Greed Index</h1>
-		<div class="px-6 pt-4 opacity-50 descriptio text-whiten">
-			Crypto Fear and Greed Index if based on volatility, social media sentiments, surveys, market
-			momentum, and more.
-		</div>
-	</div>
-</section>
-
-{#if $coinstats_global_data}
-	<section class="max-w-4xl mx-auto mt-16 symbol_info">
-		<SymbolInfo
-			data={{
-				market_cap: {
-					value: `$${$coinstats_global_data?.marketCap.toLocaleString()}`,
-					change: $coinstats_global_data?.marketCapChange
-				},
-				volume_24h: {
-					value: `$${$coinstats_global_data?.volume.toLocaleString()}`,
-					change: $coinstats_global_data?.volumeChange
-				},
-				btc_dominance: {
-					value: `${$coinstats_global_data?.btcDominance}%`,
-					change: $coinstats_global_data?.btcDominanceChange
-				}
-			}}
-		/>
-	</section>
-{/if}
-
-<section
-	class="flex flex-col-reverse items-center justify-between max-w-5xl mx-auto mt-16 md:flex-row cfgi"
->
-	<div class="w-full gauge_chart">
-		<CFGIGaugeChart />
-	</div>
-
-	<div class="w-full sentiment_wrapper">
-		<Sentiment />
-	</div>
-</section>
-
-<section class="max-w-5xl px-4 mx-auto mt-16 cfgi_trend sm:px-0">
-	<CFGITrendChart />
-</section>
-
-<div class="w-full h-20 sm:h-10 spacer"></div>
-
-<SocialSharePopup /> -->
-
 <main class="w-full relative overflow-clip">
 	<!-- Mobile top bg image -->
 	<div
@@ -138,12 +59,12 @@
 
 	<!-- Mobile bnb coin -->
 	<div
-		class="desktop:hidden bg-[url(/images/mobile/bnb-coin-bg.svg)] w-[94px] aspect-square absolute left-0 top-20"
+		class="desktop:hidden bg-[url(/images/mobile/bnb-coin-bg.svg)] w-[94px] h-[94px] absolute left-0 top-20"
 	></div>
 
 	<!-- Mobile ether coin -->
 	<div
-		class="desktop:hidden bg-[url(/images/mobile/eth-coin-bg.svg)] w-[94px] aspect-square absolute -right-6 top-[600px] -z-10"
+		class="desktop:hidden bg-[url(/images/mobile/eth-coin-bg.svg)] w-[94px] h-[94px] absolute -right-6 top-[600px] -z-10"
 	></div>
 
 	<div class="h-full max-w-[980px] mx-auto desktop:min-h-screen px-4 flex flex-col justify-center">
@@ -172,12 +93,12 @@
 
 			<!-- Mobile btc coin -->
 			<div
-				class="desktop:hidden bg-[url(/images/mobile/btc-coin.svg)] w-[94px] aspect-square absolute -right-6 -top-10 z-20"
+				class="desktop:hidden bg-[url(/images/mobile/btc-coin.svg)] w-[94px] h-[94px] absolute -right-6 -top-10 z-20"
 			></div>
 
 			<!-- Mobile sol coin -->
 			<div
-				class="desktop:hidden bg-[url(/images/mobile/sol-coin.svg)] w-[94px] aspect-square absolute -left-4 bottom-20 z-20"
+				class="desktop:hidden bg-[url(/images/mobile/sol-coin.svg)] w-[94px] h-[94px] absolute -left-4 bottom-20 z-20"
 			></div>
 
 			<SmallCharts />
@@ -212,7 +133,7 @@
 		</div>
 	</div>
 
-	<div class="desktop:hidden px-4 mt-4">
+	<div class="desktop:hidden px-4 mt-4 h-[450px]">
 		<IndicatorCard />
 	</div>
 
@@ -299,7 +220,7 @@
 			<div class="flex mx-auto max-w-max gap-x-[20px] pt-[9px]">
 				<img src="/fomoed.svg" class="-desktop:w-[125px]" width={158} height={33} alt="Fomoed." />
 
-				<PremiumBadge />
+				<PaidPlanBadge />
 			</div>
 		</div>
 	</div>
@@ -307,14 +228,28 @@
 		class="pt-[52px] -desktop:pt-8 flex justify-center gap-x-[14px] items-center px-4 -desktop:flex-col gap-y-4"
 	>
 		<FreeCard />
-		<PremiumCard
-			on:click-free-trial={() => goto('/plans')}
-			on:click-subscribe={() => goto('/plans')}
-		/>
-		<DegenCard
-			on:click-subscribe={() => goto('/plans')}
-			on:click-unsubscribe={() => goto('/plans')}
-		/>
+
+		{#if $planInfoPro}
+			<PaidPlanCard
+				planInfo={$planInfoPro}
+				yearlySelected={false}
+				on:click-free-trial={() => goto('/plans')}
+				on:click-subscribe={() => goto('/plans')}
+				on:click-unsubscribe={() => goto('/plans')}
+				on:click-resubscribe={() => goto('/plans')}
+			/>
+		{/if}
+
+		{#if $planInfoPlus}
+			<PaidPlanCard
+				planInfo={$planInfoPlus}
+				yearlySelected={false}
+				on:click-free-trial={() => goto('/plans')}
+				on:click-subscribe={() => goto('/plans')}
+				on:click-unsubscribe={() => goto('/plans')}
+				on:click-resubscribe={() => goto('/plans')}
+			/>
+		{/if}
 	</div>
 
 	<div

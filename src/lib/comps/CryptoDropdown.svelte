@@ -8,7 +8,6 @@
 	} from '$lib/stores';
 	import { auth_user } from '$lib/stores/user';
 	import { derived, writable } from 'svelte/store';
-	import { fade, slide } from 'svelte/transition';
 
 	let isOpen = false;
 

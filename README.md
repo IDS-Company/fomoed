@@ -1,48 +1,13 @@
-# create-svelte
+# Welcome to fomoed!
 
-Everything you need to build a Svelte project, powered by [`create-svelte`](https://github.com/sveltejs/kit/tree/main/packages/create-svelte).
+## Known issues
 
-## Creating a project
+- Subscriptions in the DB are not correctly updated (especially on cancellation)! This limits the ability to check whether the user
+has an active plan or not when the API is used by the FE. (for example liquidation map)
+- Currently the user subscription is retrieved directly from Stripe, which is not optimal.
+- Setting a custom price through Stripe on user's subscription will cause the Plans page to not display any subscription as selected.
+- Switching a plan to another unsubscribes from all active plans and only then redirects to the checkout. If the user cancels the checkout, they will be unsubscribed from the current plan, which potentially causes the project owner to lose some money!
 
-If you're seeing this, you've probably already done this step. Congrats!
+## DB initialization for a new project:
 
-```bash
-# create a new project in the current directory
-npm create svelte@latest
-
-# create a new project in my-app
-npm create svelte@latest my-app
-```
-
-## Developing
-
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
-
-```bash
-npm run dev
-
-# or start the server and open the app in a new browser tab
-npm run dev -- --open
-```
-
-## Building
-
-To create a production version of your app:
-
-```bash
-npm run build
-```
-
-You can preview the production build with `npm run preview`.
-
-> To deploy your app, you may need to install an [adapter](https://kit.svelte.dev/docs/adapters) for your target environment.
-
-# Plans
-
-Subscription $2.99
-access to 4h and 1d and 1week FGI
-
-• Free for Bitcoin and ETH Charts
-• collect Emails, Username password
-
-Add share button for Twitter.
+> Todo

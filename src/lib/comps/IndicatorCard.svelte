@@ -185,139 +185,141 @@
 		: 'rounded-[26px]'} backdrop-blur-xl flex flex-col {onHomepage &&
 		'border-2 border-transparent'} {!onHomepage && 'border border-[#FFFFFF1A]'}"
 >
-	<div class="relative max-h-[220px] w-full">
-		<div class="inset-x-0 grid place-items-center px-2 mt-4">
-			<Gauge percentage={$cfgi_summary ? percentage : 0} />
-		</div>
-
-		<div class="inset-x-0 absolute bottom-4 flex justify-center items-center">
-			<div class="relative">
-				<img
-					class:opacity-0={!$cfgi_summary}
-					src="/images/{icons[iconIdx]}"
-					alt=""
-					class="max-w-[92px] max-h-[124px]"
-				/>
+	<div class="mx-auto h-full flex flex-col">
+		<div class="relative max-h-[220px] w-full">
+			<div class="inset-x-0 grid place-items-center px-2 mt-4">
+				<Gauge percentage={$cfgi_summary ? percentage : 0} />
 			</div>
 
-			{#if !$cfgi_summary}
-				<div class="absolute w-full">
-					<LoadingAnim />
+			<div class="inset-x-0 absolute bottom-4 flex justify-center items-center">
+				<div class="relative">
+					<img
+						class:opacity-0={!$cfgi_summary}
+						src="/images/{icons[iconIdx]}"
+						alt=""
+						class="max-w-[92px] max-h-[124px]"
+					/>
+				</div>
+
+				{#if !$cfgi_summary}
+					<div class="absolute w-full">
+						<LoadingAnim />
+					</div>
+				{/if}
+			</div>
+		</div>
+
+		<div
+			class="grid grid-cols-[1fr_2fr_1fr] justify-between px-[28px] duration-500"
+			class:opacity-0={!$cfgi_summary}
+		>
+			<div>
+				<div class="text-xs opacity-60">Prev</div>
+				<div class="opacity-80 font-paralucent font-medium text-[18px]">{prev}</div>
+			</div>
+
+			<div class="text-center">
+				<div class="text-[40px] leading-[40px] font-paralucent font-medium" style:color>
+					{percentage}
+				</div>
+				<div class="text-lg opacity-80 font-paralucent font-medium">{marketSentiment}</div>
+			</div>
+
+			<div class="text-right">
+				<div class="text-xs opacity-60">Average</div>
+				<div class="opacity-80 font-paralucent font-medium text-[18px]">{average}</div>
+			</div>
+		</div>
+
+		<div class="px-[12px]">
+			<div class="h-[1px] bg-white opacity-10 mt-[20px]"></div>
+		</div>
+
+		<div class="flex-grow flex flex-col mb-4 justify-evenly h-28">
+			{#if $loading}
+				<div
+					in:fade
+					out:fade
+					on:introstart={() => (loadingIsOut = false)}
+					on:outroend={() => (loadingIsOut = true)}
+					class="font-medium text-sm text-center mt-[20px] opacity-80"
+				>
+					Loading...
+				</div>
+			{:else if $has_voted && loadingIsOut}
+				<div in:fade class="flex flex-col items-center">
+					<div
+						class="text-[40px] leading-[40px] font-paralucent font-medium mt-2"
+						style:color={fomoed_score_color}
+					>
+						{~~$aped_score}
+					</div>
+
+					<div
+						class="font-paralucent max-w-max font-medium text-sm bg-gradient-to-r from-primary to-yellow text-transparent bg-clip-text"
+					>
+						Fomoed score
+					</div>
+
+					<div class="font-medium text-sm text-center opacity-80">Share your polls on</div>
+
+					<div class="flex gap-x-2 justify-center mt-[10px]">
+						<a href={copy_social_link('twitter', getLink())} target="_blank">
+							<SocialButton>
+								<X />
+							</SocialButton>
+						</a>
+
+						<a href={copy_social_link('facebook', getLink())} target="_blank">
+							<SocialButton>
+								<Facebook />
+							</SocialButton>
+						</a>
+
+						<a href={copy_social_link('telegram', getLink())} target="_blank">
+							<SocialButton>
+								<Telegram />
+							</SocialButton>
+						</a>
+
+						<SocialButton
+							on:click={() => {
+								navigator.clipboard.writeText(
+									copy_social_link('copy', `${$page.url.origin}?score=${+$aped_score.toFixed(2)}`)
+								);
+								success('Success: Copied Share Link to Clipboard');
+								return;
+							}}
+						>
+							<Copy />
+						</SocialButton>
+					</div>
+				</div>
+			{:else if !$loading && !$has_voted && loadingIsOut}
+				<div in:fade>
+					<div class="font-medium text-sm text-center mt-[20px] opacity-80">
+						How do you feel about the market today?
+					</div>
+
+					<div class="flex gap-x-[10px] justify-center mt-4 relative z-10">
+						<TintedSecondaryButton
+							disabled={$loading || $has_voted}
+							on:click={() => vote(SentimentRatingEnum.BEARISH)}
+							color="red"
+						>
+							Bearish
+						</TintedSecondaryButton>
+
+						<TintedSecondaryButton
+							disabled={$loading || $has_voted}
+							on:click={() => vote(SentimentRatingEnum.BULLISH)}
+							color="green"
+						>
+							Bullish
+						</TintedSecondaryButton>
+					</div>
 				</div>
 			{/if}
 		</div>
-	</div>
-
-	<div
-		class="grid grid-cols-[1fr_2fr_1fr] justify-between px-[28px] duration-500"
-		class:opacity-0={!$cfgi_summary}
-	>
-		<div>
-			<div class="text-xs opacity-60">Prev</div>
-			<div class="opacity-80 font-paralucent font-medium text-[18px]">{prev}</div>
-		</div>
-
-		<div class="text-center">
-			<div class="text-[40px] leading-[40px] font-paralucent font-medium" style:color>
-				{percentage}
-			</div>
-			<div class="text-lg opacity-80 font-paralucent font-medium">{marketSentiment}</div>
-		</div>
-
-		<div class="text-right">
-			<div class="text-xs opacity-60">Average</div>
-			<div class="opacity-80 font-paralucent font-medium text-[18px]">{average}</div>
-		</div>
-	</div>
-
-	<div class="px-[12px]">
-		<div class="h-[1px] bg-white opacity-10 mt-[20px]"></div>
-	</div>
-
-	<div class="flex-grow flex flex-col mb-4 justify-evenly">
-		{#if $loading}
-			<div
-				in:fade
-				out:fade
-				on:introstart={() => (loadingIsOut = false)}
-				on:outroend={() => (loadingIsOut = true)}
-				class="font-medium text-sm text-center mt-[20px] opacity-80"
-			>
-				Loading...
-			</div>
-		{:else if $has_voted && loadingIsOut}
-			<div in:fade class="flex flex-col items-center">
-				<div
-					class="text-[40px] leading-[40px] font-paralucent font-medium mt-2"
-					style:color={fomoed_score_color}
-				>
-					{~~$aped_score}
-				</div>
-
-				<div
-					class="font-paralucent max-w-max font-medium text-sm bg-gradient-to-r from-primary to-yellow text-transparent bg-clip-text"
-				>
-					Fomoed score
-				</div>
-
-				<div class="font-medium text-sm text-center opacity-80">Share your polls on</div>
-
-				<div class="flex gap-x-2 justify-center mt-[10px]">
-					<a href={copy_social_link('twitter', getLink())} target="_blank">
-						<SocialButton>
-							<X />
-						</SocialButton>
-					</a>
-
-					<a href={copy_social_link('facebook', getLink())} target="_blank">
-						<SocialButton>
-							<Facebook />
-						</SocialButton>
-					</a>
-
-					<a href={copy_social_link('telegram', getLink())} target="_blank">
-						<SocialButton>
-							<Telegram />
-						</SocialButton>
-					</a>
-
-					<SocialButton
-						on:click={() => {
-							navigator.clipboard.writeText(
-								copy_social_link('copy', `${$page.url.origin}?score=${+$aped_score.toFixed(2)}`)
-							);
-							success('Success: Copied Share Link to Clipboard');
-							return;
-						}}
-					>
-						<Copy />
-					</SocialButton>
-				</div>
-			</div>
-		{:else if !$loading && !$has_voted && loadingIsOut}
-			<div in:fade>
-				<div class="font-medium text-sm text-center mt-[20px] opacity-80">
-					How do you feel about the market today?
-				</div>
-
-				<div class="flex gap-x-[10px] justify-center mt-4 relative z-10">
-					<TintedSecondaryButton
-						disabled={$loading || $has_voted}
-						on:click={() => vote(SentimentRatingEnum.BEARISH)}
-						color="red"
-					>
-						Bearish
-					</TintedSecondaryButton>
-
-					<TintedSecondaryButton
-						disabled={$loading || $has_voted}
-						on:click={() => vote(SentimentRatingEnum.BULLISH)}
-						color="green"
-					>
-						Bullish
-					</TintedSecondaryButton>
-				</div>
-			</div>
-		{/if}
 	</div>
 </div>

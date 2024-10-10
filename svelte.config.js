@@ -20,7 +20,11 @@ const config = {
 					})
 				: netlify_adapter({
 						runtime: 'nodejs20.x'
-					})
+					}),
+		alias: {
+			$ts: './src/ts',
+			$lib: './src/lib'
+		}
 	}
 };
 
