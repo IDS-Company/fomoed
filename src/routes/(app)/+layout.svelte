@@ -31,7 +31,7 @@
 		refresh_coinstats_coin_list();
 		fetch_global_data();
 
-		const { data } = supabase.auth.onAuthStateChange((_, newSession) => {
+		const { data } = supabase.auth.onAuthStateChange((event, newSession) => {
 			if (!newSession) {
 				/**
 				 * Queue this as a task so the navigation won't prevent the
@@ -57,6 +57,10 @@
 
 			if (newSession?.expires_at !== session?.expires_at) {
 				invalidate('supabase:auth');
+			}
+
+			if (event === 'PASSWORD_RECOVERY') {
+				goto('/auth?uid=' + newSession?.user?.id);
 			}
 		});
 
