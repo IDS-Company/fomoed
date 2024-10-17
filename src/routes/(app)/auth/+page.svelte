@@ -15,7 +15,7 @@
 	const action = writable<'login' | 'signup' | 'forgot' | 'update_password'>('login');
 
 	onMount(() => {
-		if ($page.url.searchParams.get('uid') && $auth_user) {
+		if ($page.url.searchParams.get('token_hash')) {
 			action.set('update_password');
 		}
 	});
