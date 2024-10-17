@@ -114,17 +114,5 @@ export const actions: Actions = {
 		await supabase.auth.resetPasswordForEmail(email, { redirectTo });
 
 		return redirect(303, '/auth/sent/password-reset?email=' + email);
-	},
-	update_password: async ({ request, locals: { supabase, user }, url }) => {
-		if (!user) {
-			return { error: 'Unauthorized', action: 'update_password', success: false };
-		}
-
-		const formData = await request.formData();
-		const new_password = formData.get('password') as string;
-
-		await supabase.auth.updateUser({ password: new_password });
-
-		return { success: true, action: 'update_password', error: null };
 	}
 };

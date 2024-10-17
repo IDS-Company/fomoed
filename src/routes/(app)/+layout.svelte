@@ -131,7 +131,10 @@ sentiment analysis"
 
 {#if $displayLogoutPopup}
 	<SignOutPopup
-		on:sign-out={() => signOut(supabase)}
+		on:sign-out={async () => {
+			await signOut(supabase);
+			goto('/auth');
+		}}
 		on:cancel={() => displayLogoutPopup.set(false)}
 	/>
 {/if}

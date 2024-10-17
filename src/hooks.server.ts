@@ -76,9 +76,13 @@ const authGuard: Handle = async ({ event, resolve }) => {
 	}
 
 	const coming_from_password_reset_link =
-		event.url.pathname === '/auth' && event.url.searchParams.get('uid');
+		event.url.pathname === '/auth' && event.url.searchParams.get('token_hash');
 
-	if (event.locals.session && event.url.pathname === '/auth' && !coming_from_password_reset_link) {
+	if (
+		event.locals.session &&
+		event.url.pathname.startsWith('/auth') &&
+		!coming_from_password_reset_link
+	) {
 		return redirect(303, '/');
 	}
 

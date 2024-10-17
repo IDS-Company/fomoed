@@ -107,6 +107,7 @@ export const no_reroute_routes = [
 	'/(app)/auth/sent/create-account',
 	'/(app)/auth/sent/password-reset',
 	'/(app)/auth/error',
+	'/(app)/auth/update-password',
 	'/(app)/auth',
 	'/(app)/dashboard',
 	'/(app)/plans',

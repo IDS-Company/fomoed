@@ -63,6 +63,33 @@ export const load: LayoutLoad = async ({ depends, fetch, data, url }) => {
 		data: { user }
 	} = await supabase.auth.getUser();
 
+	async function signInWithTokenHash(token_hash: string) {
+		const { data, error } = await supabase.auth.verifyOtp({
+			token_hash: token_hash,
+			type: 'recovery'
+		});
+
+		if (error) {
+			console.error(error);
+			failure(error.message);
+
+			return;
+		}
+
+		if (data) {
+			success('Signed in!');
+		}
+
+		refreshSession();
+	}
+
+	function refreshSession() {
+		supabase.auth.refreshSession().catch((err) => {
+			console.error('Error refreshing session:', err.message);
+			failure(err.message);
+		});
+	}
+
 	if (!user && isBrowser()) {
 		const code = url.searchParams.get('code');
 
@@ -81,19 +108,7 @@ export const load: LayoutLoad = async ({ depends, fetch, data, url }) => {
 		const token_hash = url.searchParams.get('token_hash');
 
 		if (token_hash) {
-			const { data, error } = await supabase.auth.verifyOtp({
-				token_hash: token_hash,
-				type: 'recovery'
-			});
-
-			if (error) {
-				console.error(error);
-				failure(error.message);
-			}
-
-			if (data) {
-				success('Signed in!');
-			}
+			signInWithTokenHash(token_hash);
 		}
 	}
 

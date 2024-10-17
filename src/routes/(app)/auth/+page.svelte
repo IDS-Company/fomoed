@@ -1,16 +1,17 @@
 <script lang="ts">
 	import { writable } from 'svelte/store';
 	import type { ActionData } from './$types';
-	import { failure, success } from '$lib/utils';
-	import { goto } from '$app/navigation';
+	import { failure } from '$lib/utils';
 	import { onMount } from 'svelte';
 	import { page } from '$app/stores';
 	import { auth_user } from '$lib/stores/user';
 	import LoginForm from '$lib/comps/forms/LoginForm.svelte';
 	import RegisterForm from '$lib/comps/forms/RegisterForm.svelte';
-	import UpdatePasswordForm from '$lib/comps/forms/UpdatePasswordForm.svelte';
 	import ForgotPasswordForm from '$lib/comps/forms/ForgotPasswordForm.svelte';
 	import TwoPaneLayout from './TwoPaneLayout.svelte';
+	import type { SupabaseClient } from '@supabase/supabase-js';
+
+	export let supabase: SupabaseClient;
 
 	const action = writable<'login' | 'signup' | 'forgot' | 'update_password'>('login');
 
@@ -28,35 +29,11 @@
 	$: if (form) {
 		if (form.error) {
 			failure(form.error);
-		} else {
-			// if (form.action === 'signup') {
-			// 	onMount(() => {
-			// 		goto('/auth/sent/create-account?email=');
-			// 	});
-			// 	// success(
-			// 	// 	'Successfully created your account. Please check your email for additional instructions'
-			// 	// );
-			// }
-			// if (form.action === 'forgot') {
-			// 	onMount(() => {
-			// 		goto('/auth/sent/password-reset?email=' + form.email);
-			// 	});
-			// 	// success(
-			// 	// 	'Successfully sent password reset email. Please check your email for the confirmation link'
-			// 	// );
-			// }
-			if (form.action === 'update_password') {
-				onMount(() => {
-					goto('/').then(() => {
-						success('Successfully updated password');
-					});
-				});
-			}
 		}
 	}
 
 	auth_user.subscribe((u) => {
-		if ($page.url.searchParams.get('email')) {
+		if ($page.url.searchParams.get('token_hash')) {
 			action.set('update_password');
 		}
 	});
@@ -66,10 +43,6 @@
 	<form method="POST" action="?/{$action}">
 		{#if $action === 'signup'}
 			<RegisterForm on:click-login-link={() => action.set('login')} />
-		{/if}
-
-		{#if $action === 'update_password'}
-			<UpdatePasswordForm />
 		{/if}
 
 		{#if $action === 'forgot'}
