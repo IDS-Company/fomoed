@@ -123,12 +123,6 @@ export const actions: Actions = {
 		const formData = await request.formData();
 		const new_password = formData.get('password') as string;
 
-		const uid = url.searchParams.get('uid');
-
-		if (!uid) {
-			return { error: 'Invalid Details', action: 'update_password', success: false };
-		}
-
 		await supabase.auth.updateUser({ password: new_password });
 
 		return { success: true, action: 'update_password', error: null };
