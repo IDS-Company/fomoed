@@ -8,8 +8,13 @@ import { active_sub, changingSubscription } from '$lib/stores/subs';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import { get_user, sleep } from '$lib';
 import type { Readable } from 'svelte/motion';
+import { browser } from '$app/environment';
 
 export const availablePlans = autoFetchStore<PlanInfo[]>(async () => {
+	if (!browser) {
+		return [];
+	}
+
 	const res = await fetch('/api/plans');
 	const json = await res.json();
 

@@ -107,14 +107,19 @@ export const actions: Actions = {
 		const formData = await request.formData();
 		const email = formData.get('email') as string;
 
-		await supabase.auth.resetPasswordForEmail(email, {
-			// This uuid doesn't mean anything, just to throw off hackers. Basically, any authenticated user can reset their password, so this is the 'activator'
-			redirectTo: `${url.protocol}//${url.host}/auth?uid=${uuidv4()}`
-		});
+		const redirectTo = `${url.protocol}//${url.host}`;
+
+		console.log('Redirecting to: ', redirectTo);
+
+		await supabase.auth.resetPasswordForEmail(email, { redirectTo });
 
 		return redirect(303, '/auth/sent/password-reset?email=' + email);
 	},
-	update_password: async ({ request, locals: { supabase }, url }) => {
+	update_password: async ({ request, locals: { supabase, user }, url }) => {
+		if (!user) {
+			return { error: 'Unauthorized', action: 'update_password', success: false };
+		}
+
 		const formData = await request.formData();
 		const new_password = formData.get('password') as string;
 
@@ -122,12 +127,6 @@ export const actions: Actions = {
 
 		if (!uid) {
 			return { error: 'Invalid Details', action: 'update_password', success: false };
-		}
-
-		if (validate(uid)) {
-			if (version(uid) !== 4) {
-				return { erorr: 'Invalid Credentials', action: 'update_password', success: false };
-			}
 		}
 
 		await supabase.auth.updateUser({ password: new_password });

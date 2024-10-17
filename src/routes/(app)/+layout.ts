@@ -5,6 +5,7 @@ import { PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON } from '$env/static/public';
 import type { SetOptional } from 'type-fest';
 import type { Session } from '@supabase/supabase-js';
 import { goto } from '$app/navigation';
+import { failure, success } from '$lib/utils';
 
 export const load: LayoutLoad = async ({ depends, fetch, data, url }) => {
 	/**
@@ -71,7 +72,28 @@ export const load: LayoutLoad = async ({ depends, fetch, data, url }) => {
 				query.delete('code');
 
 				await goto(`${url.protocol}//${url.host}${url.pathname}?${query.toString()}`);
+
+				console.error(err);
+				failure(err.message);
 			});
+		}
+
+		const token_hash = url.searchParams.get('token_hash');
+
+		if (token_hash) {
+			const { data, error } = await supabase.auth.verifyOtp({
+				token_hash: token_hash,
+				type: 'recovery'
+			});
+
+			if (error) {
+				console.error(error);
+				failure(error.message);
+			}
+
+			if (data) {
+				success('Signed in!');
+			}
 		}
 	}
 

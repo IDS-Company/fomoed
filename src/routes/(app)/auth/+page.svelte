@@ -13,7 +13,6 @@
 	import TwoPaneLayout from './TwoPaneLayout.svelte';
 
 	const action = writable<'login' | 'signup' | 'forgot' | 'update_password'>('login');
-	const uid = $page.url.searchParams.get('uid');
 
 	onMount(() => {
 		if ($page.url.searchParams.get('uid') && $auth_user) {
@@ -57,14 +56,14 @@
 	}
 
 	auth_user.subscribe((u) => {
-		if ($page.url.searchParams.get('uid')) {
+		if ($page.url.searchParams.get('email')) {
 			action.set('update_password');
 		}
 	});
 </script>
 
 <TwoPaneLayout>
-	<form method="POST" action="?/{$action + (uid ? '&uid=' + uid : '')}">
+	<form method="POST" action="?/{$action}">
 		{#if $action === 'signup'}
 			<RegisterForm on:click-login-link={() => action.set('login')} />
 		{/if}

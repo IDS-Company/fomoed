@@ -117,8 +117,6 @@ export async function fetchLiqMapData(
 
 		const liquidationData = data_.data.liquidationData.data.data;
 
-		console.log({ liquidationData });
-
 		for (const [price, arrays] of Object.entries(liquidationData)) {
 			const price_ = parseInt(price);
 

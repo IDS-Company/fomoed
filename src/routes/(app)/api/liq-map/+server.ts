@@ -1,5 +1,4 @@
 import { fetchCoinglassLiqMap, fetchPairMarkets } from '$ts/utils/server/coinglass';
-import { getActiveSubPlanName, hasActiveSubscription } from '$ts/utils/server/subscription';
 import { json, type RequestEvent, error } from '@sveltejs/kit';
 
 /** @type {import('./$types').RequestHandler} */

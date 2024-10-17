@@ -59,9 +59,9 @@
 				invalidate('supabase:auth');
 			}
 
-			if (event === 'PASSWORD_RECOVERY') {
-				goto('/auth?uid=' + newSession?.user?.id);
-			}
+			// if (event === 'PASSWORD_RECOVERY') {
+			// 	goto('/auth?uid=' + newSession?.user?.id);
+			// }
 		});
 
 		if (

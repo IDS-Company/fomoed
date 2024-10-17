@@ -31,8 +31,6 @@ const planInfos: PlanInfo[] = [
 export async function GET({ request }: RequestEvent) {
 	const prices = await stripe.prices.list();
 
-	console.log(prices);
-
 	for (const price of prices.data) {
 		const planId = price.metadata.plan_id;
 		const planInfo = planInfos.find((i) => planId.startsWith(i.planIdPrefix));
