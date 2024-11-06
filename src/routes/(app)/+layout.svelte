@@ -64,20 +64,14 @@
 			// }
 		});
 
-		if (
-			$page.url.hash
-				.split('&')
-				.filter((m) => m.startsWith('error_description'))[0]
-				?.split('=')[1]
-				?.replaceAll('+', ' ')
-		) {
-			failure(
-				$page.url.hash
-					.split('&')
-					.filter((m) => m.startsWith('error_description'))[0]
-					?.split('=')[1]
-					?.replaceAll('+', ' ')
-			);
+		const error_msg = $page.url.hash
+			.split('&')
+			.filter((m) => m.startsWith('error_description'))[0]
+			?.split('=')[1]
+			?.replaceAll('+', ' ');
+
+		if (error_msg) {
+			failure(error_msg);
 		}
 
 		return () => data.subscription.unsubscribe();

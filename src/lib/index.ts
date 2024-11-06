@@ -107,6 +107,7 @@ export const no_reroute_routes = [
 	'/(app)/auth/sent/create-account',
 	'/(app)/auth/sent/password-reset',
 	'/(app)/auth/error',
+	'/(app)/auth/auth-code-error',
 	'/(app)/auth/update-password',
 	'/(app)/auth',
 	'/(app)/dashboard',
@@ -130,6 +131,7 @@ export async function get_user(supabase: SupabaseClient) {
 			}
 		)
 		.catch(async (err) => {
+			console.warn('Signed out due to error in get_user');
 			failure(err.message);
 			await supabase.auth.signOut();
 		});

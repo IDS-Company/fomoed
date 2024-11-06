@@ -24,6 +24,8 @@ export async function GET({ locals: { supabase, user } }: RequestEvent) {
 	if (!users[0]) {
 		await supabase.auth.signOut();
 
+		console.warn('User not found in database, signed out');
+
 		return error(404, {
 			message: 'User not Found'
 		});

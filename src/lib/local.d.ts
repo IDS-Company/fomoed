@@ -1,10 +1,13 @@
 import type { SubPlanName } from './types';
 
-interface IUser {
-	id: number;
+interface IUserInsert {
+	email: string;
+	username: string;
 	user_id: string;
-	username: string | null;
-	email: string | null;
+}
+
+interface IUser extends IUserInsert {
+	id: number;
 	created_at: string; // ! These will be strings that need to be converted to date
 	updated_at: string | null; // ! These will be strings that need to be converted to date
 	has_valid_sub: boolean;

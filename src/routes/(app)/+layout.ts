@@ -3,9 +3,10 @@ import type { LayoutLoad } from './$types';
 
 import { PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON } from '$env/static/public';
 import type { SetOptional } from 'type-fest';
-import type { Session } from '@supabase/supabase-js';
+import type { Session, SupabaseClient } from '@supabase/supabase-js';
 import { goto } from '$app/navigation';
 import { failure, success } from '$lib/utils';
+import { getContext } from 'svelte';
 
 export const load: LayoutLoad = async ({ depends, fetch, data, url }) => {
 	/**
@@ -91,20 +92,6 @@ export const load: LayoutLoad = async ({ depends, fetch, data, url }) => {
 	}
 
 	if (!user && isBrowser()) {
-		const code = url.searchParams.get('code');
-
-		if (code) {
-			await supabase.auth.exchangeCodeForSession(code).catch(async (err) => {
-				const query = new URLSearchParams(url.search);
-				query.delete('code');
-
-				await goto(`${url.protocol}//${url.host}${url.pathname}?${query.toString()}`);
-
-				console.error(err);
-				failure(err.message);
-			});
-		}
-
 		const token_hash = url.searchParams.get('token_hash');
 
 		if (token_hash) {
