@@ -11,3 +11,9 @@ has an active plan or not when the API is used by the FE. (for example liquidati
 ## DB initialization for a new project:
 
 > Todo
+
+## Testing emails
+
+```
+(echo "Subject: HTML Email"; echo "Content-Type: text/html"; cat ./src/templates/reset-password.html) | msmtp jakub.blaha@gmail.com
+```
