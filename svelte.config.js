@@ -16,7 +16,8 @@ const config = {
 		adapter:
 			process.env.USE_VERCEL === 'true'
 				? vercel_adapter({
-						runtime: 'nodejs20.x'
+						runtime: 'nodejs20.x',
+						maxDuration: 60
 					})
 				: netlify_adapter({
 						runtime: 'nodejs20.x'

@@ -10,8 +10,6 @@ import { createServerClient } from '@supabase/ssr';
 import { type RequestEvent, error, json } from '@sveltejs/kit';
 import { now } from 'lodash-es';
 
-export const maxDuration = 60;
-
 const maxCacheAgeSeconds = 120;
 
 /** @type {import('./$types').RequestHandler} */
