@@ -14,7 +14,7 @@
 
 <div
 	style="background-image: url(/background/dashboard.svg)"
-	class="desktop:absolute desktop:inset-0 desktop:overflow-scroll bg-cover desktop:flex desktop:flex-col -desktop:bg-[50%_50%]"
+	class="desktop:absolute desktop:inset-0 desktop:overflow-scroll bg-cover desktop:flex desktop:flex-col -desktop:bg-[50%_50%] no-scrollbar"
 >
 	<AppNav showCurrencyDropdown />
 

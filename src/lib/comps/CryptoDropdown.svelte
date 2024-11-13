@@ -104,7 +104,7 @@
 
 		<div class="h-px bg-[#FFFFFF1A]"></div>
 
-		<div class="overflow-y-scroll overflow-x-hidden w-full">
+		<div class="overflow-y-scroll overflow-x-hidden w-full no-scrollbar">
 			{#each $filteredCoinList || [] as item}
 				<button
 					on:click={() => {

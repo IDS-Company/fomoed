@@ -52,7 +52,7 @@
 		<div
 			class="absolute top-0 left-0 translate-y-16 border border-[#FFFFFF1A] bg-[#0F0D0DE5] rounded-xl w-full h-[300px]"
 		>
-			<div class="overflow-y-scroll py-3 h-full" data-simplebar>
+			<div class="overflow-y-scroll py-3 h-full no-scrollbar" data-simplebar>
 				{#each displayedOptions as option}
 					<div>
 						<button

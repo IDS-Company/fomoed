@@ -17,7 +17,11 @@
 </script>
 
 <div class="px-2 h-full relative">
-	<div bind:this={container} class="w-full overflow-x-scroll h-full" class:opacity-0={loading}>
+	<div
+		bind:this={container}
+		class="w-full overflow-x-scroll h-full no-scrollbar"
+		class:opacity-0={loading}
+	>
 		<div class="-desktop:min-w-[700px] -desktop:h-full desktop:h-full -desktop:pb-3">
 			<slot />
 		</div>
