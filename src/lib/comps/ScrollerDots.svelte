@@ -31,12 +31,12 @@
 
 <div class="flex gap-[3px] justify-center w-full items-center" class:flex-col={vertical}>
 	{#each Array(pages) as _, i}
-		<div class:selected={page === i} class="--dot"></div>
+		<div class:selected={page === i} class="_dot"></div>
 	{/each}
 </div>
 
 <style>
-	.--dot {
+	._dot {
 		@apply duration-300 snap-always;
 		width: 4px;
 		height: 4px;
@@ -44,13 +44,13 @@
 		border-radius: 2px;
 	}
 
-	.--dot.selected {
+	._dot.selected {
 		background-color: #fff;
 		width: 9px;
 		height: 4px;
 	}
 
-	.flex-col .--dot.selected {
+	.flex-col ._dot.selected {
 		width: 4px;
 		height: 9px;
 	}

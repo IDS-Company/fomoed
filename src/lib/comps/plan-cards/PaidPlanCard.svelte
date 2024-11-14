@@ -79,7 +79,7 @@
 </script>
 
 <div
-	class="--container bg-black w-[333px] rounded-[20px] flex flex-col border-transparent relative"
+	class="_container bg-black w-[333px] rounded-[20px] flex flex-col border-transparent relative"
 	class:recommended={planInfo.recommended}
 >
 	<div class="h-1/2 grid place-items-center text-center">
@@ -172,7 +172,7 @@
 {/if}
 
 <style>
-	.--container {
+	._container {
 		@apply h-[436px] border;
 
 		background:
@@ -181,7 +181,7 @@
 				border-box;
 	}
 
-	.--container.recommended {
+	._container.recommended {
 		@apply h-[540px] border-2;
 
 		background:
