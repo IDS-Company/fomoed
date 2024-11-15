@@ -29,7 +29,9 @@ export default {
 				platform_light_green: '#99cb81',
 				platform_green: '#34b348',
 				primary: '#FF3B10',
-				yellow: '#F3C111'
+				yellow: '#F3C111',
+				red: '#FF3B10',
+				green: '#399F57'
 			},
 			fontFamily: {
 				satoshi: ['Satoshi-Variable', 'sans-serif'],

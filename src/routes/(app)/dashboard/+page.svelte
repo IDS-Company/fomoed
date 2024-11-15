@@ -17,7 +17,7 @@
 <svelte:window bind:scrollY />
 
 <div
-	class="fixed top-0 w-full z-10 -desktop:bg-[50%_50%]"
+	class="fixed top-0 w-full z-40 -desktop:bg-[50%_50%]"
 	style="backdrop-filter: brightness({1 - Math.min(0.7, scrollY / 100)}) blur(16px);"
 >
 	<AppNav showCurrencyDropdown />
@@ -102,8 +102,8 @@
 			</div>
 		</div>
 
-		<div class="col-span-6 min-h-[600px]">
-			<DashboardCard>
+		<div class="col-span-6">
+			<DashboardCard disablePadding>
 				<NewsCardContent />
 			</DashboardCard>
 		</div>

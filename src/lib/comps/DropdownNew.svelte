@@ -1,3 +1,4 @@
+<!-- DEPRECATED, here for backwards compatibility with Svelte 4 -->
 <script lang="ts">
 	import DropdownArrow from '$lib/icons/DropdownArrow.svelte';
 	import { createEventDispatcher } from 'svelte';
