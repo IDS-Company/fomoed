@@ -31,7 +31,8 @@ export default {
 				primary: '#FF3B10',
 				yellow: '#F3C111',
 				red: '#FF3B10',
-				green: '#399F57'
+				green: '#399F57',
+				skeleton: 'rgba(255,255,255,0.1)'
 			},
 			fontFamily: {
 				satoshi: ['Satoshi-Variable', 'sans-serif'],

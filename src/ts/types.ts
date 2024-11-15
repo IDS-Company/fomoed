@@ -5,6 +5,8 @@ export type NewsItem = {
 	id: number;
 	title: string;
 	published_at: string;
+	url: string;
+	domain: string;
 	votes: {
 		positive: number;
 		negative: number;

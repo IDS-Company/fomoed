@@ -80,5 +80,18 @@ export class NewsService {
 
 		this.news.set(json.data.results);
 		this.status.set('success');
+
+		// For testing
+		this.news.update((news) => {
+			news[0].votes.positive = 3;
+			news[1].votes.positive = 2;
+			news[3].votes.positive = 1;
+
+			news[4].votes.negative = 0;
+			news[5].votes.negative = 1;
+			news[6].votes.negative = 2;
+
+			return news;
+		});
 	}
 }
