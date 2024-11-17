@@ -8,7 +8,7 @@
 	<div class="_label" class:selected={!state}>{labelLeft}</div>
 
 	<div class="bg-[#373737] rounded-full w-[36px] h-[14px] flex items-center">
-		<div class="w-[20px] aspect-square bg-white rounded-full duration-200 --dot" class:state></div>
+		<div class="w-[20px] aspect-square bg-white rounded-full duration-200 _dot" class:state></div>
 	</div>
 
 	<div class="_label" class:selected={state}>{labelRight}</div>
@@ -23,7 +23,7 @@
 		@apply text-white;
 	}
 
-	.--dot.state {
+	._dot.state {
 		@apply translate-x-full;
 	}
 </style>
