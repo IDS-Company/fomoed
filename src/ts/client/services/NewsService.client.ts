@@ -1,30 +1,26 @@
-import type { ClientFetchStatus, NewsItem, ServerResponse } from '$ts/types';
+import type {
+	ClientFetchStatus,
+	NewsFilterVal,
+	NewsItem,
+	NewsKindVal,
+	ServerResponse
+} from '$ts/types';
 import { writable } from 'svelte/store';
 
-type NewsFilterVal =
-	| 'rising'
-	| 'hot'
-	| 'bullish'
-	| 'bearish'
-	| 'important'
-	| 'saved'
-	| 'lol'
-	| 'all';
 export type NewsFilterOption = { value: NewsFilterVal; label: string };
 
 export const newsFilterOpts: NewsFilterOption[] = [
-	{ value: 'all', label: 'Top news' },
+	{ value: 'all', label: 'Latest news' },
 	{ value: 'rising', label: 'Rising' },
 	{ value: 'hot', label: 'Hot' },
 	{ value: 'bullish', label: 'Bullish' },
 	{ value: 'bearish', label: 'Bearish' },
 	{ value: 'important', label: 'Important' },
-	{ value: 'saved', label: 'Saved' },
+	// { value: 'saved', label: 'Saved' },
 	{ value: 'lol', label: 'LOL' }
 ];
 
-export type NewsKind = 'news' | 'media' | 'all';
-export type NewsKindOption = { value: NewsKind; label: string };
+export type NewsKindOption = { value: NewsKindVal; label: string };
 
 export const newsKindOpts: NewsKindOption[] = [
 	{ value: 'all', label: 'News & Media' },
@@ -35,7 +31,9 @@ export const newsKindOpts: NewsKindOption[] = [
 interface FetchNewsOpts {
 	currrency?: string;
 	filter?: NewsFilterVal;
-	kind?: NewsKind;
+	kind?: NewsKindVal;
+	page?: number;
+	append?: boolean;
 }
 
 export class NewsService {
@@ -43,10 +41,21 @@ export class NewsService {
 	status = writable<ClientFetchStatus>('idle');
 	error = writable<string>('');
 
+	#lastFetchOpts: FetchNewsOpts = {};
+	#nextPage = 1;
+
 	async fetchNews(opts: FetchNewsOpts = {}) {
+		console.log('fetching news');
+
+		if (!opts.append) {
+			this.news.set([]);
+		}
+
 		this.status.set('loading');
 
 		const url = new URL(window.location.origin + '/api/news');
+
+		url.searchParams.set('page', (opts.page ?? 1).toString());
 
 		if (opts.currrency) {
 			url.searchParams.set('currencies', opts.currrency);
@@ -78,20 +87,19 @@ export class NewsService {
 			return;
 		}
 
-		this.news.set(json.data.results);
+		this.news.update((prev) => {
+			return [...prev, json.data.results];
+		});
 		this.status.set('success');
 
-		// For testing
-		this.news.update((news) => {
-			news[0].votes.positive = 3;
-			news[1].votes.positive = 2;
-			news[3].votes.positive = 1;
+		this.#lastFetchOpts = opts;
+		this.#nextPage = 2;
+	}
 
-			news[4].votes.negative = 0;
-			news[5].votes.negative = 1;
-			news[6].votes.negative = 2;
+	fetchNextPage() {
+		console.log('fetching next page');
 
-			return news;
-		});
+		this.#nextPage++;
+		this.fetchNews({ ...this.#lastFetchOpts, page: this.#nextPage });
 	}
 }

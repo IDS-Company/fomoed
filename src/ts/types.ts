@@ -7,6 +7,7 @@ export type NewsItem = {
 	published_at: string;
 	url: string;
 	domain: string;
+	kind: 'news' | 'media';
 	votes: {
 		positive: number;
 		negative: number;
@@ -19,3 +20,18 @@ export type NewsItem = {
 		comments: number;
 	};
 };
+
+export const newsFilterVals = [
+	'rising',
+	'hot',
+	'bullish',
+	'bearish',
+	'important',
+	'saved',
+	'lol',
+	'all'
+] as const;
+export type NewsFilterVal = (typeof newsFilterVals)[number];
+
+export const newsKindVals = ['news', 'media', 'all'] as const;
+export type NewsKindVal = (typeof newsKindVals)[number];

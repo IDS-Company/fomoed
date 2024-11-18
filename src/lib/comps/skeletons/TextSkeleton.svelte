@@ -11,7 +11,10 @@
 	}
 </script>
 
-<div class="flex gap-x-2 absolute items-center {props.class}" out:fade={{ duration: 500 }}>
+<div
+	class="flex gap-x-2 absolute items-center animate-pulse {props.class}"
+	out:fade={{ duration: 500 }}
+>
 	{#each widths as w}
 		<div class="bg-white/10 h-4 rounded-md" style="width: {w}px;">{' '}</div>
 	{/each}

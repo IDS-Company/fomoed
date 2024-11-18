@@ -86,6 +86,9 @@ importers:
       stripe:
         specifier: ^15.3.0
         version: 15.12.0
+      svelte-inview:
+        specifier: ^4.0.4
+        version: 4.0.4(svelte@5.2.0)
       svelte-loading-spinners:
         specifier: ^0.3.6
         version: 0.3.6
@@ -95,6 +98,9 @@ importers:
       svelte-time:
         specifier: ^0.8.3
         version: 0.8.3
+      svelte-youtube-embed:
+        specifier: ^0.3.3
+        version: 0.3.3(svelte@5.2.0)
       type-fest:
         specifier: ^4.18.0
         version: 4.20.1
@@ -2197,6 +2203,11 @@ packages:
     peerDependencies:
       svelte: ^3.19.0 || ^4.0.0
 
+  svelte-inview@4.0.4:
+    resolution: {integrity: sha512-PlXNSHHijvQ6MhmSYUj6cMyS+39NttoTffk7W5WYF8T2tsyLgJnKhyuAF+/hSujbY0vpsmqXaMd2nolEKvR8Kw==}
+    peerDependencies:
+      svelte: ^3.0.0 || ^4.0.0 || ^5.0.0 || ^5.0.0-next
+
   svelte-loading-spinners@0.3.6:
     resolution: {integrity: sha512-mthHQ2TwiwzTWzbFry3CBnVEfzqPOD9WkVw84OfSYzHRq6N9wgQ+yv37u81uPeuLU/ZOIPqhujpXquB1aol5ZQ==}
 
@@ -2244,6 +2255,11 @@ packages:
 
   svelte-time@0.8.3:
     resolution: {integrity: sha512-8uBYoOgn7PwiTF/aNAx31yxbz7AAcD/JJF3SlgzsH/pZ/XSllmAgeCAYZ1j6G52QbNnUhwd8homQonDow616GA==}
+
+  svelte-youtube-embed@0.3.3:
+    resolution: {integrity: sha512-g4+53JauVB+Jwz486lVqW8PUTnoP1SinECWhmQSCaKuh6zrYiAOFRpzMG6vW1TaQfSigiLWyUactFWipo4lsfQ==}
+    peerDependencies:
+      svelte: ^4.0.0
 
   svelte@5.2.0:
     resolution: {integrity: sha512-LOowFhMB0CoTzDsa90snaICFMftrxKlYsOhH4YP1AamjCSDBZvtDq0yB5QY8LJA1tFftcmpAhmLCK/gAOFNrtw==}
@@ -4396,6 +4412,10 @@ snapshots:
     dependencies:
       svelte: 5.2.0
 
+  svelte-inview@4.0.4(svelte@5.2.0):
+    dependencies:
+      svelte: 5.2.0
+
   svelte-loading-spinners@0.3.6: {}
 
   svelte-meta-tags@3.1.2(svelte@5.2.0)(typescript@5.5.2):
@@ -4421,6 +4441,10 @@ snapshots:
   svelte-time@0.8.3:
     dependencies:
       dayjs: 1.11.13
+
+  svelte-youtube-embed@0.3.3(svelte@5.2.0):
+    dependencies:
+      svelte: 5.2.0
 
   svelte@5.2.0:
     dependencies:
