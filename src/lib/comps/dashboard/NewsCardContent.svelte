@@ -4,7 +4,7 @@
 		newsKindOpts,
 		type NewsService
 	} from '$ts/client/services/NewsService.client';
-	import { getContext, onMount } from 'svelte';
+	import { getContext, tick } from 'svelte';
 	import type { NewsItem } from '$ts/types';
 	import NewsFilterDropdown from '../dropdowns/NewsFilterDropdown.svelte';
 	import NewsKindDropdown from '../dropdowns/NewsKindDropdown.svelte';
@@ -23,14 +23,11 @@
 	import Film from '$lib/icons/Film.icon.svelte';
 	import SimpleBar from 'simplebar';
 	import { inview } from 'svelte-inview';
+	import { fill } from 'lodash-es';
 
 	const newsService = getContext<NewsService>('newsService');
 
-	const { status, error, news } = newsService;
-
-	// onMount(() => {
-	// 	newsService.fetchNews();
-	// });
+	const { status, error, news, hasNextPage } = newsService;
 
 	let newsFilterSelected = $state(newsFilterOpts[0]);
 	let newsKindSelected = $state(newsKindOpts[0]);
@@ -67,7 +64,7 @@
 	});
 
 	function getRedGreenDotCounts(item: NewsItem | null) {
-		if (!item) {
+		if (!item?.votes) {
 			return { red: 0, green: 0 };
 		}
 
@@ -90,11 +87,12 @@
 		};
 	}
 
-	let listContainer = $state();
+	let listContainer = $state<HTMLElement>();
 	let showTopGradient = $state(false);
+	let simplebar: SimpleBar;
 
 	$effect(() => {
-		const simplebar = new SimpleBar(listContainer as HTMLElement, {
+		simplebar = new SimpleBar(listContainer as HTMLElement, {
 			autoHide: false
 		});
 
@@ -102,6 +100,8 @@
 			showTopGradient = (e.target as HTMLElement).scrollTop > 0;
 		}
 
+		// @ts-ignore
+		simplebar.contentWrapperEl.style.overscrollBehavior = 'contain';
 		simplebar.contentWrapperEl?.addEventListener('scroll', listScrollHandler);
 
 		return () => {
@@ -110,8 +110,8 @@
 		};
 	});
 
-	function fetchNextPage() {
-		newsService.fetchNextPage();
+	async function fetchNextPage() {
+		await newsService.fetchNextPage();
 	}
 </script>
 
@@ -169,8 +169,13 @@
 	</div>
 {/snippet}
 
-{#snippet newsItem(item: NewsItem | null)}
-	<button class="py-1 group w-full text-left" onclick={() => (detailShownItem = item)}>
+{#snippet newsItem(item: NewsItem | null, onFirstInView: any)}
+	<button
+		use:inview={{ unobserveOnEnter: true }}
+		oninview_enter={onFirstInView}
+		class="py-1 group w-full text-left"
+		onclick={() => (detailShownItem = item)}
+	>
 		<div
 			class="border-white border-opacity-20 rounded-lg border px-4 py-6 w-full duration-200 group-hover:!duration-0"
 			class:cursor-pointer={item}
@@ -239,16 +244,24 @@
 		{#if $status === 'error'}
 			<CardError>{$error}</CardError>
 		{:else}
-			<div id="list-container" bind:this={listContainer} class="overflow-y-scroll no-scrollbar">
-				{#each $news as item}
-					{@render newsItem(item)}
+			<div
+				id="list-container"
+				bind:this={listContainer}
+				class="no-scrollbar"
+				style="overflow-y: scroll;"
+			>
+				{#each [...$news, ...($hasNextPage ? fill(new Array(4), null) : [])] as item, index}
+					{@render newsItem(
+						item,
+						index === $news.length ? () => $news.length && fetchNextPage() : null
+					)}
 				{/each}
 
-				<div use:inview oninview_enter={() => $news.length && fetchNextPage()}></div>
-
-				{#each new Array(5) as _}
-					{@render newsItem(null)}
-				{/each}
+				{#if !$hasNextPage}
+					<div class="text-center text-white opacity-50 py-32 text-lg font-semibold">
+						No more news
+					</div>
+				{/if}
 			</div>
 
 			<div

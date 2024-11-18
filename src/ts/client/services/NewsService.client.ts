@@ -5,7 +5,7 @@ import type {
 	NewsKindVal,
 	ServerResponse
 } from '$ts/types';
-import { writable } from 'svelte/store';
+import { get, writable } from 'svelte/store';
 
 export type NewsFilterOption = { value: NewsFilterVal; label: string };
 
@@ -40,13 +40,12 @@ export class NewsService {
 	news = writable<NewsItem[]>([]);
 	status = writable<ClientFetchStatus>('idle');
 	error = writable<string>('');
+	hasNextPage = writable(true);
 
 	#lastFetchOpts: FetchNewsOpts = {};
 	#nextPage = 1;
 
 	async fetchNews(opts: FetchNewsOpts = {}) {
-		console.log('fetching news');
-
 		if (!opts.append) {
 			this.news.set([]);
 		}
@@ -88,18 +87,23 @@ export class NewsService {
 		}
 
 		this.news.update((prev) => {
-			return [...prev, json.data.results];
+			return [...prev, ...json.data.results];
 		});
 		this.status.set('success');
 
+		if (json.data.next === null) {
+			this.hasNextPage.set(false);
+		}
+
 		this.#lastFetchOpts = opts;
-		this.#nextPage = 2;
 	}
 
-	fetchNextPage() {
-		console.log('fetching next page');
+	async fetchNextPage() {
+		if (get(this.status) === 'loading') {
+			return;
+		}
 
 		this.#nextPage++;
-		this.fetchNews({ ...this.#lastFetchOpts, page: this.#nextPage });
+		await this.fetchNews({ ...this.#lastFetchOpts, page: this.#nextPage, append: true });
 	}
 }

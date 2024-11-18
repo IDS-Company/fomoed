@@ -4,10 +4,12 @@ import type { NewsFilterVal, NewsKindVal } from '$ts/types';
 export class NewsService {
 	async getFromCryptoPanic({
 		filter = 'all',
-		kind = 'all'
+		kind = 'all',
+		page = 1
 	}: {
 		filter: NewsFilterVal;
 		kind: NewsKindVal;
+		page: number;
 	}) {
 		const url = new URL('https://cryptopanic.com/api/posts/');
 		url.searchParams.set('auth_token', PRIVATE_CRYPTOPANIC_KEY);
@@ -19,6 +21,8 @@ export class NewsService {
 		if (kind !== 'all') {
 			url.searchParams.set('kind', kind);
 		}
+
+		url.searchParams.set('page', page.toString());
 
 		const res = await fetch(url);
 
