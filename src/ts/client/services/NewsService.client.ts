@@ -106,4 +106,9 @@ export class NewsService {
 		this.#nextPage++;
 		await this.fetchNews({ ...this.#lastFetchOpts, page: this.#nextPage, append: true });
 	}
+
+	reset() {
+		this.news.set([]);
+		this.#nextPage = 1;
+	}
 }

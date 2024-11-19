@@ -13,7 +13,10 @@
 
 	export let selected: CoinstatsCoinListItem | null = null;
 
-	$: selected && coinstats_selected_coin.set(selected);
+	// This is a hotfix to prevent setting the same value multiple times
+	$: if (selected && $coinstats_selected_coin !== selected) {
+		coinstats_selected_coin.set(selected);
+	}
 
 	coinstats_coin_list.subscribe((value) => {
 		if (!selected && value) {

@@ -4,7 +4,7 @@
 		newsKindOpts,
 		type NewsService
 	} from '$ts/client/services/NewsService.client';
-	import { getContext, tick } from 'svelte';
+	import { getContext } from 'svelte';
 	import type { NewsItem } from '$ts/types';
 	import NewsFilterDropdown from '../dropdowns/NewsFilterDropdown.svelte';
 	import NewsKindDropdown from '../dropdowns/NewsKindDropdown.svelte';
@@ -24,6 +24,7 @@
 	import SimpleBar from 'simplebar';
 	import { inview } from 'svelte-inview';
 	import { fill } from 'lodash-es';
+	import { browser } from '$app/environment';
 
 	const newsService = getContext<NewsService>('newsService');
 
@@ -44,15 +45,24 @@
 		detailShownItem && detailShownItem.votes.positive < detailShownItem.votes.negative
 	);
 
-	$effect(() => {
-		console.log('running');
+	function fetchNews() {
+		if (!$coinstats_selected_coin) {
+			return;
+		}
 
 		newsService.fetchNews({
 			filter: newsFilterSelected.value,
-			kind: newsKindSelected.value
-			// search: searchValue
+			kind: newsKindSelected.value,
+			currrency: $coinstats_selected_coin.symbol
 		});
-	});
+	}
+
+	if (browser) {
+		$effect(() => {
+			newsService.reset();
+			fetchNews();
+		});
+	}
 
 	$inspect(detailShownItem);
 

@@ -5,10 +5,12 @@ export class NewsService {
 	async getFromCryptoPanic({
 		filter = 'all',
 		kind = 'all',
+		currencies = null,
 		page = 1
 	}: {
 		filter: NewsFilterVal;
 		kind: NewsKindVal;
+		currencies: string | null;
 		page: number;
 	}) {
 		const url = new URL('https://cryptopanic.com/api/posts/');
@@ -22,6 +24,10 @@ export class NewsService {
 
 		if (kind !== 'all') {
 			url.searchParams.set('kind', kind);
+		}
+
+		if (currencies) {
+			url.searchParams.set('currencies', currencies);
 		}
 
 		url.searchParams.set('page', page.toString());
