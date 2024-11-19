@@ -23,7 +23,7 @@
 	import Film from '$lib/icons/Film.icon.svelte';
 	import SimpleBar from 'simplebar';
 	import { inview } from 'svelte-inview';
-	import { fill, now } from 'lodash-es';
+	import { fill } from 'lodash-es';
 	import { browser } from '$app/environment';
 	import { innerHeight, isDesktop } from '$lib/stores/ui';
 
@@ -371,7 +371,8 @@
 				{/if}
 
 				<div
-					class="mt-4 text-justify whitespace-pre-wrap overflow-hidden leading-loose font-serif desktop:text-lg text-white/90 -desktop:text-xl select-all"
+					class="mt-4 whitespace-pre-wrap overflow-hidden leading-loose font-serif desktop:text-lg text-white/90 -desktop:text-xl select-all"
+					class:text-justify={detailShownItem.domain !== 'youtube.com'}
 				>
 					{detailShownItem.metadata?.description}
 				</div>
