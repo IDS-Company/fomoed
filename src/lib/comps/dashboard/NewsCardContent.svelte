@@ -127,6 +127,15 @@
 
 	// Hotfix for the height being the full end height on transition start
 	let allowFullFiltersHeightSubstract = $state(false);
+
+	// Disable page scrolling behind new detail on mobile
+	$effect(() => {
+		if (detailShownItem) {
+			document.body.style.overflow = 'hidden';
+		} else {
+			document.body.style.overflow = '';
+		}
+	});
 </script>
 
 {#snippet statsRow(item: NewsItem | null)}
@@ -316,16 +325,16 @@
 	{#if detailShownItem}
 		<div
 			id="detail-container"
-			class="absolute inset-0 backdrop-blur-3xl backdrop-brightness-90 p-12"
+			class="absolute -desktop:fixed -desktop:z-40 inset-0 backdrop-blur-3xl backdrop-brightness-90 -desktop:backdrop-brightness-75 p-12 -desktop:px-2 -desktop:pt-4"
 			class:bullish={isDetailBullish}
 			class:bearish={isDetailBearish}
 			transition:fly={{ x: clientWidth, duration: 600, opacity: 1, easing: quintOut }}
 		>
 			<button
-				class="z-10 h-10 active:brightness-50 items-center duration-100 absolute top-12 right-12 p-2 border-white/10 border rounded-lg bg-white/10"
+				class="z-10 active:brightness-50 items-center duration-100 absolute top-12 -desktop:top-4 right-12 -desktop:right-2 p-2 border-white/10 border rounded-lg bg-white/10 -desktop:bg-white/5"
 				onclick={() => (detailShownItem = null)}
 			>
-				<div class="h-6 w-6">
+				<div class="h-5 w-5">
 					<CancelIcon />
 				</div>
 			</button>
@@ -335,14 +344,16 @@
 				class="overflow-y-scroll h-full max-w-prose mx-auto pr-6 translate-x-3 no-scrollbar"
 			>
 				<div class="flex gap-x-4">
-					<div class="font-paralucent-heavy text-4xl text-white/80">
+					<div
+						class="font-paralucent-heavy text-4xl text-white/80 -desktop:mr-10 -desktop:text-2xl"
+					>
 						{detailShownItem.title}
 					</div>
 				</div>
 
 				<div class="pt-2 opacity-60 flex">
 					<div>
-						<a href={detailShownItem.source.domain} class="underline" target="_blank">
+						<a href={'https://' + detailShownItem.source.domain} class="underline" target="_blank">
 							{detailShownItem.source.domain}
 						</a>
 					</div>
@@ -365,7 +376,7 @@
 				{/if}
 
 				<div
-					class="mt-4 text-justify whitespace-pre-wrap overflow-hidden leading-loose font-serif text-lg text-white/90"
+					class="mt-4 text-justify whitespace-pre-wrap overflow-hidden leading-loose font-serif desktop:text-lg text-white/90 -desktop:text-xl select-all"
 				>
 					{detailShownItem.metadata?.description}
 				</div>
