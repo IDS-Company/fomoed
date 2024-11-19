@@ -65,12 +65,7 @@
 		});
 	}
 
-	let placeholderMediaUrl = $state('https://www.youtube.com/watch?v=29-NlwqtijM');
-
-	const videoId = $derived(() => {
-		const url = new URL(placeholderMediaUrl);
-		return url.searchParams.get('v');
-	});
+	let videoId = $derived(detailShownItem?.metadata.image.split('/')[4]);
 
 	function getRedGreenDotCounts(item: NewsItem | null) {
 		if (!item?.votes) {
