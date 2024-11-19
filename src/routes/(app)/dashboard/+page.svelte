@@ -30,7 +30,7 @@
 	class:opacity-0={$isDesktop === null}
 >
 	<div
-		class="grid grid-cols-6 gap-[7px] mx-auto h-full pb-6 w-full max-w-[1050px] desktop:grid-rows-[1fr_3fr]"
+		class="grid grid-cols-6 gap-[7px] mx-auto h-full desktop:pb-6 w-full max-w-[1050px] desktop:grid-rows-[1fr_3fr]"
 	>
 		<div
 			bind:this={smallChartsCointainer}
@@ -102,8 +102,8 @@
 			</div>
 		</div>
 
-		<div class="col-span-6">
-			<DashboardCard disablePadding>
+		<div class="col-span-6 -desktop:pt-4">
+			<DashboardCard disablePadding hideCard={!$isDesktop}>
 				<NewsCardContent />
 			</DashboardCard>
 		</div>

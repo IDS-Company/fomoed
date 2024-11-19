@@ -23,8 +23,9 @@
 	import Film from '$lib/icons/Film.icon.svelte';
 	import SimpleBar from 'simplebar';
 	import { inview } from 'svelte-inview';
-	import { fill } from 'lodash-es';
+	import { fill, now } from 'lodash-es';
 	import { browser } from '$app/environment';
+	import { innerHeight, isDesktop } from '$lib/stores/ui';
 
 	const newsService = getContext<NewsService>('newsService');
 
@@ -33,7 +34,7 @@
 	let newsFilterSelected = $state(newsFilterOpts[0]);
 	let newsKindSelected = $state(newsKindOpts[0]);
 	let searchValue = $state('');
-	let showFilters = $state(false);
+	let filtersOpen = $state(false);
 	let detailShownItem = $state<NewsItem | null>(null);
 	let clientWidth = $state(0);
 
@@ -63,8 +64,6 @@
 			fetchNews();
 		});
 	}
-
-	$inspect(detailShownItem);
 
 	let placeholderMediaUrl = $state('https://www.youtube.com/watch?v=29-NlwqtijM');
 
@@ -110,8 +109,6 @@
 			showTopGradient = (e.target as HTMLElement).scrollTop > 0;
 		}
 
-		// @ts-ignore
-		simplebar.contentWrapperEl.style.overscrollBehavior = 'contain';
 		simplebar.contentWrapperEl?.addEventListener('scroll', listScrollHandler);
 
 		return () => {
@@ -124,7 +121,12 @@
 		await newsService.fetchNextPage();
 	}
 
-	$inspect(detailShownItem);
+	let container: HTMLElement;
+
+	let filtersHeight = $state(0);
+
+	// Hotfix for the height being the full end height on transition start
+	let allowFullFiltersHeightSubstract = $state(false);
 </script>
 
 {#snippet statsRow(item: NewsItem | null)}
@@ -189,22 +191,25 @@
 		onclick={() => (detailShownItem = item)}
 	>
 		<div
-			class="border-white border-opacity-20 rounded-lg border px-4 py-6 w-full duration-200 group-hover:!duration-0"
+			class="border-white/20 -desktop:border-white/10 rounded-lg border px-4 py-6 w-full duration-200 group-hover:!duration-0"
 			class:cursor-pointer={item}
 			class:item-bearish={item ? item.votes.negative > item.votes.positive : false}
 			class:item-bullish={item ? item.votes.negative < item.votes.positive : false}
 			class:item-neutral={item ? item.votes.negative === item.votes.positive : false}
 		>
-			<div class="flex gap-x-4 font-paralucent relative items-center">
-				<div class="flex-grow text-lg" class:whitespace-pre={!item}>
-					{item?.title || ' '}
-
-					{#if !item}
-						<TextSkeleton class="inset-0" />
-					{/if}
+			<div class="flex -desktop:flex-col gap-x-4 font-paralucent desktop:items-center gap-y-2">
+				<div class="flex-grow text-lg font-switzer text-white/80 relative overflow-hidden">
+					{item?.title}
+					<div class:absolute={item} class="inset-0 duration-500" class:opacity-0={item}>
+						<TextSkeleton />
+					</div>
 				</div>
 
-				<div class="opacity-50 min-w-32 rounded-lg text-right" class:bg-skeleton={!item}>
+				<div
+					class="opacity-50 min-w-32 rounded-lg desktop:text-right -desktop:text-sm -desktop:pt-1"
+					class:bg-skeleton={!item}
+					class:w-24={!item}
+				>
 					{#if item}
 						<Time live timestamp={new Date(item?.published_at).getTime()} relative />
 					{:else}
@@ -220,14 +225,21 @@
 	</button>
 {/snippet}
 
-<div bind:clientWidth class="w-full px-8 pb-4 relative">
+<div
+	bind:this={container}
+	bind:clientWidth
+	class="w-full px-8 -desktop:px-4 deksktop:pb-4 relative"
+>
 	<div class="flex gap-x-2">
 		<h2 class="text-[20px] font-paralucent-heavy pt-5">{$coinstats_selected_coin?.name} news</h2>
 
 		<div class="flex-grow"></div>
 
 		<button
-			onclick={() => (showFilters = !showFilters)}
+			onclick={() => {
+				filtersOpen = !filtersOpen;
+				setTimeout(() => (allowFullFiltersHeightSubstract = filtersOpen), 300);
+			}}
 			class="pl-2 pr-1 hover:text-white text-transparent duration-200 pt-5"
 		>
 			<div class="w-4">
@@ -236,23 +248,36 @@
 		</button>
 	</div>
 
-	{#if showFilters}
-		<div class="flex gap-x-2 pt-2 pb-3 border-b border-white/20" transition:slide>
-			<div class="flex-grow">
+	{#if filtersOpen}
+		<div
+			class="flex gap-x-2 gap-y-2 pt-2 desktop:pb-3 desktop:border-b border-white/20 flex-wrap"
+			transition:slide
+			bind:clientHeight={filtersHeight}
+		>
+			<div class="flex-grow -desktop:hidden">
 				<BaseSearch bind:value={searchValue} />
 			</div>
 
-			<div class="w-40">
+			<div class="desktop:w-40 -desktop:flex-grow">
 				<NewsFilterDropdown bind:selected={newsFilterSelected} />
 			</div>
 
-			<div class="w-40">
+			<div class="desktop:w-40 -desktop:flex-grow">
 				<NewsKindDropdown bind:selected={newsKindSelected} />
 			</div>
 		</div>
 	{/if}
 
-	<div class="grid h-[500px] overflow-hidden w-full mt-2 relative">
+	<div
+		class="grid overflow-hidden w-full mt-2 relative"
+		style="height: {$isDesktop
+			? 500
+			: $innerHeight -
+				75 -
+				110 -
+				40 -
+				(filtersHeight < 64 || allowFullFiltersHeightSubstract ? filtersHeight : 0)}px"
+	>
 		{#if $status === 'error'}
 			<CardError>{$error}</CardError>
 		{:else}
@@ -277,12 +302,12 @@
 			</div>
 
 			<div
-				class="absolute top-0 w-full h-8 bg-gradient-to-t from-transparent to-[#0F0D0D] duration-200"
+				class="absolute top-0 w-full h-8 bg-gradient-to-t from-transparent to-[#0F0D0D] duration-200 -desktop:hidden"
 				class:opacity-0={!showTopGradient}
 			></div>
 
 			<div
-				class="absolute bottom-0 w-full h-12 bg-gradient-to-b from-transparent to-[#0F0D0D]"
+				class="absolute bottom-0 w-full h-12 bg-gradient-to-b from-transparent to-[#0F0D0D] -desktop:to-[#1f0803]"
 			></div>
 		{/if}
 	</div>
@@ -310,7 +335,7 @@
 				class="overflow-y-scroll h-full max-w-prose mx-auto pr-6 translate-x-3 no-scrollbar"
 			>
 				<div class="flex gap-x-4">
-					<div class="font-paralucent-heavy text-4xl">
+					<div class="font-paralucent-heavy text-4xl text-white/80">
 						{detailShownItem.title}
 					</div>
 				</div>
@@ -339,7 +364,9 @@
 					</div>
 				{/if}
 
-				<div class="mt-4 text-justify whitespace-pre-wrap overflow-hidden">
+				<div
+					class="mt-4 text-justify whitespace-pre-wrap overflow-hidden leading-loose font-serif text-lg text-white/90"
+				>
 					{detailShownItem.metadata?.description}
 				</div>
 
@@ -372,5 +399,9 @@
 
 	#list-container :global(.simplebar-vertical) {
 		@apply opacity-0;
+	}
+
+	#list-container :global(.simplebar-content-wrapper) {
+		@apply desktop:overscroll-contain;
 	}
 </style>

@@ -12,10 +12,10 @@
 </script>
 
 <div
-	class="flex gap-x-2 absolute items-center animate-pulse {props.class}"
+	class="flex gap-2 inset-0 items-center animate-pulse flex-wrap {props.class}"
 	out:fade={{ duration: 500 }}
 >
 	{#each widths as w}
-		<div class="bg-white/10 h-4 rounded-md" style="width: {w}px;">{' '}</div>
+		<div class="bg-white/10 rounded-md whitespace-pre" style="width: {w}px;">{' '}</div>
 	{/each}
 </div>
