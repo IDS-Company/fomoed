@@ -271,8 +271,8 @@
 			</div>
 			<div class="pt-[15px] text-[20px] -desktop:text-sm font-semibold">
 				Send us your thought to{' '}
-				<a id="contact" href="mailto:fomoed@gmail.com" class="text-primary underline">
-					fomoed@gmail.com
+				<a id="contact" href="mailto:support@fomoed.io" class="text-primary underline">
+					support@fomoed.io
 				</a>
 			</div>
 		</div>
