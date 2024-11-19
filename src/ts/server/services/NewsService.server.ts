@@ -12,7 +12,9 @@ export class NewsService {
 		page: number;
 	}) {
 		const url = new URL('https://cryptopanic.com/api/posts/');
+
 		url.searchParams.set('auth_token', PRIVATE_CRYPTOPANIC_KEY);
+		url.searchParams.set('metadata', 'true');
 
 		if (filter !== 'all') {
 			url.searchParams.set('filter', filter);
@@ -27,6 +29,7 @@ export class NewsService {
 		const res = await fetch(url);
 
 		if (!res.ok) {
+			console.error(await res.text());
 			throw new Error('Failed to fetch news from CryptoPanic');
 		}
 

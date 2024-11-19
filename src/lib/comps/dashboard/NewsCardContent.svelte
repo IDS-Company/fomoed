@@ -113,6 +113,8 @@
 	async function fetchNextPage() {
 		await newsService.fetchNextPage();
 	}
+
+	$inspect(detailShownItem);
 </script>
 
 {#snippet statsRow(item: NewsItem | null)}
@@ -305,7 +307,9 @@
 
 				<div class="pt-2 opacity-60 flex">
 					<div>
-						<a href={detailShownItem.url} class="underline" target="_blank">Link to source</a>
+						<a href={detailShownItem.source.domain} class="underline" target="_blank">
+							{detailShownItem.source.domain}
+						</a>
 					</div>
 
 					<div class="flex-grow"></div>
@@ -325,33 +329,8 @@
 					</div>
 				{/if}
 
-				<div class="mt-4 text-justify">
-					Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt
-					ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation
-					ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in
-					reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur
-					sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id
-					est laborum. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
-					tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud
-					exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure
-					dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
-					Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit
-					anim id est laborum. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-					eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis
-					nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute
-					irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla
-					pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia
-					deserunt mollit anim id est laborum. Lorem ipsum dolor sit amet, consectetur adipiscing
-					elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim
-					veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
-					Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat
-					nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia
-					deserunt mollit anim id est laborum. Lorem ipsum dolor sit amet, consectetur adipiscing
-					elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim
-					veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
-					Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat
-					nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia
-					deserunt mollit anim id est laborum.
+				<div class="mt-4 text-justify whitespace-pre-wrap overflow-hidden">
+					{detailShownItem.metadata?.description}
 				</div>
 
 				{@render statsRow(detailShownItem)}

@@ -19,6 +19,15 @@ export type NewsItem = {
 		saved: number;
 		comments: number;
 	};
+	metadata: {
+		image: string;
+		description: string;
+	};
+	source: {
+		title: string;
+		region: string;
+		domain: string;
+	};
 };
 
 export const newsFilterVals = [
