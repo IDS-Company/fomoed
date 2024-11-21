@@ -241,7 +241,7 @@
 		onclick={() => (detailShownItem = item)}
 	>
 		<div
-			class="border-white/20 -desktop:border-white/10 rounded-lg border px-4 py-6 w-full duration-200 group-hover:!duration-0 backdrop-brightness-75"
+			class="border-white/20 -desktop:border-white/10 rounded-lg border px-4 py-6 w-full duration-200 group-hover:!duration-0 backdrop-brightness-50"
 			class:cursor-pointer={item}
 			class:item-bearish={item ? item.votes.negative > item.votes.positive : false}
 			class:item-bullish={item ? item.votes.negative < item.votes.positive : false}

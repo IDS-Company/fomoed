@@ -14,7 +14,9 @@
 
 <svelte:window bind:scrollY />
 
-<div class="bg-[url(/background/dashboard.svg)] inset-0 fixed min-h-screen bg-cover -z-10"></div>
+<div
+	class="bg-[url(/background/dashboard.svg)] inset-0 fixed min-h-screen bg-cover -z-10 brightness-75"
+></div>
 
 {#snippet newsTitle()}
 	<div
