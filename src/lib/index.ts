@@ -113,7 +113,9 @@ export const no_reroute_routes = [
 	'/(app)/dashboard',
 	'/(app)/plans',
 	'/(app)/(home)',
-	'/(share_config)'
+	'/(share_config)',
+	'/(app)/news',
+	'/(app)/components'
 ];
 
 export function sleep(ms: number) {

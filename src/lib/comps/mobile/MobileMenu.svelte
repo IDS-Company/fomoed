@@ -9,6 +9,7 @@
 	import LoginButton from '../buttons/LoginButton.svelte';
 	import { fade } from 'svelte/transition';
 	import { ClientSubscriptionManager } from '$ts/utils/client/plans';
+	import AllNewsButton from '../AllNewsButton.svelte';
 
 	$: currentActivePlan = ClientSubscriptionManager.currentActivePlan;
 </script>
@@ -30,41 +31,51 @@
 	</div>
 
 	{#if $auth_user}
-		<div class="flex-grow flex flex-col items-center px-12 justify-center">
-			<div class="w-full max-w-32">
-				<BorderedProfileImage />
+		<div class="flex-grow flex flex-col items-center justify-center">
+			<div class="pb-2 w-full px-4">
+				<AllNewsButton onclick={() => ($mobileMenuOpen = false)} class="w-full" />
 			</div>
 
-			<div class="mt-[10px] text-[32px] font-paralucent-demibold">
-				{$auth_user?.username}
-			</div>
+			<div class="flex-grow"></div>
 
-			<div class="text-[18px] text-[#FFFFFF99]">
-				{$auth_user?.email}
-			</div>
-
-			<div class="mt-6 w-full h-[45px] max-w-64">
-				<SecondaryButton
-					on:click={() => {
-						mobileMenuOpen.set(false);
-						goto('/plans');
-					}}
-				>
-					Select Plan
-				</SecondaryButton>
-			</div>
-
-			{#if $active_sub}
-				<div class="mt-4 text-[#FFFFFF99] text-sm">
-					<span>{$currentActivePlan?.name} plan </span>
-
-					{#if $active_sub && !$active_sub.cancel_at_period_end}
-						Renews <Time relative timestamp={$active_sub.current_period_end * 1000} />
-					{:else if $active_sub && $active_sub.cancel_at_period_end}
-						Cancels <Time relative timestamp={$active_sub.current_period_end * 1000} />
-					{/if}
+			<div class="flex flex-grow flex-col items-center justify-center">
+				<div class="w-full max-w-32">
+					<BorderedProfileImage />
 				</div>
-			{/if}
+
+				<div class="mt-[10px] text-[32px] font-paralucent-demibold">
+					{$auth_user?.username}
+				</div>
+
+				<div class="text-[18px] text-[#FFFFFF99]">
+					{$auth_user?.email}
+				</div>
+
+				<div class="mt-6 w-full h-[45px] max-w-64">
+					<SecondaryButton
+						on:click={() => {
+							mobileMenuOpen.set(false);
+							goto('/plans');
+						}}
+					>
+						Select Plan
+					</SecondaryButton>
+				</div>
+
+				{#if $active_sub}
+					<div class="mt-4 text-[#FFFFFF99] text-sm">
+						<span>{$currentActivePlan?.name} plan </span>
+
+						{#if $active_sub && !$active_sub.cancel_at_period_end}
+							Renews <Time relative timestamp={$active_sub.current_period_end * 1000} />
+						{:else if $active_sub && $active_sub.cancel_at_period_end}
+							Cancels <Time relative timestamp={$active_sub.current_period_end * 1000} />
+						{/if}
+					</div>
+				{/if}
+			</div>
+
+			<div class="flex-grow"></div>
 		</div>
 
 		<div class="flex justify-center">
@@ -84,8 +95,9 @@
 			</button>
 		</div>
 	{:else}
-		<div class="grid place-items-center h-full">
-			<LoginButton />
+		<div class="flex gap-x-4 px-4 items-center py-2">
+			<AllNewsButton onclick={() => ($mobileMenuOpen = false)} class="!w-1/2" />
+			<LoginButton class="!w-1/2" />
 		</div>
 	{/if}
 </div>

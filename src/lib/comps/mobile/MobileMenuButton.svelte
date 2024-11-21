@@ -3,7 +3,7 @@
 </script>
 
 <button
-	class="grid place-items-center h-full mr-6 ml-4"
+	class="grid place-items-center h-full mr-6 w-full"
 	on:click={() => ($mobileMenuOpen = !$mobileMenuOpen)}
 >
 	<img src="/icons/menu.svg" alt="" />

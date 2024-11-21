@@ -72,18 +72,18 @@
 				class="desktop:grid desktop:grid-cols-subgrid col-span-3 desktop:place-items-center -desktop:flex -desktop:overflow-x-scroll -desktop:gap-x-2 items-center -desktop:w-full -desktop:px-2 -xs:snap-x -xs:snap-mandatory no-scrollbar -desktop:mt-[18px] desktop:mt-[20px] duration-200"
 				class:opacity-0={isLoadingPlanInfo}
 			>
-				<div class="--card-container">
+				<div class="_card-container">
 					<FreeCard />
 				</div>
 
 				{#if $planInfoPro}
-					<div class="--card-container">
+					<div class="_card-container">
 						<PaidPlanCard planInfo={$planInfoPro} {yearlySelected} />
 					</div>
 				{/if}
 
 				{#if $planInfoPlus}
-					<div class="--card-container">
+					<div class="_card-container">
 						<PaidPlanCard planInfo={$planInfoPlus} {yearlySelected} />
 					</div>
 				{/if}
@@ -101,7 +101,7 @@
 {/if}
 
 <style>
-	.--card-container {
+	._card-container {
 		@apply flex-shrink-0 snap-center;
 	}
 </style>
