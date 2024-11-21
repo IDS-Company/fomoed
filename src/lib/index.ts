@@ -114,6 +114,7 @@ export const no_reroute_routes = [
 	'/(app)/plans',
 	'/(app)/(home)',
 	'/(share_config)',
+	'/(app)/news',
 	'/(app)/components'
 ];
 

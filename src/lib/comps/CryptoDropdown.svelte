@@ -51,10 +51,10 @@
 	);
 </script>
 
-<div class="relative">
+<div class="relative h-full">
 	<button
 		on:click={() => (isOpen = !isOpen)}
-		class="border-[#FFFFFF1A] duration-150 border rounded-[11px] px-[14px] py-[12px] flex items-center text-[#FFFFFFCC] w-[140px] hover:bg-[#FFFFFF0D] hover:border-[#FFFFFF4D]"
+		class="border-[#FFFFFF1A] duration-150 border rounded-[11px] px-[14px] h-full flex items-center text-[#FFFFFFCC] w-[140px] hover:bg-[#FFFFFF0D] hover:border-[#FFFFFF4D]"
 	>
 		<img
 			src={selected?.icon || 'https://static.coinstats.app/coins/1650455588819.png'}

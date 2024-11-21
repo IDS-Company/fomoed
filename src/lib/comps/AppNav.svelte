@@ -1,5 +1,7 @@
 <script>
 	import { auth_user } from '$lib/stores/user';
+	import AllNewsButton from './AllNewsButton.svelte';
+	import DashboardButton from './buttons/DashboardButton.svelte';
 	import LoginButton from './buttons/LoginButton.svelte';
 	import CryptoDropdown from './CryptoDropdown.svelte';
 	import LoadUserData from './func/LoadUserData.svelte';
@@ -7,6 +9,8 @@
 	import ProfileButton from './ProfileButton.svelte';
 
 	export let showCurrencyDropdown = false;
+	export let showAllNewsLink = false;
+	export let showDashboardLink = false;
 </script>
 
 <LoadUserData />
@@ -20,8 +24,16 @@
 		</a>
 	</div>
 
-	<div class="absolute right-2 flex gap-x-[10px] w-full">
+	<div class="absolute right-2 flex gap-x-[10px] w-full items-center h-full py-3">
 		<div class="flex-grow"></div>
+
+		{#if showDashboardLink}
+			<DashboardButton />
+		{/if}
+
+		{#if showAllNewsLink}
+			<AllNewsButton />
+		{/if}
 
 		{#if showCurrencyDropdown}
 			<CryptoDropdown />

@@ -20,7 +20,7 @@
 	class="fixed top-0 w-full z-40 -desktop:bg-[50%_50%]"
 	style="backdrop-filter: brightness({1 - Math.min(0.7, scrollY / 100)}) blur(16px);"
 >
-	<AppNav showCurrencyDropdown />
+	<AppNav showCurrencyDropdown showAllNewsLink />
 </div>
 
 <div class="bg-[url(/background/dashboard.svg)] inset-0 fixed min-h-screen bg-cover -z-10"></div>

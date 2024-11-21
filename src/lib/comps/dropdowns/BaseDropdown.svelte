@@ -31,7 +31,7 @@
 		<div
 			class="absolute top-0 translate-y-16 border border-[#FFFFFF1A] bg-white/10 backdrop-brightness-50 rounded-xl w-full overflow-hidden z-20 backdrop-blur-md"
 		>
-			<div class="h-full max-h-[300px]" data-simplebar>
+			<div class="h-full max-h-[320px]" data-simplebar>
 				{#each options as option}
 					<div>
 						<button
@@ -39,7 +39,8 @@
 								selected = option;
 								expanded = false;
 							}}
-							class="py-2.5 hover:bg-[#ffffff22] pl-3 pr-1 w-full text-left">{option.label}</button
+							class="py-2.5 hover:bg-[#ffffff22] font-semibold pl-3 pr-1 w-full text-left"
+							>{option.label}</button
 						>
 					</div>
 				{/each}

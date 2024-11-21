@@ -27,6 +27,18 @@
 	import { browser } from '$app/environment';
 	import { innerHeight, isDesktop } from '$lib/stores/ui';
 
+	const {
+		alwaysShowFilters = false,
+		autoListWrapperHeight = false,
+		disableGradientEdges = false,
+		class: cls = ''
+	}: {
+		alwaysShowFilters?: boolean;
+		autoListWrapperHeight?: boolean;
+		disableGradientEdges?: boolean;
+		class?: string;
+	} = $props();
+
 	const newsService = getContext<NewsService>('newsService');
 
 	const { status, error, news, hasNextPage } = newsService;
@@ -131,6 +143,22 @@
 			document.body.style.overflow = '';
 		}
 	});
+
+	function getListWrapperHeight() {
+		if ($isDesktop) {
+			return 500;
+		}
+
+		return (
+			$innerHeight -
+			75 -
+			110 -
+			40 -
+			(filtersHeight < 64 || allowFullFiltersHeightSubstract ? filtersHeight : 0)
+		);
+	}
+
+	let listWrapperHeight = $derived(getListWrapperHeight());
 </script>
 
 {#snippet statsRow(item: NewsItem | null)}
@@ -191,7 +219,7 @@
 	<button
 		use:inview={{ unobserveOnEnter: true }}
 		oninview_enter={onFirstInView}
-		class="py-1 group w-full text-left"
+		class="py-1 group w-full text-left backdrop-brightness-75"
 		onclick={() => (detailShownItem = item)}
 	>
 		<div
@@ -232,27 +260,29 @@
 <div
 	bind:this={container}
 	bind:clientWidth
-	class="w-full px-8 -desktop:px-4 deksktop:pb-4 relative"
+	class="w-full px-8 -desktop:px-4 desktop:pb-4 relative flex flex-col overflow-hidden max-h-full {cls}"
 >
 	<div class="flex gap-x-2">
 		<h2 class="text-[20px] font-paralucent-heavy pt-5">{$coinstats_selected_coin?.name} news</h2>
 
-		<div class="flex-grow"></div>
+		{#if !alwaysShowFilters}
+			<div class="flex-grow"></div>
 
-		<button
-			onclick={() => {
-				filtersOpen = !filtersOpen;
-				setTimeout(() => (allowFullFiltersHeightSubstract = filtersOpen), 300);
-			}}
-			class="pl-2 pr-1 hover:text-white text-transparent duration-200 pt-5"
-		>
-			<div class="w-4">
-				<Funnel />
-			</div>
-		</button>
+			<button
+				onclick={() => {
+					filtersOpen = !filtersOpen;
+					setTimeout(() => (allowFullFiltersHeightSubstract = filtersOpen), 300);
+				}}
+				class="pl-2 pr-1 hover:text-white text-transparent duration-200 pt-5"
+			>
+				<div class="w-4">
+					<Funnel />
+				</div>
+			</button>
+		{/if}
 	</div>
 
-	{#if filtersOpen}
+	{#if filtersOpen || alwaysShowFilters}
 		<div
 			class="flex gap-x-2 gap-y-2 pt-2 desktop:pb-3 desktop:border-b border-white/20 flex-wrap"
 			transition:slide
@@ -273,14 +303,8 @@
 	{/if}
 
 	<div
-		class="grid overflow-hidden w-full mt-2 relative"
-		style="height: {$isDesktop
-			? 500
-			: $innerHeight -
-				75 -
-				110 -
-				40 -
-				(filtersHeight < 64 || allowFullFiltersHeightSubstract ? filtersHeight : 0)}px"
+		class="grid overflow-hidden w-full mt-2 relative flex-grow flex-shrink"
+		style="height: {autoListWrapperHeight ? 'auto' : listWrapperHeight + 'px'}"
 	>
 		{#if $status === 'error'}
 			<CardError>{$error}</CardError>
@@ -305,14 +329,16 @@
 				{/if}
 			</div>
 
-			<div
-				class="absolute top-0 w-full h-8 bg-gradient-to-t from-transparent to-[#0F0D0D] duration-200 -desktop:hidden"
-				class:opacity-0={!showTopGradient}
-			></div>
+			{#if !disableGradientEdges}
+				<div
+					class="absolute top-0 w-full h-8 bg-gradient-to-t from-transparent to-[#0F0D0D] duration-200 -desktop:hidden"
+					class:opacity-0={!showTopGradient}
+				></div>
 
-			<div
-				class="absolute bottom-0 w-full h-12 bg-gradient-to-b from-transparent to-[#0F0D0D] -desktop:to-[#1f0803]"
-			></div>
+				<div
+					class="absolute bottom-0 w-full h-12 bg-gradient-to-b from-transparent to-[#0F0D0D] -desktop:to-[#1f0803]"
+				></div>
+			{/if}
 		{/if}
 	</div>
 
