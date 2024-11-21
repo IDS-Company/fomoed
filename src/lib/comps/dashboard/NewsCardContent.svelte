@@ -2,6 +2,7 @@
 	import {
 		newsFilterOpts,
 		newsKindOpts,
+		newsTokenOpts,
 		type NewsService
 	} from '$ts/client/services/NewsService.client';
 	import { getContext } from 'svelte';
@@ -10,7 +11,6 @@
 	import NewsKindDropdown from '../dropdowns/NewsKindDropdown.svelte';
 	import BaseSearch from '../search/BaseSearch.svelte';
 	import TextSkeleton from '../skeletons/TextSkeleton.svelte';
-	import { coinstats_selected_coin } from '$lib/stores';
 	import Funnel from '$lib/icons/Funnel.icon.svelte';
 	import { fly, slide } from 'svelte/transition';
 	import Time from 'svelte-time/Time.svelte';
@@ -23,19 +23,25 @@
 	import Film from '$lib/icons/Film.icon.svelte';
 	import SimpleBar from 'simplebar';
 	import { inview } from 'svelte-inview';
-	import { fill } from 'lodash-es';
+	import { capitalize, fill } from 'lodash-es';
 	import { browser } from '$app/environment';
-	import { innerHeight, isDesktop } from '$lib/stores/ui';
+	import { innerHeight, isDesktop, isMobile } from '$lib/stores/ui';
+	import NewsTokenDropdown from '../dropdowns/NewsTokenDropdown.svelte';
+	import { coinstats_selected_coin } from '$lib/stores';
 
-	const {
-		alwaysShowFilters = false,
+	let {
+		alwaysShowFilters: isOnAllNewsPage = false,
 		autoListWrapperHeight = false,
 		disableGradientEdges = false,
+		hideTitle = false,
+		disableFly = false,
 		class: cls = ''
 	}: {
 		alwaysShowFilters?: boolean;
 		autoListWrapperHeight?: boolean;
 		disableGradientEdges?: boolean;
+		hideTitle?: boolean;
+		disableFly?: boolean;
 		class?: string;
 	} = $props();
 
@@ -43,6 +49,7 @@
 
 	const { status, error, news, hasNextPage } = newsService;
 
+	let newsTokenSelected = $state($newsTokenOpts[0]);
 	let newsFilterSelected = $state(newsFilterOpts[0]);
 	let newsKindSelected = $state(newsKindOpts[0]);
 	let searchValue = $state('');
@@ -58,15 +65,21 @@
 		detailShownItem && detailShownItem.votes.positive < detailShownItem.votes.negative
 	);
 
+	let filterByToken = $derived(
+		isOnAllNewsPage
+			? { symbol: newsTokenSelected.value, name: newsTokenSelected.label }
+			: $coinstats_selected_coin
+	);
+
 	function fetchNews() {
-		if (!$coinstats_selected_coin) {
+		if (!filterByToken) {
 			return;
 		}
 
 		newsService.fetchNews({
 			filter: newsFilterSelected.value,
 			kind: newsKindSelected.value,
-			currrency: $coinstats_selected_coin.symbol
+			currrency: filterByToken.symbol
 		});
 	}
 
@@ -77,7 +90,7 @@
 		});
 	}
 
-	let videoId = $derived(detailShownItem?.metadata.image.split('/')[4]);
+	let videoId = $derived(detailShownItem?.metadata?.image?.split('/')[4]);
 
 	function getRedGreenDotCounts(item: NewsItem | null) {
 		if (!item?.votes) {
@@ -159,6 +172,11 @@
 	}
 
 	let listWrapperHeight = $derived(getListWrapperHeight());
+
+	function onFiltersClick() {
+		filtersOpen = !filtersOpen;
+		setTimeout(() => (allowFullFiltersHeightSubstract = filtersOpen), 100);
+	}
 </script>
 
 {#snippet statsRow(item: NewsItem | null)}
@@ -219,11 +237,11 @@
 	<button
 		use:inview={{ unobserveOnEnter: true }}
 		oninview_enter={onFirstInView}
-		class="py-1 group w-full text-left backdrop-brightness-75"
+		class="py-1 group w-full text-left"
 		onclick={() => (detailShownItem = item)}
 	>
 		<div
-			class="border-white/20 -desktop:border-white/10 rounded-lg border px-4 py-6 w-full duration-200 group-hover:!duration-0"
+			class="border-white/20 -desktop:border-white/10 rounded-lg border px-4 py-6 w-full duration-200 group-hover:!duration-0 backdrop-brightness-75"
 			class:cursor-pointer={item}
 			class:item-bearish={item ? item.votes.negative > item.votes.positive : false}
 			class:item-bullish={item ? item.votes.negative < item.votes.positive : false}
@@ -262,18 +280,37 @@
 	bind:clientWidth
 	class="w-full px-8 -desktop:px-4 desktop:pb-4 relative flex flex-col overflow-hidden max-h-full {cls}"
 >
-	<div class="flex gap-x-2">
-		<h2 class="text-[20px] font-paralucent-heavy pt-5">{$coinstats_selected_coin?.name} news</h2>
+	<div class="flex gap-x-2 items-center">
+		{#if !hideTitle}
+			<h2 class="text-[20px] flex-grow -desktop:text-2xl font-paralucent-heavy pt-5">
+				{capitalize(filterByToken?.name + ' news')}
+			</h2>
+		{/if}
 
-		{#if !alwaysShowFilters}
-			<div class="flex-grow"></div>
+		<div class="flex-grow -desktop:hidden"></div>
 
+		{#if isOnAllNewsPage}
+			<div class="-desktop:flex-grow desktop:hidden">
+				<NewsTokenDropdown bind:selected={newsTokenSelected} />
+			</div>
+		{/if}
+
+		{#if isOnAllNewsPage}
 			<button
-				onclick={() => {
-					filtersOpen = !filtersOpen;
-					setTimeout(() => (allowFullFiltersHeightSubstract = filtersOpen), 300);
-				}}
-				class="pl-2 pr-1 hover:text-white text-transparent duration-200 pt-5"
+				onclick={onFiltersClick}
+				class="desktop:pl-2 desktop:pr-1 -desktop:px-5 hover:text-white text-transparent duration-200 desktop:pt-5 -desktop:border-white/20 -desktop:bg-white/5 -desktop:border -desktop:rounded-xl -desktop:h-14"
+				class:hidden={$isDesktop}
+				class:!text-white={filtersOpen && $isMobile}
+			>
+				<div class="w-4">
+					<Funnel />
+				</div>
+			</button>
+		{:else}
+			<button
+				onclick={onFiltersClick}
+				class="desktop:pl-2 desktop:pr-1 hover:text-white text-transparent duration-200 pt-5"
+				class:!text-white={filtersOpen && $isMobile}
 			>
 				<div class="w-4">
 					<Funnel />
@@ -282,14 +319,19 @@
 		{/if}
 	</div>
 
-	{#if filtersOpen || alwaysShowFilters}
+	{#if filtersOpen || (isOnAllNewsPage && $isDesktop)}
 		<div
-			class="flex gap-x-2 gap-y-2 pt-2 desktop:pb-3 desktop:border-b border-white/20 flex-wrap"
-			transition:slide
+			class="flex gap-x-2 gap-y-2 pt-2 desktop:pb-3 desktop:border-b border-white/20 flex-wrap mx-auto w-full"
+			style="max-width: var(--max-filters-width);"
+			transition:slide={{ duration: $isMobile && isOnAllNewsPage ? 0 : 300 }}
 			bind:clientHeight={filtersHeight}
 		>
 			<div class="flex-grow -desktop:hidden">
 				<BaseSearch bind:value={searchValue} />
+			</div>
+
+			<div class="desktop:w-40 -desktop:flex-grow -desktop:hidden">
+				<NewsTokenDropdown bind:selected={newsTokenSelected} />
 			</div>
 
 			<div class="desktop:w-40 -desktop:flex-grow">
@@ -303,8 +345,10 @@
 	{/if}
 
 	<div
-		class="grid overflow-hidden w-full mt-2 relative flex-grow flex-shrink"
-		style="height: {autoListWrapperHeight ? 'auto' : listWrapperHeight + 'px'}"
+		class="grid overflow-hidden w-full mt-2 relative flex-grow flex-shrink mx-auto"
+		style="height: {autoListWrapperHeight
+			? 'auto'
+			: listWrapperHeight + 'px'}; max-width: var(--max-list-width)"
 	>
 		{#if $status === 'error'}
 			<CardError>{$error}</CardError>
@@ -349,7 +393,12 @@
 			class="absolute -desktop:fixed -desktop:z-40 inset-0 backdrop-blur-3xl backdrop-brightness-90 -desktop:backdrop-brightness-75 p-12 -desktop:px-2 -desktop:pt-4"
 			class:bullish={isDetailBullish}
 			class:bearish={isDetailBearish}
-			transition:fly={{ x: clientWidth, duration: 600, opacity: 1, easing: quintOut }}
+			transition:fly={{
+				x: disableFly ? 0 : clientWidth,
+				duration: 600,
+				opacity: disableFly ? 0 : 1,
+				easing: quintOut
+			}}
 		>
 			<button
 				class="z-10 active:brightness-50 items-center duration-100 absolute top-12 -desktop:top-4 right-12 -desktop:right-2 p-2 border-white/10 border rounded-lg bg-white/10 -desktop:bg-white/5"

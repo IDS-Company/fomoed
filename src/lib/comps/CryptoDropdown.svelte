@@ -51,7 +51,7 @@
 	);
 </script>
 
-<div class="relative h-full">
+<div class="relative h-[50px]">
 	<button
 		on:click={() => (isOpen = !isOpen)}
 		class="border-[#FFFFFF1A] duration-150 border rounded-[11px] px-[14px] h-full flex items-center text-[#FFFFFFCC] w-[140px] hover:bg-[#FFFFFF0D] hover:border-[#FFFFFF4D]"

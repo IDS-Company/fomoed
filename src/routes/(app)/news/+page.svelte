@@ -16,18 +16,34 @@
 
 <div class="bg-[url(/background/dashboard.svg)] inset-0 fixed min-h-screen bg-cover -z-10"></div>
 
+{#snippet newsTitle()}
+	<div
+		class="font-semibold font-paralucent-heavy flex items-end translate-y-px text-3xl -desktop:hidden"
+	>
+		News
+	</div>
+{/snippet}
+
 <div
 	class="fixed top-0 w-full z-40 -desktop:bg-[50%_50%]"
 	style="backdrop-filter: brightness({1 - Math.min(0.7, scrollY / 100)}) blur(16px);"
 >
-	<AppNav showDashboardLink />
+	<AppNav title={newsTitle} showDashboardLink class="" />
 </div>
 
-<div class="pt-12 max-w-screen-xl mx-auto overflow-hidden" style="height: {$innerHeight}px;">
+<div class="pt-[75px] overflow-hidden mx-2" style="height: {$innerHeight}px;">
+	<div class="font-semibold font-paralucent-heavy flex items-end text-4xl pl-3 pb-2 desktop:hidden">
+		News
+	</div>
+
 	<NewsCardContent
 		alwaysShowFilters
 		autoListWrapperHeight
 		disableGradientEdges
-		class="desktop:!px-6 -desktop:!px-2 !pb-0"
+		hideTitle
+		disableFly
+		class="desktop:!px-0 -desktop:!px-2 !pb-0"
+		--max-list-width="1050px"
+		--max-filters-width="1050px"
 	/>
 </div>

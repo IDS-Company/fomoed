@@ -1,3 +1,4 @@
+import { coinstats_coin_list } from '$lib/stores';
 import type {
 	ClientFetchStatus,
 	NewsFilterVal,
@@ -5,7 +6,28 @@ import type {
 	NewsKindVal,
 	ServerResponse
 } from '$ts/types';
-import { get, writable } from 'svelte/store';
+import { derived, get, writable } from 'svelte/store';
+
+export type NewsTokenOption = { value: string; label: string; icon: string | null };
+
+const allTokensOption = { value: 'all', label: 'All crypto', icon: null };
+export const newsTokenOpts = derived(
+	coinstats_coin_list,
+	(coinlist) => {
+		if (!coinlist) {
+			return [allTokensOption];
+		}
+
+		const tokens: NewsTokenOption[] = coinlist.map((coin) => {
+			return { value: coin.symbol, label: coin.name, icon: coin.icon };
+		});
+
+		tokens.unshift(allTokensOption);
+
+		return tokens;
+	},
+	[allTokensOption]
+);
 
 export type NewsFilterOption = { value: NewsFilterVal; label: string };
 
@@ -56,7 +78,7 @@ export class NewsService {
 
 		url.searchParams.set('page', (opts.page ?? 1).toString());
 
-		if (opts.currrency) {
+		if (opts.currrency && opts.currrency !== 'all') {
 			url.searchParams.set('currencies', opts.currrency);
 		}
 

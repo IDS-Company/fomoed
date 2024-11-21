@@ -7,3 +7,4 @@ export const innerHeight = writable(0);
 export const isDesktop = derived(innerWidth, ($innerWidth) =>
 	$innerWidth ? $innerWidth >= 980 : null
 );
+export const isMobile = derived(isDesktop, ($isDesktop) => $isDesktop !== null && !$isDesktop);
