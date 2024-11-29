@@ -156,10 +156,7 @@
 			class="w-full flex overflow-x-scroll snap-x snap-mandatory px-3 no-scrollbar flex-grow"
 		>
 			{#each components as component, i}
-				<div
-					class="flex-shrink-0 snap-center w-[calc(100vw-1.5rem)] relative"
-					class:hidden={isFullscreen && i != mobileScrollIndex}
-				>
+				<div class="flex-shrink-0 snap-center w-[calc(100vw-1.5rem)] relative">
 					{#if mobileScrollIndex === i}
 						<div
 							bind:this={chartCardContainer}
