@@ -6,13 +6,18 @@
 	import Legend from '$lib/comps/charts/Legend.svelte';
 	import PlusRequiredOverlay from '$lib/comps/overlays/PlusRequiredOverlay.svelte';
 	import { coinstats_selected_coin } from '$lib/stores';
+	import { isDesktop } from '$lib/stores/ui';
 	import { ClientSubscriptionManager } from '$ts/utils/client/plans';
+	import { getContext } from 'svelte';
 
 	export let hideCard = false;
+	export let chart: any;
 
+	const isFullscreenCardStore: Readable<boolean> = getContext('isFullscreenCardStore');
 	const enablePlusFeatures = ClientSubscriptionManager.enableProFeatures;
 
 	import SimpleCfgiChart from './SimpleCfgiChart.svelte';
+	import type { Readable } from 'svelte/store';
 
 	type Option = { label: string; value: number };
 
@@ -45,7 +50,9 @@
 					subtitle="Simplified Crypto Fear and Greed Chart"
 				></DashboardCardTitle>
 
-				<div class="-desktop:mt-3 -desktop:w-full">
+				<div
+					class="-desktop:mt-3 -desktop:w-full {$isFullscreenCardStore && $isDesktop && 'pr-12'}"
+				>
 					<DurationSwitcher
 						autoFetchTokenData={false}
 						bind:selected={selectedDuration}
@@ -60,7 +67,7 @@
 
 			<div class="flex-grow desktop:px-[30px]">
 				<InCardChartContainer {loading}>
-					<SimpleCfgiChart bind:loading daysBack={selectedDuration.value} />
+					<SimpleCfgiChart bind:chart bind:loading daysBack={selectedDuration.value} />
 				</InCardChartContainer>
 			</div>
 		</div>

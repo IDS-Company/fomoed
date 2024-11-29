@@ -15,12 +15,15 @@
 	import IconCollapse from '$lib/icons/IconCollapse.svelte';
 	import anime from 'animejs';
 
+	export let isFullscreen = false;
+
 	const isFullscreenCardStore = writable(false);
+	const fullscreenAnimCompleteCounterStore = writable(0);
 
 	setContext('isFullscreenCardStore', isFullscreenCardStore);
+	setContext('fullscreenAnimCompleteCounterStore', fullscreenAnimCompleteCounterStore);
 
 	let page = 0;
-	let isFullscreen = false;
 
 	function goLeft() {
 		page = page === 0 ? components.length - 1 : page - 1;
@@ -72,6 +75,8 @@
 			complete: () => {
 				chart.resize();
 				chart.canvas.style.opacity = 1;
+
+				fullscreenAnimCompleteCounterStore.update((n) => n + 1);
 			}
 		});
 	}
@@ -105,6 +110,8 @@
 				chart.resize();
 
 				chart.canvas.style.opacity = 1;
+
+				fullscreenAnimCompleteCounterStore.update((n) => n + 1);
 			}
 		});
 	}
@@ -204,5 +211,9 @@
 
 	#fullscreen-btn.isFullscreen {
 		@apply fixed top-4 right-4 p-2;
+	}
+
+	:global(canvas) {
+		@apply duration-150 transition-opacity ease-linear;
 	}
 </style>

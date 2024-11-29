@@ -15,9 +15,12 @@
 	import LoadingAnim from './animations/LoadingAnim.svelte';
 	import { fade } from 'svelte/transition';
 	import { get_data_color } from '$lib/utils';
-	import { onMount, tick } from 'svelte';
+	import { tick } from 'svelte';
 	import 'chartjs-adapter-dayjs-4/dist/chartjs-adapter-dayjs-4.esm';
+	import { registerChartPluginZoomInBrowser } from '$ts/client/utils/ui';
 	import type { ZoomPluginOptions } from 'chartjs-plugin-zoom/types/options';
+
+	registerChartPluginZoomInBrowser();
 
 	export let showLoadingAnim = false;
 	export let loading = false;
@@ -38,9 +41,6 @@
 
 		const prices_data = formatted_data.map((d) => Math.round(d.price));
 		const cfgi_data = formatted_data.map((c) => c.cfgi);
-
-		console.log('prices_data', prices_data);
-		console.log('cfgi_data', cfgi_data);
 
 		if (chart) {
 			chart.destroy();
@@ -210,7 +210,7 @@
 			});
 		}
 
-		chart.resize();
+		chart?.resize();
 	}
 
 	let trend_chart_canvas: HTMLCanvasElement;
@@ -220,18 +220,8 @@
 
 		if (!loading && trend_chart_canvas) {
 			ctx = trend_chart_canvas.getContext('2d')!;
-			await registerZoom();
 			chart_init();
 		}
-	});
-
-	async function registerZoom() {
-		const pluginZoom = await import('chartjs-plugin-zoom');
-		Chart.register(pluginZoom.default);
-	}
-
-	onMount(() => {
-		registerZoom();
 	});
 </script>
 
@@ -243,7 +233,6 @@
 	{/if}
 
 	<canvas
-		class="duration-150 transition-opacity ease-linear"
 		class:opacity-0={$trend_chart_loading && showLoadingAnim}
 		bind:this={trend_chart_canvas}
 		width="400"

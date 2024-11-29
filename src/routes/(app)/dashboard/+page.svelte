@@ -12,6 +12,8 @@
 
 	let smallChartsCointainer: HTMLElement;
 	let scrollY = 0;
+
+	let isCarouselFullscreen = false;
 </script>
 
 <main
@@ -120,10 +122,11 @@
 		</div>
 
 		<div
-			class="snap-end flex flex-col justify-end pb-4 pt-20 -translate-y-20 z-50 relative"
+			class="snap-end flex flex-col justify-end pb-4 pt-20 -translate-y-20 relative {isCarouselFullscreen &&
+				'z-50'}"
 			style="height: {$innerHeight}px"
 		>
-			<DashboardCarousel />
+			<DashboardCarousel bind:isFullscreen={isCarouselFullscreen} />
 		</div>
 
 		<DashboardCard disablePadding hideCard={!$isDesktop}>
