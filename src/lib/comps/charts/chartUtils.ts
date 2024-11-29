@@ -302,10 +302,17 @@ export async function fetchLiqMapDataMerged(
 export async function getSupportedLiqMapInstrumentOptions(): Promise<
 	{ label: string; value: InstrumentInfo }[]
 > {
+	const coinstatsSelectedCoin = get(coinstats_selected_coin);
+
+	if (!coinstatsSelectedCoin) {
+		return [];
+	}
+
+	const symbol = coinstatsSelectedCoin.symbol;
+
 	const data = await getCacheOrFetchSupportedExchangePairs();
 	const options = supportedExchangePairsToOptions(data);
 
-	const symbol = get(coinstats_selected_coin).symbol;
 	const filtered = options.filter((i) => i.value.baseAsset === symbol);
 
 	return filtered;

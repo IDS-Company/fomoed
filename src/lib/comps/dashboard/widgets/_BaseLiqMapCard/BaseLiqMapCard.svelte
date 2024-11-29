@@ -15,6 +15,7 @@
 	import DashboardCardTitle from '$lib/comps/DashboardCardTitle.svelte';
 	import DashboardCardHeader from '$lib/comps/DashboardCardHeader.svelte';
 	import InCardChartContainer from '$lib/comps/InCardChartContainer.svelte';
+	import { logged_in } from '$lib/stores/user';
 
 	export let hideCard = false;
 
@@ -50,12 +51,18 @@
 
 	async function loadAssetOptions() {
 		assetOptions = await getInstrumentOptions();
+
+		if (!assetOptions.length) {
+			selAssetOption.set(null);
+			return;
+		}
+
 		selAssetOption.set(assetOptions[0]);
 		pairSearchTerm.set(assetOptions[0].label);
 	}
 
 	coinstats_selected_coin.subscribe(() => {
-		browser && loadAssetOptions();
+		browser && $logged_in && loadAssetOptions();
 	});
 
 	async function safeRefreshData() {

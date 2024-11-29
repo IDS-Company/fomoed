@@ -13,7 +13,7 @@
 <BaseLiqMapCard
 	{hideCard}
 	getTitle={(s) =>
-		`${s?.value.baseAsset || $coinstats_selected_coin.symbol}/${s?.value.quoteAsset || 'USDT'}`}
+		`${s?.value.baseAsset || $coinstats_selected_coin?.symbol}/${s?.value.quoteAsset || 'USDT'}`}
 	getInstrumentOptions={getSupportedLiqMapInstrumentOptions}
 	fetchLiqMapData={(timeframe, selAssetOption) =>
 		fetchLiqMapData(timeframe, [selAssetOption.value])}

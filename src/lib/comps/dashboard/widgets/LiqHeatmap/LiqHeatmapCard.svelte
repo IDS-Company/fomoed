@@ -20,6 +20,7 @@
 	import InCardChartContainer from '$lib/comps/InCardChartContainer.svelte';
 	import DashboardCardTitle from '$lib/comps/DashboardCardTitle.svelte';
 	import DashboardCardHeader from '$lib/comps/DashboardCardHeader.svelte';
+	import { auth_email, logged_in } from '$lib/stores/user';
 
 	export let hideCard = false;
 
@@ -54,6 +55,12 @@
 		const filtered = options.filter((o) => o.value.baseAsset === symbol);
 
 		exchangeOptions = filtered;
+
+		if (filtered.length < 1) {
+			selectedExchangeOption.set(null);
+			return;
+		}
+
 		selectedExchangeOption.set(filtered[0]);
 		pairSearchTerm.set(filtered[0].label);
 	}
@@ -73,11 +80,15 @@
 	});
 
 	coinstats_selected_coin.subscribe(() => {
+		if (!$logged_in) {
+			return;
+		}
+
 		loadExchangeOptions();
 	});
 
 	$: title =
-		($selectedExchangeOption?.value.baseAsset || $coinstats_selected_coin.symbol) +
+		($selectedExchangeOption?.value.baseAsset || $coinstats_selected_coin?.symbol) +
 		'/' +
 		($selectedExchangeOption?.value.quoteAsset || 'USDT');
 	$: humanizedMaxLiqValue = humanizeNumber(maxLiqValue);

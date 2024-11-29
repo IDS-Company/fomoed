@@ -61,7 +61,7 @@
 		<div class="flex flex-col w-full h-full">
 			<DashboardCardHeader>
 				<DashboardCardTitle
-					title={$coinstats_selected_coin.name.toUpperCase()}
+					title={$coinstats_selected_coin?.name.toUpperCase()}
 					subtitle="Exchange Liquidation Map"
 				/>
 

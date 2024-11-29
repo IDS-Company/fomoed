@@ -2,6 +2,8 @@
 	import { fade } from 'svelte/transition';
 	import MainButton from '../buttons/MainButton.svelte';
 	import PaidPlanBadge from '../decorations/PaidPlanBadge.svelte';
+
+	const { hideCb }: { hideCb: () => void } = $props();
 </script>
 
 <div
@@ -25,6 +27,10 @@
 					<img src="/icons/login-arrow.svg" width={17} height={13} alt="Arrow right" />
 				</MainButton>
 			</a>
+
+			<button onclick={hideCb} class="mx-auto underline hover:text-primary mt-4 block text-sm">
+				Later
+			</button>
 		</div>
 	</div>
 </div>

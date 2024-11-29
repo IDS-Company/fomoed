@@ -61,15 +61,15 @@ font-family: 'ParalucentHeavy';
   font-weight: 400;
   font-display: swap;
   font-style: normal;
-  }
+}
 
 @font-face {
 font-family: 'Paralucent';
-  src: url('/fonts/paralucent/ParalucentCondLight.woff') format('woff');
+  src: url('/fonts/paralucent/ParalucentCondLight.woff2') format('woff');
   font-weight: 300;
   font-display: swap;
   font-style: normal;
-  }
+}
 
 @font-face {
 font-family: 'Paralucent';
@@ -77,4 +77,4 @@ font-family: 'Paralucent';
   font-weight: 500;
   font-display: swap;
   font-style: normal;
-  }
+}
