@@ -4,7 +4,7 @@
 	import PlusRequiredOverlay from '$lib/comps/overlays/PlusRequiredOverlay.svelte';
 	import DashboardCard from '$lib/comps/DashboardCard.svelte';
 	import DropdownNew from '$lib/comps/DropdownNew.svelte';
-	import { tick } from 'svelte';
+	import { getContext, tick } from 'svelte';
 	import IconRefresh from '$lib/icons/IconRefresh.svelte';
 	import IconButton from '$lib/comps/buttons/IconButton.svelte';
 	import Legend from '$lib/comps/charts/Legend.svelte';
@@ -13,8 +13,13 @@
 	import DashboardCardTitle from '$lib/comps/DashboardCardTitle.svelte';
 	import DashboardCardHeader from '$lib/comps/DashboardCardHeader.svelte';
 	import InCardChartContainer from '$lib/comps/InCardChartContainer.svelte';
+	import type { Chart } from 'chart.js';
+	import type { Readable } from 'svelte/store';
+
+	const isFullscreenCardStore: Readable<boolean> = getContext('isFullscreenCardStore');
 
 	export let hideCard = false;
+	export let chart: Chart;
 
 	const enablePlusFeatures = ClientSubscriptionManager.enableProFeatures;
 
@@ -58,7 +63,7 @@
 			</div>
 		{/if}
 
-		<div class="flex flex-col w-full h-full">
+		<div class="flex flex-col w-full h-full max-w-full overflow-hidden">
 			<DashboardCardHeader>
 				<DashboardCardTitle
 					title={$coinstats_selected_coin?.name.toUpperCase()}
@@ -78,7 +83,7 @@
 
 					<div class="-desktop:flex-grow"></div>
 
-					<div class="">
+					<div class={$isFullscreenCardStore && 'pr-10'}>
 						<IconButton disabled={loading} on:click={safeRefreshData}>
 							<div class:animate-reverse-spin={loading}>
 								<IconRefresh />
@@ -102,13 +107,14 @@
 					></Legend>
 				</div>
 
-				<div class="text-sm text-center pt-1 -desktop:text-xs">
+				<!-- <div class="text-sm text-center pt-1 -desktop:text-xs">
 					Current Price: {currentPrice}
-				</div>
+				</div> -->
 
 				{#if $enablePlusFeatures}
 					<InCardChartContainer {loading}>
 						<BaseLiqMapChart
+							bind:chart
 							bind:refreshData
 							bind:currentPrice
 							fetchLiqMapData={() =>
