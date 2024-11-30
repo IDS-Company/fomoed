@@ -174,9 +174,9 @@ export async function fetchLiqMapData(
 			pushed = true;
 		}
 
-		if (!pushed) {
-			liqBars.push({ x: price, y: 0, color: '#0000' });
-		}
+		// if (!pushed) {
+		// 	liqBars.push({ x: price, y: 0, color: '#0000' });
+		// }
 	}
 
 	// Extract long cumulative liquidation leverage

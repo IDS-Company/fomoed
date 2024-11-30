@@ -5,12 +5,15 @@
 	} from '$lib/comps/charts/chartUtils';
 	import Legend from '$lib/comps/charts/Legend.svelte';
 	import { coinstats_selected_coin } from '$lib/stores';
+	import type { Chart } from 'chart.js';
 	import BaseLiqMapCard from '../_BaseLiqMapCard/BaseLiqMapCard.svelte';
 
 	export let hideCard = false;
+	export let chart: Chart;
 </script>
 
 <BaseLiqMapCard
+	bind:chart
 	{hideCard}
 	getTitle={(s) =>
 		`${s?.value.baseAsset || $coinstats_selected_coin?.symbol}/${s?.value.quoteAsset || 'USDT'}`}

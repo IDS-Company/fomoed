@@ -19,7 +19,7 @@ export const actions: Actions = {
 		const user = data.user?.id;
 
 		if (error) {
-			console.error(error);
+			console.error('Signup Error: ', error);
 			return {
 				error: error.message,
 				action: 'signup',
@@ -42,6 +42,7 @@ export const actions: Actions = {
 
 			if (create_user_error) {
 				// The error occured, so we need to try to create it any other time the user tries to login
+				console.error('Failed to create user in database!');
 				console.error(create_user_error);
 
 				return {

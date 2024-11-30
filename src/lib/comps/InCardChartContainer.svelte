@@ -16,7 +16,7 @@
 	let container: HTMLElement;
 </script>
 
-<div class="pl-1 h-full relative">
+<div class="px-1 h-full relative">
 	<div bind:this={container} class="w-full h-full no-scrollbar" class:opacity-0={loading}>
 		<div class="-desktop:h-full desktop:h-full -desktop:pb-3">
 			<slot />
