@@ -10,10 +10,16 @@
 	import LiqHeatmapCard from './widgets/LiqHeatmap/LiqHeatmapCard.svelte';
 	import LiqMapCard from './widgets/LiqMap/LiqMapCard.svelte';
 	import SimpleCfgiCard from './widgets/SimpleCfgi/SimpleCfgiCard.svelte';
-	import { setContext, tick } from 'svelte';
+	import { getContext, onMount, setContext, tick } from 'svelte';
 	import { writable } from 'svelte/store';
 	import IconCollapse from '$lib/icons/IconCollapse.svelte';
 	import anime from 'animejs';
+	import type { DashboardService } from '$ts/client/services/DashboardService.client';
+	import { browser } from '$app/environment';
+
+	let mounted = false;
+
+	const dashboardService = getContext<DashboardService>('dashboardService');
 
 	export let isFullscreen = false;
 
@@ -23,7 +29,7 @@
 	setContext('isFullscreenCardStore', isFullscreenCardStore);
 	setContext('fullscreenAnimCompleteCounterStore', fullscreenAnimCompleteCounterStore);
 
-	let page = 0;
+	let page = browser ? dashboardService.getLastDisplayedChartIndex() : 0;
 
 	function goLeft() {
 		page = page === 0 ? components.length - 1 : page - 1;
@@ -32,6 +38,13 @@
 	function goRight() {
 		page = (page + 1) % components.length;
 	}
+
+	$: mounted && dashboardService.setLastDisplayedChartIndex(page);
+
+	onMount(() => {
+		page = dashboardService.getLastDisplayedChartIndex();
+		mounted = true;
+	});
 
 	const components = [
 		DetailedCfgiCard,
