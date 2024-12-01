@@ -1,14 +1,28 @@
+import type { IUserInsert } from '$lib/local';
+import { getServerClient } from '$ts/utils/server/supabase';
+import { authUserWithEmailExists, createUserRow, userWithEmailExists } from '$ts/utils/server/user';
 import { error, redirect, type Actions } from '@sveltejs/kit';
-import { v4 as uuidv4, validate, version } from 'uuid';
 
 export const actions: Actions = {
-	signup: async ({ request, locals: { supabase }, url }) => {
+	// For sign up using email and password
+	signup: async ({ request, locals, url }) => {
+		const supabase = getServerClient();
+
 		const formData = await request.formData();
+
 		const email = formData.get('email') as string;
 		const password = formData.get('password') as string;
 		const username = formData.get('username') as string;
 
-		const { error, data } = await supabase.auth.signUp({
+		const genericErrorMsg = 'Registration failed!';
+
+		// if (await authUserWithEmailExists(email)) {
+		// 	error(409, "User with this email already exists.");
+		// }
+
+		// Supabase will override these details if user with the email
+		// laready exists, but their email isn't verified
+		const authRes = await supabase.auth.signUp({
 			email,
 			password,
 			options: {
@@ -16,43 +30,54 @@ export const actions: Actions = {
 			}
 		});
 
-		const user = data.user?.id;
+		// Supabase returns a fake user object if a user with this email already exists
+		// https://github.com/orgs/supabase/discussions/1282#discussioncomment-5230475
+		if (
+			authRes.data.user &&
+			authRes.data.user.identities &&
+			authRes.data.user.identities.length === 0
+		) {
+			error(409, 'User with this email already exists.');
+		}
 
-		if (error) {
-			console.error(error);
-			return {
-				error: error.message,
-				action: 'signup',
-				success: false
-			};
-		} else {
-			/**
-			 * Initialize the user object with an empty subscription body
-			 */
-			const { data: create_user_data, error: create_user_error } = await supabase
+		if (authRes.error) {
+			console.error('Failed to create a new supabase user!', error);
+			error(500, genericErrorMsg);
+		}
+
+		const supabaseUserId = authRes.data.user?.id;
+
+		if (!supabaseUserId) {
+			console.error('Did not receive new auth user ID from supabase!');
+			error(500, genericErrorMsg);
+		}
+
+		// If user row with this email already exists, link the new user id to the existing user
+		// This does NOT enable users to create another account for an already registered email
+		if (await userWithEmailExists(email)) {
+			const updateRes = await supabase
 				.from('users')
-				.insert([
-					{
-						email,
-						username,
-						user_id: user
-					} as Omit<IUser, 'id' | 'updated_at' | 'created_at' | 'has_valid_sub'>
-				])
-				.select();
+				.update({
+					user_id: supabaseUserId,
+					username
+				})
+				.eq('email', email);
 
-			if (create_user_error) {
-				// The error occured, so we need to try to create it any other time the user tries to login
-				console.error(create_user_error);
-
-				return {
-					error: create_user_error.message,
-					action: 'signup',
-					success: false
-				};
+			if (updateRes.error) {
+				console.error('Failed to link new supabase user to existing user!');
+				error(500, genericErrorMsg);
 			}
 
-			return redirect(303, '/auth/sent/create-account?email=' + email);
+			console.info('Linked new auth login to existing user. Email: ', email);
+		} else {
+			await createUserRow({
+				email,
+				username,
+				user_id: supabaseUserId
+			});
 		}
+
+		return redirect(303, '/auth/sent/create-account?email=' + email);
 	},
 	login: async ({ request, locals: { supabase } }) => {
 		const formData = await request.formData();
@@ -61,47 +86,22 @@ export const actions: Actions = {
 
 		console.log(email, password);
 
-		const { error: sign_in_error, data } = await supabase.auth.signInWithPassword({
+		const { error } = await supabase.auth.signInWithPassword({
 			email,
 			password
 		});
 
-		if (sign_in_error) {
-			console.error('Login Error: ', sign_in_error);
+		if (error) {
+			console.error('Login Error: ', error);
 
 			return {
 				success: false,
 				action: 'login',
-				error: sign_in_error.message
+				error: error.message
 			};
-		} else {
-			const { data: users, error: user_error } = await supabase
-				.from('users')
-				.select()
-				.eq('email', email);
-
-			if (user_error) {
-				return error(+user_error.code, {
-					message: user_error.message
-				});
-			}
-
-			if (!users?.[0]) {
-				// create the user
-				const { data: create_user_data, error: create_user_error } = await supabase
-					.from('users')
-					.insert([
-						{
-							email,
-							username: email?.split('@')[0],
-							user_id: data.user.id
-						} as Omit<IUser, 'id' | 'updated_at' | 'created_at' | 'has_valid_sub'>
-					])
-					.select();
-			}
-
-			return redirect(303, '/');
 		}
+
+		return redirect(303, '/');
 	},
 	forgot: async ({ request, locals: { supabase }, url }) => {
 		const formData = await request.formData();
