@@ -1,4 +1,4 @@
-import { createUserFromOAuthIfNotExists } from '$ts/utils/server/user.js';
+import { createOrLinkUserFromOAuth } from '$ts/utils/server/user.js';
 import { redirect } from '@sveltejs/kit';
 
 export const GET = async (event) => {
@@ -16,7 +16,7 @@ export const GET = async (event) => {
 			throw redirect(303, '/auth/auth-code-error');
 		}
 
-		createUserFromOAuthIfNotExists(supabase, data.user);
+		createOrLinkUserFromOAuth(supabase, data.user);
 
 		if (!error) {
 			throw redirect(303, `/${next.slice(1)}`);
