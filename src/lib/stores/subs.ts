@@ -7,6 +7,19 @@ export const active_sub: Readable<Stripe.Subscription | null> = derived(auth_use
 		return null;
 	}
 
+	// Select the most expensive subscription
+	// Find a PRO plan if available
+	for (const sub of $auth_user.subscriptions) {
+		const plan_id = sub.plan.metadata.plan_id;
+
+		console.log({ plan_id });
+
+		if (plan_id.includes('pro')) {
+			console.log('HERE');
+			return sub;
+		}
+	}
+
 	return $auth_user.subscriptions[0];
 });
 

@@ -75,7 +75,9 @@
 		originalWidth = width;
 		originalHeight = height;
 
-		chart.canvas.style.opacity = 0;
+		if (chart) {
+			chart.canvas.style.opacity = 0;
+		}
 
 		anime({
 			targets: chartCardContainer,
@@ -224,6 +226,6 @@
 	}
 
 	:global(canvas) {
-		@apply duration-150 transition-opacity ease-linear;
+		@apply duration-150 transition-opacity ease-linear cursor-pointer;
 	}
 </style>
