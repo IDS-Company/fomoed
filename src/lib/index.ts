@@ -133,6 +133,7 @@ export async function get_user(supabase: SupabaseClient) {
 			}
 		)
 		.catch(async (err) => {
+			console.error(err);
 			console.warn('Signed out due to error in get_user');
 			failure(err.message);
 			await supabase.auth.signOut();
