@@ -6,7 +6,8 @@
 	import InCardChartContainer from '$lib/comps/InCardChartContainer.svelte';
 	import GetFreeTrialOverlay from '$lib/comps/overlays/GetFreeTrialOverlay.svelte';
 	import { coinstats_selected_coin } from '$lib/stores';
-	import { isDesktop, isMobile } from '$lib/stores/ui';
+	import { isDesktop } from '$lib/stores/ui';
+	import { CfgiPeriods, type CfgiPeriodOption } from '$lib/utils/cfgi_data';
 	import { getContext } from 'svelte';
 	import type { Readable } from 'svelte/store';
 
@@ -24,6 +25,8 @@
 		75: '#399F57',
 		100: '#05A5A6'
 	};
+
+	let selectedPeriodOption: CfgiPeriodOption = CfgiPeriods[0];
 </script>
 
 <DashboardCard isChartCard {hideCard}>
@@ -43,7 +46,9 @@
 			<div class="flex-grow"></div>
 
 			<div class="-desktop:mt-3 {$isFullscreenCardStore && $isDesktop ? 'pr-12' : ''}">
-				<DurationSwitcher on:show-subscription-required={() => (showSubRequired = true)}
+				<DurationSwitcher
+					bind:selected={selectedPeriodOption}
+					on:show-subscription-required={() => (showSubRequired = true)}
 				></DurationSwitcher>
 			</div>
 		</div>
@@ -59,7 +64,11 @@
 
 		<div class="pt-4 flex-grow">
 			<InCardChartContainer {loading}>
-				<HomepageBigChart bind:chart bind:loading></HomepageBigChart>
+				<HomepageBigChart
+					bind:chart
+					bind:loading
+					periodHasSeconds={selectedPeriodOption.periodInSeconds}
+				></HomepageBigChart>
 			</InCardChartContainer>
 		</div>
 	</div>

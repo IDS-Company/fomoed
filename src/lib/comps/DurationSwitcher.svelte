@@ -2,7 +2,7 @@
 	import { coinstats_selected_coin } from '$lib/stores';
 	import { auth_user } from '$lib/stores/user';
 	import { get_token_data } from '$lib/utils';
-	import { CfgiPeriods, type Option } from '$lib/utils/cfgi_data';
+	import { CfgiPeriods, type CfgiPeriodOption } from '$lib/utils/cfgi_data';
 	import { createEventDispatcher } from 'svelte';
 
 	const dispatch = createEventDispatcher();
@@ -24,7 +24,7 @@
 		);
 	}
 
-	function selectDuration(option: Option) {
+	function selectDuration(option: CfgiPeriodOption) {
 		if ($auth_user?.has_valid_sub) {
 			selected = option;
 		} else {

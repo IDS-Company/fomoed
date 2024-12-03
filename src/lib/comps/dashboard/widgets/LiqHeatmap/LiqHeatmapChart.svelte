@@ -127,13 +127,13 @@
 		const zoomPluginOptions: ZoomPluginOptions = {
 			zoom: {
 				wheel: {
-					enabled: true
+					enabled: true,
+					speed: 0.05
 				},
 				pinch: {
 					enabled: true
 				},
-				mode: 'x',
-				scaleMode: 'y'
+				mode: 'xy'
 			},
 			pan: {
 				enabled: true,
@@ -190,6 +190,7 @@
 				{
 					id: 'bg',
 					beforeDraw: (chart: Chart) => {
+						// Purple background
 						const { ctx, chartArea } = chart;
 						const { left, right, top, bottom } = chartArea;
 

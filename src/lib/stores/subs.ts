@@ -15,7 +15,6 @@ export const active_sub: Readable<Stripe.Subscription | null> = derived(auth_use
 		console.log({ plan_id });
 
 		if (plan_id.includes('pro')) {
-			console.log('HERE');
 			return sub;
 		}
 	}

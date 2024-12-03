@@ -2,7 +2,7 @@
 	import { Chart } from 'chart.js/auto';
 	import 'chartjs-adapter-dayjs-4/dist/chartjs-adapter-dayjs-4.esm';
 	import annotationPlugin from 'chartjs-plugin-annotation';
-	import type { LiqMapData } from '../chartUtils';
+	import type { LiqMapData } from '$lib/comps/charts/chartUtils';
 	import { failure } from '$lib/utils';
 	import { registerChartPluginZoomInBrowser } from '$ts/client/utils/ui';
 	import type { ZoomPluginOptions } from 'chartjs-plugin-zoom/types/options';
@@ -57,28 +57,35 @@
 			chart.destroy();
 		}
 
+		const minPricePoint = data.minPrice;
+		const maxPricePoint = data.maxPrice;
+		const maxShownCumulativeValue = data.maxCumulativeValue * 1.15;
+
 		const zoomPluginOptions: ZoomPluginOptions = {
 			zoom: {
 				wheel: {
-					enabled: true
+					enabled: true,
+					speed: 0.05
 				},
 				pinch: {
 					enabled: true
 				},
-				mode: 'x',
-				scaleMode: 'y'
+				mode: 'x'
+				// scaleMode: 'y'
 			},
 			pan: {
 				enabled: true,
-				mode: 'xy',
+				mode: 'x',
 				threshold: 0
 			},
 			limits: {
-				x: { minRange: 100 },
+				x: { minRange: 100, min: minPricePoint, max: maxPricePoint },
 				y: { min: 0 },
-				cumulative: { min: 0 }
+				cumulative: { min: 0, max: maxShownCumulativeValue }
 			}
 		};
+
+		const nf = Intl.NumberFormat('en-US');
 
 		chart = new Chart(canvas, {
 			data: {
@@ -88,7 +95,7 @@
 						data: data.liqBars,
 						barThickness: 0.5,
 						order: 20,
-						backgroundColor: (data: any) => data.raw.color
+						backgroundColor: data.liqBars.map((i) => i.color)
 					},
 					{
 						type: 'line',
@@ -117,8 +124,8 @@
 				]
 			},
 			options: {
-				spanGaps: true, // for better performance
-				animation: false, // for better performance
+				spanGaps: true,
+				animation: false,
 				responsive: false,
 				maintainAspectRatio: false,
 				scales: {
@@ -142,7 +149,7 @@
 							color: '#fff2'
 						},
 						border: {
-							dash: [8, 4]
+							dash: [4, 2]
 						},
 						min: 0,
 						ticks: {
@@ -155,7 +162,7 @@
 							color: '#fff2'
 						},
 						position: 'right',
-						max: data.maxCumulativeValue * 1.15,
+						max: maxShownCumulativeValue,
 						min: 0,
 						border: {
 							dash: [8, 4]
@@ -178,13 +185,17 @@
 						position: 'nearest',
 						callbacks: {
 							title: (ctx: any) => {
-								return `Price: ${Math.round(ctx[0].parsed.x)} USD`;
+								const formatted = nf.format(ctx[0].parsed.x);
+
+								return `Price: ${formatted} USD`;
 							},
 							label: (ctx) => {
+								const formatted = nf.format(Math.round(ctx.parsed.y));
+
 								if (ctx.datasetIndex === 0) {
-									return ` Leverage: ${ctx.parsed.y}`;
+									return ` Leverage: ${formatted}`;
 								} else if (ctx.datasetIndex === 1 || ctx.datasetIndex === 2) {
-									return ` Cumulative: ${ctx.parsed.y}`;
+									return ` Cumulative: ${formatted}`;
 								}
 							},
 							labelColor: (ctx: any) => {

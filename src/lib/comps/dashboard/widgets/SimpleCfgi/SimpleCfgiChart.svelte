@@ -19,6 +19,7 @@
 	import { registerChartPluginZoomInBrowser } from '$ts/client/utils/ui';
 	import 'chartjs-adapter-dayjs-4/dist/chartjs-adapter-dayjs-4.esm';
 	import type { ZoomPluginOptions } from 'chartjs-plugin-zoom/types/options';
+	import { callback } from 'chart.js/helpers';
 
 	registerChartPluginZoomInBrowser();
 
@@ -78,6 +79,9 @@
 			datasets: [cfgiData]
 		};
 
+		const minDate = formatted_data[0].date;
+		const maxDate = formatted_data[formatted_data.length - 1].date;
+
 		const zoomPluginOptions: ZoomPluginOptions = {
 			zoom: {
 				wheel: {
@@ -95,7 +99,8 @@
 				threshold: 0
 			},
 			limits: {
-				x: { minRange: 1000 * 60 * 60 * 24 * 1 }
+				x: { minRange: 1000 * 60 * 60 * 24 * 1, min: minDate, max: maxDate },
+				y: { min: 0 }
 			}
 		};
 
@@ -125,7 +130,10 @@
 						offset: false
 					},
 					ticks: {
-						display: true
+						display: true,
+						callback: (val: any) => {
+							return Math.round(val);
+						}
 					},
 					border: {
 						display: false

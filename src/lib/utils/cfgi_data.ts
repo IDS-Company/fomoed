@@ -57,28 +57,33 @@ export enum CFGI_SUPPORTED_PERIODS_ENUM {
 	YEAR1 = '1Y'
 }
 
-export type Option = {
+export type CfgiPeriodOption = {
 	label: string;
 	value: any;
 	disabled?: boolean;
 	requiresPremium?: boolean;
+	periodInSeconds: number;
 };
 
-export const CfgiPeriods: Option[] = [
+export const CfgiPeriods: CfgiPeriodOption[] = [
 	{
 		label: '24H',
-		value: CFGI_SUPPORTED_PERIODS_ENUM.DAY1
+		value: CFGI_SUPPORTED_PERIODS_ENUM.DAY1,
+		periodInSeconds: 24 * 60 * 60
 	},
 	{
 		label: '4H',
-		value: CFGI_SUPPORTED_PERIODS_ENUM.HOUR4
+		value: CFGI_SUPPORTED_PERIODS_ENUM.HOUR4,
+		periodInSeconds: 4 * 60 * 60
 	},
 	{
 		label: '1H',
-		value: CFGI_SUPPORTED_PERIODS_ENUM.HOUR1
+		value: CFGI_SUPPORTED_PERIODS_ENUM.HOUR1,
+		periodInSeconds: 1 * 60 * 60
 	},
 	{
 		label: '15M',
-		value: CFGI_SUPPORTED_PERIODS_ENUM.MIN15
+		value: CFGI_SUPPORTED_PERIODS_ENUM.MIN15,
+		periodInSeconds: 15 * 60
 	}
 ];
