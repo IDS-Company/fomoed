@@ -1,12 +1,12 @@
 <script lang="ts">
 	import Autocomplete from '$lib/comps/Autocomplete.svelte';
 	import DropdownNew from '$lib/comps/DropdownNew.svelte';
-	import { tick } from 'svelte';
+	import { getContext, tick } from 'svelte';
 	import { supportedExchangePairsToOptions, type InstrumentInfo } from '$ts/utils/client';
 	import IconRefresh from '$lib/icons/IconRefresh.svelte';
 	import IconButton from '$lib/comps/buttons/IconButton.svelte';
 	import { getCacheOrFetchSupportedExchangePairs } from '$ts/utils/client/api';
-	import { writable } from 'svelte/store';
+	import { writable, type Readable } from 'svelte/store';
 	import LiqHeatmapChart from './LiqHeatmapChart.svelte';
 	import Legend from '$lib/comps/charts/Legend.svelte';
 	import DashboardCard from '$lib/comps/DashboardCard.svelte';
@@ -18,6 +18,8 @@
 	import DashboardCardHeader from '$lib/comps/DashboardCardHeader.svelte';
 	import { browser } from '$app/environment';
 	import { auth_user } from '$lib/stores/user';
+
+	const isFullscreenCardStore: Readable<boolean> = getContext('isFullscreenCardStore');
 
 	export let hideCard = false;
 	export let chart: any;
@@ -91,7 +93,7 @@
 			</div>
 		{/if}
 
-		<div class="flex flex-col w-full h-full">
+		<div class="flex flex-col w-full h-full max-w-full overflow-hidden">
 			<DashboardCardHeader>
 				<DashboardCardTitle {title} subtitle="Liquidation Heatmap"></DashboardCardTitle>
 
@@ -116,7 +118,7 @@
 					</div>
 				</div>
 
-				<div class="-desktop:order-2 place-self-end">
+				<div class="-desktop:order-2 place-self-end {$isFullscreenCardStore && 'pr-10'}">
 					<IconButton disabled={loading} on:click={refreshData}>
 						<div class:animate-reverse-spin={loading}>
 							<IconRefresh />
