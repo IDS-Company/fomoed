@@ -123,19 +123,8 @@ export function sleep(ms: number) {
 }
 
 export async function get_user(supabase: SupabaseClient) {
-	await fetch(`/api/user`)
-		.then((res) => res.json())
-		.then(
-			(res: {
-				data: IUser & { subscriptions: (Stripe.Subscription & { plan: Stripe.Plan })[] };
-			}) => {
-				auth_user.set(res.data);
-			}
-		)
-		.catch(async (err) => {
-			console.error(err);
-			console.warn('Signed out due to error in get_user');
-			failure(err.message);
-			await supabase.auth.signOut();
-		});
+	const res = await fetch(`/api/user`);
+	const json = await res.json();
+
+	auth_user.set(json.data);
 }

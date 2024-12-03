@@ -21,10 +21,11 @@ export async function GET({ locals: { supabase, user } }: RequestEvent) {
 		});
 	}
 
-	if (!users[0]) {
-		await supabase.auth.signOut();
-
-		console.warn('User not found in database, signed out');
+	if (users.length < 1) {
+		// Here to inspect a bug of users automatically being logged out
+		console.error(
+			`User with email ${user.email} not found in DB, even though they are authenticated.`
+		);
 
 		return error(404, {
 			message: 'User not Found'

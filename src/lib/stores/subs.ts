@@ -2,26 +2,30 @@ import { derived, writable, type Readable } from 'svelte/store';
 import { auth_user } from './user';
 import type Stripe from 'stripe';
 
+const ProPlanProductId = 'prod_QuL2KcFQNsFWb1';
+const PlusPlanProductId = 'prod_Q4NT6y9VdwZlKo';
+
 export const active_sub: Readable<Stripe.Subscription | null> = derived(auth_user, ($auth_user) => {
 	if (!$auth_user) {
 		return null;
 	}
 
-	console.log($auth_user.subscriptions);
+	const subs = $auth_user.subscriptions;
 
-	// Select the most expensive subscription
-	// Find a PRO plan if available
-	for (const sub of $auth_user.subscriptions) {
-		const plan_id = sub.plan.metadata.plan_id;
+	// First try to find PRO sub, then try to find Plus sub
+	const proSub = subs.find((i) => i.plan.product === ProPlanProductId);
 
-		console.log({ plan_id });
-
-		if (plan_id.includes('pro')) {
-			return sub;
-		}
+	if (proSub) {
+		return proSub;
 	}
 
-	return $auth_user.subscriptions[0];
+	const plusSub = subs.find((i) => i.plan.product === PlusPlanProductId);
+
+	if (plusSub) {
+		return plusSub;
+	}
+
+	return null;
 });
 
 export const changingSubscription = writable(false);
