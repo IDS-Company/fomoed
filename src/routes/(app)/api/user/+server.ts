@@ -1,19 +1,22 @@
 import type { PostgrestSingleResponse } from '@supabase/supabase-js';
 import { error, json, type RequestEvent } from '@sveltejs/kit';
 import stripe from '../stripe/stripe';
+import { getServerClient } from '$ts/utils/server/supabase';
 
 /** @type {import('./$types').RequestHandler} */
-export async function GET({ locals: { supabase, user } }: RequestEvent) {
+export async function GET({ locals: { user } }: RequestEvent) {
 	if (!user?.email) {
 		return error(401, {
 			message: 'Unauthorized Request Detected'
 		});
 	}
 
+	const supabase = getServerClient();
+
 	const { data: users, error: err }: PostgrestSingleResponse<IUser[]> = await supabase
 		.from('users')
 		.select()
-		.eq('email', user?.email);
+		.eq('email', user.email);
 
 	if (err) {
 		return error(+err.code, {
