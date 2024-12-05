@@ -2,17 +2,23 @@
 	import { Chart } from 'chart.js/auto';
 	import 'chartjs-adapter-dayjs-4/dist/chartjs-adapter-dayjs-4.esm';
 	import annotationPlugin from 'chartjs-plugin-annotation';
-	import type { LiqMapData } from '../chartUtils';
+	import type { LiqMapData } from '$lib/comps/charts/chartUtils';
 	import { failure } from '$lib/utils';
+	import { registerChartPluginZoomInBrowser } from '$ts/client/utils/ui';
+	import type { ZoomPluginOptions } from 'chartjs-plugin-zoom/types/options';
 
 	Chart.register(annotationPlugin);
+	registerChartPluginZoomInBrowser();
 
+	export let chart: Chart;
 	export let currentPrice: number = 0;
 	export let fetchLiqMapData: () => Promise<LiqMapData>;
 
 	let refreshId = 0;
 
 	export async function refreshData() {
+		if (!canvas) return;
+
 		const localRefreshId = ++refreshId;
 
 		if (chart) {
@@ -33,7 +39,7 @@
 
 		currentPrice = data.currentPrice;
 
-		const ctx = trend_chart_canvas.getContext('2d');
+		const ctx = canvas.getContext('2d');
 
 		if (!ctx) {
 			return;
@@ -51,19 +57,45 @@
 			chart.destroy();
 		}
 
-		if (!trend_chart_canvas) {
-			return;
-		}
+		const minPricePoint = data.minPrice;
+		const maxPricePoint = data.maxPrice;
+		const maxShownCumulativeValue = data.maxCumulativeValue * 1.15;
 
-		chart = new Chart(trend_chart_canvas, {
+		const zoomPluginOptions: ZoomPluginOptions = {
+			zoom: {
+				wheel: {
+					enabled: true,
+					speed: 0.05
+				},
+				pinch: {
+					enabled: true
+				},
+				mode: 'x'
+				// scaleMode: 'y'
+			},
+			pan: {
+				enabled: true,
+				mode: 'x',
+				threshold: 0
+			},
+			limits: {
+				x: { minRange: 100, min: minPricePoint, max: maxPricePoint },
+				y: { min: 0 },
+				cumulative: { min: 0, max: maxShownCumulativeValue }
+			}
+		};
+
+		const nf = Intl.NumberFormat('en-US');
+
+		chart = new Chart(canvas, {
 			data: {
 				datasets: [
 					{
 						type: 'bar',
 						data: data.liqBars,
-						barThickness: 0.1,
+						barThickness: 0.5,
 						order: 20,
-						backgroundColor: (data: any) => data.raw.color
+						backgroundColor: data.liqBars.map((i) => i.color)
 					},
 					{
 						type: 'line',
@@ -92,21 +124,18 @@
 				]
 			},
 			options: {
-				resizeDelay: 500,
-				// parsing: false, // must be here, solves another stupid problem
-				spanGaps: true, // for better performance
-				animation: false, // for better performance
-				responsive: true,
+				spanGaps: true,
+				animation: false,
+				responsive: false,
 				maintainAspectRatio: false,
 				scales: {
 					x: {
 						type: 'linear',
-						// ticks: {
-						// 	// autoSkip: false,
-						// 	maxTicksLimit: 10,
-						// 	includeBounds: true,
-						// 	autoSkipPadding: 0
-						// },
+						ticks: {
+							callback: (val: any) => {
+								return Math.round(val / 1000) + 'K';
+							}
+						},
 						grid: {
 							display: false
 						},
@@ -120,9 +149,12 @@
 							color: '#fff2'
 						},
 						border: {
-							dash: [8, 4]
+							dash: [4, 2]
 						},
-						min: 0
+						min: 0,
+						ticks: {
+							callback: (val: any) => `${Math.round(val / 1000000)}M`
+						}
 					},
 					cumulative: {
 						type: 'linear',
@@ -130,9 +162,13 @@
 							color: '#fff2'
 						},
 						position: 'right',
-						max: data.maxCumulativeValue * 1.15,
+						max: maxShownCumulativeValue,
+						min: 0,
 						border: {
 							dash: [8, 4]
+						},
+						ticks: {
+							callback: (val: any) => `${Math.round(val / 1000000)}M`
 						}
 					}
 				},
@@ -144,6 +180,35 @@
 				plugins: {
 					legend: {
 						display: false
+					},
+					tooltip: {
+						position: 'nearest',
+						callbacks: {
+							title: (ctx: any) => {
+								const formatted = nf.format(ctx[0].parsed.x);
+
+								return `Price: ${formatted} USD`;
+							},
+							label: (ctx) => {
+								const formatted = nf.format(Math.round(ctx.parsed.y));
+
+								if (ctx.datasetIndex === 0) {
+									return ` Leverage: ${formatted}`;
+								} else if (ctx.datasetIndex === 1 || ctx.datasetIndex === 2) {
+									return ` Cumulative: ${formatted}`;
+								}
+							},
+							labelColor: (ctx: any) => {
+								const color = ctx.dataset.borderColor || ctx.raw.color;
+
+								return {
+									borderColor: color,
+									backgroundColor: color,
+									borderWidth: 2,
+									borderRadius: 2
+								};
+							}
+						}
 					},
 					annotation: {
 						annotations: {
@@ -167,16 +232,18 @@
 								}
 							}
 						}
-					}
+					},
+					zoom: zoomPluginOptions
 				}
 			}
 		});
+
+		chart.resize();
 	}
 
-	let trend_chart_canvas: HTMLCanvasElement;
-	let chart: Chart;
+	let canvas: HTMLCanvasElement;
 </script>
 
 <div class="relative w-full h-full">
-	<canvas bind:this={trend_chart_canvas} />
+	<canvas bind:this={canvas}></canvas>
 </div>

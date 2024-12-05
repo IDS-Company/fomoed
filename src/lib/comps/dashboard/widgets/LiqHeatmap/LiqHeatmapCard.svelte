@@ -1,16 +1,12 @@
 <script lang="ts">
 	import Autocomplete from '$lib/comps/Autocomplete.svelte';
 	import DropdownNew from '$lib/comps/DropdownNew.svelte';
-	import { onMount, tick } from 'svelte';
-	import {
-		humanizeNumber,
-		supportedExchangePairsToOptions,
-		type InstrumentInfo
-	} from '$ts/utils/client';
+	import { getContext, tick } from 'svelte';
+	import { supportedExchangePairsToOptions, type InstrumentInfo } from '$ts/utils/client';
 	import IconRefresh from '$lib/icons/IconRefresh.svelte';
 	import IconButton from '$lib/comps/buttons/IconButton.svelte';
 	import { getCacheOrFetchSupportedExchangePairs } from '$ts/utils/client/api';
-	import { writable } from 'svelte/store';
+	import { writable, type Readable } from 'svelte/store';
 	import LiqHeatmapChart from './LiqHeatmapChart.svelte';
 	import Legend from '$lib/comps/charts/Legend.svelte';
 	import DashboardCard from '$lib/comps/DashboardCard.svelte';
@@ -20,8 +16,15 @@
 	import InCardChartContainer from '$lib/comps/InCardChartContainer.svelte';
 	import DashboardCardTitle from '$lib/comps/DashboardCardTitle.svelte';
 	import DashboardCardHeader from '$lib/comps/DashboardCardHeader.svelte';
+	import { browser } from '$app/environment';
+	import { auth_user } from '$lib/stores/user';
+
+	const isFullscreenCardStore: Readable<boolean> = getContext('isFullscreenCardStore');
 
 	export let hideCard = false;
+	export let chart: any;
+
+	let symbol = $coinstats_selected_coin?.symbol || 'BTC';
 
 	const enablePlusFeatures = ClientSubscriptionManager.enableProFeatures;
 
@@ -50,37 +53,36 @@
 		const options = supportedExchangePairsToOptions(suppExchangePairs);
 
 		// Filter by selected coin
-		const symbol = $coinstats_selected_coin?.symbol || 'BTC';
 		const filtered = options.filter((o) => o.value.baseAsset === symbol);
 
 		exchangeOptions = filtered;
+
+		if (filtered.length < 1) {
+			console.error('No exchange options found for', symbol);
+
+			selectedExchangeOption.set(null);
+			return;
+		}
+
 		selectedExchangeOption.set(filtered[0]);
 		pairSearchTerm.set(filtered[0].label);
 	}
 
 	let refreshData: () => any;
-	let maxLiqValue: number;
 	let loading: boolean = true;
 
 	const pairSearchTerm = writable($selectedExchangeOption?.label || '');
 
-	onMount(async () => {
-		selectedExchangeOption.subscribe(async (val) => {
-			console.log(val?.value);
-			await tick();
-			refreshData?.();
-		});
-	});
+	$: if ($selectedExchangeOption && selectedTimeframe) {
+		refreshData();
+	}
 
-	coinstats_selected_coin.subscribe(() => {
-		loadExchangeOptions();
-	});
+	$: browser && $auth_user && symbol && loadExchangeOptions();
 
 	$: title =
-		($selectedExchangeOption?.value.baseAsset || $coinstats_selected_coin.symbol) +
+		($selectedExchangeOption?.value.baseAsset || $coinstats_selected_coin?.symbol) +
 		'/' +
 		($selectedExchangeOption?.value.quoteAsset || 'USDT');
-	$: humanizedMaxLiqValue = humanizeNumber(maxLiqValue);
 </script>
 
 <div class="h-full w-full overflow-hidden relative">
@@ -91,7 +93,7 @@
 			</div>
 		{/if}
 
-		<div class="flex flex-col w-full h-full">
+		<div class="flex flex-col w-full h-full max-w-full overflow-hidden">
 			<DashboardCardHeader>
 				<DashboardCardTitle {title} subtitle="Liquidation Heatmap"></DashboardCardTitle>
 
@@ -116,7 +118,7 @@
 					</div>
 				</div>
 
-				<div class="-desktop:order-2 place-self-end">
+				<div class="-desktop:order-2 place-self-end {$isFullscreenCardStore && 'pr-10'}">
 					<IconButton disabled={loading} on:click={refreshData}>
 						<div class:animate-reverse-spin={loading}>
 							<IconRefresh />
@@ -134,36 +136,16 @@
 				></Legend>
 			</div>
 
-			<div class="flex-grow gap-x-4">
+			<div class="flex-grow gap-x-4 pl-5">
 				<InCardChartContainer {loading}>
-					<div class="flex gap-x-4 h-full px-[30px]">
-						<div
-							class:opacity-0={!humanizedMaxLiqValue}
-							class="w-[40px] flex flex-col items-center text-[#FFFFFF66] font-paralucent font-medium text-xs gap-y-[5px] duration-500"
-						>
-							<div class="whitespace-nowrap">{humanizedMaxLiqValue}</div>
-
-							<div
-								class="rounded-[10px] flex-grow w-full"
-								style="background: linear-gradient(180deg, #E7E60B 0%, #63C752 22.5%, #27A77D 47%, #2F5C86 75%, #44095F 100%);"
-							></div>
-
-							<div>0</div>
-						</div>
-
-						<div class="flex-grow h-full">
-							{#if $enablePlusFeatures && $selectedExchangeOption}
-								<LiqHeatmapChart
-									bind:refreshData
-									bind:maxLiqValue
-									bind:loading
-									timeframe={selectedTimeframe.value}
-									exchange={$selectedExchangeOption.value.exchange}
-									symbol={$selectedExchangeOption.value.instrumentId}
-								/>
-							{/if}
-						</div>
-					</div>
+					<LiqHeatmapChart
+						bind:chart
+						bind:refreshData
+						bind:loading
+						timeframe={selectedTimeframe.value}
+						exchange={$selectedExchangeOption?.value.exchange}
+						symbol={$selectedExchangeOption?.value.instrumentId}
+					/>
 				</InCardChartContainer>
 			</div>
 		</div>

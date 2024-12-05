@@ -14,31 +14,39 @@
 	} from 'chart.js/auto';
 	import LoadingAnim from './animations/LoadingAnim.svelte';
 	import { fade } from 'svelte/transition';
-	import { isDesktop } from '$lib/stores/ui';
 	import { get_data_color } from '$lib/utils';
-	import { onDestroy, tick } from 'svelte';
+	import { tick } from 'svelte';
+	import 'chartjs-adapter-dayjs-4/dist/chartjs-adapter-dayjs-4.esm';
+	import { registerChartPluginZoomInBrowser } from '$ts/client/utils/ui';
+	import type { ZoomPluginOptions } from 'chartjs-plugin-zoom/types/options';
+	import { maxBy, minBy } from 'lodash-es';
+
+	registerChartPluginZoomInBrowser();
 
 	export let showLoadingAnim = false;
 	export let loading = false;
+	export let chart: Chart | null = null;
+	export let periodHasSeconds: number;
 
 	$: loading = $trend_chart_loading;
 
-	let cfgi_trend_chart: Chart;
 	let ctx: CanvasRenderingContext2D;
 
 	function chart_init() {
-		if (!$coin_data?.length || !trend_chart_canvas) {
+		if (!$coin_data?.length || !canvas) {
 			return;
 		}
 
-		const formatted_data = $coin_data.filter((d) => d.price && d.cfgi);
+		const data = $coin_data.filter((d) => d.price && d.cfgi);
+		const prices_data = data.map((d) => {
+			return { x: d.date, y: Math.round(d.price) };
+		});
+		const cfgi_data = data.map((c) => {
+			return { x: c.date, y: c.cfgi };
+		});
 
-		const prices_data = formatted_data.map((d) => d.price);
-		const cfgi_data = formatted_data.map((c) => c.cfgi);
-
-		if (cfgi_trend_chart) {
-			cfgi_trend_chart.destroy();
-		}
+		const minPrice = minBy(prices_data, (i) => i.y)?.y;
+		const maxPrice = maxBy(prices_data, (i) => i.y)?.y;
 
 		const gradient = ctx.createLinearGradient(0, 0, 0, 200);
 		gradient.addColorStop(0, 'rgba(71, 166, 99, 0.4)');
@@ -47,32 +55,56 @@
 		const chart_bar_data: ChartDataset<'bar'> = {
 			type: 'bar',
 			data: cfgi_data,
-			backgroundColor: cfgi_data.map((c) => (c ? get_data_color(c) : '#0d0d0d')),
-			yAxisID: 'right-y-axis',
+			backgroundColor: cfgi_data.map((c) => get_data_color(c.y)),
+			yAxisID: 'indexY',
+			xAxisID: 'x',
 			label: 'Fear and Greed Index',
-			order: 1
+			order: 2,
+			categoryPercentage: 1,
+			barPercentage: 1,
+			barThickness: 'flex',
+			parsing: false
 		};
 
 		const chart_line_data: ChartDataset<'line'> = {
 			type: 'line',
 			data: prices_data,
-			backgroundColor: '#2c56ff',
-			yAxisID: 'left-y-axis',
+			yAxisID: 'priceY',
+			xAxisID: 'x',
 			label: 'Price',
-			order: 2,
+			order: 1,
 			spanGaps: true,
-			tension: 0.4,
 			pointRadius: 0,
-			borderColor: '#2c56ff'
+			borderColor: 'white',
+			borderWidth: 1,
+			parsing: false
 		};
 
-		const chart_data = {
-			labels: formatted_data.map((d) => dayjs(d.date).format('DD MMM YYYY')),
-			datasets: [chart_bar_data, chart_line_data]
-		};
+		const minDate = data[0].date;
+		const maxDate = data[data.length - 1].date;
 
-		const max_price = Math.max(...(prices_data.filter((d) => d) as number[]));
-		const max_y_index = +`${+max_price.toString()[0] + 1}${max_price.toString().slice(1)}`;
+		// On homepage, period of 24 hours is fetched
+		const periodSeconds = periodHasSeconds || 24 * 60 * 60;
+
+		const zoomPluginOptions: ZoomPluginOptions = {
+			zoom: {
+				wheel: {
+					enabled: true
+				},
+				pinch: {
+					enabled: true
+				},
+				mode: 'x'
+			},
+			pan: {
+				enabled: true,
+				mode: 'x',
+				threshold: 0
+			},
+			limits: {
+				x: { minRange: periodSeconds * 1000, min: minDate, max: maxDate }
+			}
+		};
 
 		const options: _DeepPartialObject<
 			CoreChartOptions<'bar'> &
@@ -82,27 +114,27 @@
 				ScaleChartOptions<'bar'> &
 				LineControllerChartOptions
 		> = {
-			resizeDelay: 500,
 			interaction: {
 				mode: 'nearest',
 				intersect: false
 			},
-			responsive: true,
+			animations: false,
+			responsive: false,
 			maintainAspectRatio: false,
 			scales: {
-				'left-y-axis': {
+				priceY: {
 					beginAtZero: false,
 					ticks: {
 						font: { family: 'Manrope', size: 10 },
 						callback: (value: number) => {
-							return `$${value}`;
+							return `$${Math.round(value / 1000)}k`;
 						}
 					},
-					min: Math.floor(Math.min(...(prices_data.filter((d) => d) as number[]))),
-					max: Math.ceil(max_y_index),
+					min: minPrice,
+					max: maxPrice,
 					position: 'left'
 				},
-				'right-y-axis': {
+				indexY: {
 					beginAtZero: true,
 					grid: {
 						display: true,
@@ -122,62 +154,59 @@
 							return value.tick.value === 0
 								? 'rgba(255, 255, 255, 0.3)'
 								: get_data_color(value.tick.value);
-						}
+						},
+						display: true
 					},
 					max: 100,
 					position: 'right'
 				},
 				x: {
 					ticks: {
-						font: { family: 'Manrope', size: 8 },
-						autoSkip: true
-						// color: '#aaa'
-					}
-					// To append last tick
-					// beforeFit: function (axis: any) {
-					// 	var l = axis.getLabels();
-					// 	axis.ticks.push({ value: axis.max, label: l[axis.max] });
-					// }
+						minRotation: 0,
+						maxRotation: 0,
+						offset: true
+					},
+					time: {
+						displayFormats: {
+							day: 'DD MMM YY'
+						}
+					},
+					type: 'time'
 				}
 			},
 			plugins: {
 				legend: {
 					display: false
+				},
+				zoom: zoomPluginOptions,
+				tooltip: {
+					enabled: true,
+					position: 'nearest'
 				}
 			}
 		};
 
-		if (trend_chart_canvas) {
-			cfgi_trend_chart = new Chart(trend_chart_canvas, {
-				type: 'bar',
-				// @ts-expect-error
-				data: chart_data,
-				options: options
+		chart?.destroy();
+
+		if (canvas) {
+			chart = new Chart(canvas, {
+				data: { datasets: [chart_bar_data, chart_line_data] },
+				options
 			});
 		}
+
+		chart?.resize();
 	}
 
-	let trend_chart_canvas: HTMLCanvasElement;
+	let canvas: HTMLCanvasElement;
 
 	trend_chart_loading.subscribe(async (loading) => {
 		await tick();
 
-		if (!loading && trend_chart_canvas) {
-			ctx = trend_chart_canvas.getContext('2d')!;
+		if (!loading && canvas) {
+			ctx = canvas.getContext('2d')!;
 			chart_init();
 		}
-	});
-
-	const resizeUnsub = isDesktop.subscribe((desktop) => {
-		if (cfgi_trend_chart) {
-			// @ts-ignore
-			cfgi_trend_chart.options.scales.y.display = desktop;
-			cfgi_trend_chart.update();
-		}
-	});
-
-	onDestroy(() => {
-		resizeUnsub();
 	});
 </script>
 
@@ -188,10 +217,6 @@
 		</div>
 	{/if}
 
-	<canvas
-		class:opacity-0={$trend_chart_loading && showLoadingAnim}
-		bind:this={trend_chart_canvas}
-		width="400"
-		class="h-[150px] -desktop:h-[300px]"
-	/>
+	<canvas class:opacity-0={$trend_chart_loading && showLoadingAnim} bind:this={canvas} width="400"
+	></canvas>
 </div>

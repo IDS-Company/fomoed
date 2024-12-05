@@ -31,7 +31,6 @@
 		console.log({ symbol });
 
 		if (!$coinstats_coin_list) {
-			console.error('Coin list not loaded yet');
 			return;
 		}
 
@@ -88,7 +87,7 @@
 			class="relative bg-gradient-to-b from-black to-[#00000033] w-full desktop:h-[550px] mt-[25px] rounded-[28px] pt-[46px] flex flex-col border-2 border-transparent pb-[20px]"
 		>
 			{#if showGetFreeTrial}
-				<GetFreeTrialOverlay />
+				<GetFreeTrialOverlay hideCb={() => (showGetFreeTrial = false)} />
 			{/if}
 
 			<!-- Mobile btc coin -->

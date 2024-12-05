@@ -1,6 +1,5 @@
-import type { IUserInsert } from '$lib/local';
 import { getServerClient } from '$ts/utils/server/supabase';
-import { authUserWithEmailExists, createUserRow, userWithEmailExists } from '$ts/utils/server/user';
+import { createUserRow, userWithEmailExists } from '$ts/utils/server/user';
 import { error, redirect, type Actions } from '@sveltejs/kit';
 
 export const actions: Actions = {

@@ -10,36 +10,58 @@
 		type PluginChartOptions,
 		type ScaleChartOptions
 	} from 'chart.js';
-	import { dayjs } from 'svelte-time';
 	import type { _DeepPartialObject } from 'chart.js/dist/types/utils';
 	import { coinstats_selected_coin } from '$lib/stores';
 	import { logged_in } from '$lib/stores/user';
 	import { fetchCfgi } from '$lib/comps/charts/chartUtils';
+	import { getContext } from 'svelte';
+	import type { Readable } from 'svelte/store';
+	import { registerChartPluginZoomInBrowser } from '$ts/client/utils/ui';
+	import 'chartjs-adapter-dayjs-4/dist/chartjs-adapter-dayjs-4.esm';
+	import type { ZoomPluginOptions } from 'chartjs-plugin-zoom/types/options';
+	import { callback } from 'chart.js/helpers';
+
+	registerChartPluginZoomInBrowser();
+
+	const fullscreenAnimCompleteCounterStore: Readable<boolean> = getContext(
+		'fullscreenAnimCompleteCounterStore'
+	);
 
 	export let daysBack: number;
 	export let loading = true;
 
 	const color = '#47A663';
 
-	let cfgi_trend_chart: Chart;
+	export let chart: Chart;
 	let ctx: CanvasRenderingContext2D;
 
-	function chart_init(data: ICoinCfgiPriceData[]) {
-		const formatted_data = data.filter((d) => d.price && d.cfgi);
-		const cfgi_data = formatted_data.map((c) => c.cfgi);
-
-		if (cfgi_trend_chart) {
-			cfgi_trend_chart.destroy();
+	function updateGradient() {
+		if (!ctx) {
+			return;
 		}
 
-		const gradient = ctx.createLinearGradient(0, 0, 0, 400);
+		const gradient = ctx.createLinearGradient(0, 0, 0, Math.round(container.clientHeight));
+
 		gradient.addColorStop(0, 'rgba(71, 166, 99, 0.4)');
 		gradient.addColorStop(1, 'rgba(71, 166, 99, 0)');
+
+		chart.data.datasets[0].backgroundColor = gradient;
+		chart.update();
+	}
+
+	async function chart_init(data: ICoinCfgiPriceData[]) {
+		const formatted_data = data.filter((d) => d.cfgi);
+		const cfgi_data = formatted_data.map((c) => c.cfgi);
+
+		console.log({ formatted_data });
+
+		if (chart) {
+			chart.destroy();
+		}
 
 		const cfgiData: ChartDataset<'line'> = {
 			type: 'line',
 			data: cfgi_data,
-			backgroundColor: gradient,
 			label: 'Fear and Greed Index',
 			order: 1,
 			fill: true,
@@ -48,9 +70,38 @@
 			pointRadius: 0
 		};
 
+		const labels = formatted_data.map((d) => d.date);
+
+		console.log({ labels });
+
 		const chart_data = {
-			labels: formatted_data.map((d) => dayjs(d.date).format('DD MMM YYYY')),
+			labels,
 			datasets: [cfgiData]
+		};
+
+		const minDate = formatted_data[0].date;
+		const maxDate = formatted_data[formatted_data.length - 1].date;
+
+		const zoomPluginOptions: ZoomPluginOptions = {
+			zoom: {
+				wheel: {
+					enabled: true
+				},
+				pinch: {
+					enabled: true
+				},
+				mode: 'x',
+				scaleMode: 'y'
+			},
+			pan: {
+				enabled: true,
+				mode: 'xy',
+				threshold: 0
+			},
+			limits: {
+				x: { minRange: 1000 * 60 * 60 * 24 * 1, min: minDate, max: maxDate },
+				y: { min: 0 }
+			}
 		};
 
 		const options: _DeepPartialObject<
@@ -62,10 +113,9 @@
 				LineControllerChartOptions
 		> = {
 			animation: {
-				duration: 500
+				duration: 0
 			},
-			responsive: true,
-			resizeDelay: 500,
+			responsive: false,
 			maintainAspectRatio: false,
 			interaction: {
 				mode: 'nearest',
@@ -80,7 +130,10 @@
 						offset: false
 					},
 					ticks: {
-						display: true
+						display: true,
+						callback: (val: any) => {
+							return Math.round(val);
+						}
 					},
 					border: {
 						display: false
@@ -91,38 +144,45 @@
 					color: '#FFFFFF'
 				},
 				x: {
-					beginAtZero: true,
+					type: 'time',
+					// beginAtZero: true,
 					grid: {
 						display: true,
 						color: '#272525',
 						offset: false
 					},
 					ticks: {
-						maxRotation: 90,
-						autoSkipPadding: 10
+						maxRotation: 0,
+						minRotation: 0
+						// autoSkipPadding: 10
 					},
 					border: {
 						display: false
-					},
-					beforeFit: function (axis: any) {
-						var l = axis.getLabels();
-						axis.ticks.push({ value: axis.max, label: l[axis.max] });
 					}
+					// beforeFit: function (axis: any) {
+					// 	var l = axis.getLabels();
+					// 	axis.ticks.push({ value: axis.max, label: l[axis.max] });
+					// }
 				}
 			},
 			plugins: {
 				legend: {
 					display: false
-				}
+				},
+				zoom: zoomPluginOptions
 			}
 		};
 
-		if (trend_chart_canvas) {
-			cfgi_trend_chart = new Chart(trend_chart_canvas, {
-				type: 'bar',
+		if (canvas) {
+			chart = new Chart(canvas, {
+				type: 'line',
 				data: chart_data,
 				options: options
 			});
+
+			updateGradient();
+
+			chart.resize();
 		}
 	}
 
@@ -138,11 +198,11 @@
 		}
 
 		// Component could already be unmounted
-		if (!trend_chart_canvas) {
+		if (!canvas) {
 			return;
 		}
 
-		ctx = trend_chart_canvas.getContext('2d')!;
+		ctx = canvas.getContext('2d')!;
 		chart_init(data);
 	}
 
@@ -150,9 +210,13 @@
 		refreshData();
 	}
 
-	let trend_chart_canvas: HTMLCanvasElement;
+	let container: HTMLElement;
+	let canvas: HTMLCanvasElement;
+	let containerClientHeight: number;
+
+	$: $fullscreenAnimCompleteCounterStore && updateGradient();
 </script>
 
-<div class="relative h-full">
-	<canvas bind:this={trend_chart_canvas} />
+<div bind:this={container} bind:clientHeight={containerClientHeight} class="relative h-full">
+	<canvas bind:this={canvas}></canvas>
 </div>

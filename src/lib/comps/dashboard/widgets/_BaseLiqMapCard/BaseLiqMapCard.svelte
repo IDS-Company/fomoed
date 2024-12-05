@@ -6,17 +6,22 @@
 	import DashboardCard from '$lib/comps/DashboardCard.svelte';
 	import Autocomplete from '$lib/comps/Autocomplete.svelte';
 	import DropdownNew from '$lib/comps/DropdownNew.svelte';
-	import { onMount, tick } from 'svelte';
+	import { getContext, onMount, tick } from 'svelte';
 	import IconRefresh from '$lib/icons/IconRefresh.svelte';
 	import IconButton from '$lib/comps/buttons/IconButton.svelte';
-	import { writable } from 'svelte/store';
+	import { writable, type Readable } from 'svelte/store';
 	import { browser } from '$app/environment';
 	import type { LiqMapData } from '$lib/comps/charts/chartUtils';
 	import DashboardCardTitle from '$lib/comps/DashboardCardTitle.svelte';
 	import DashboardCardHeader from '$lib/comps/DashboardCardHeader.svelte';
 	import InCardChartContainer from '$lib/comps/InCardChartContainer.svelte';
+	import { logged_in } from '$lib/stores/user';
+	import type { Chart } from 'chart.js';
+
+	const isFullscreenCardStore: Readable<boolean> = getContext('isFullscreenCardStore');
 
 	export let hideCard = false;
+	export let chart: Chart;
 
 	const enablePlusFeatures = ClientSubscriptionManager.enableProFeatures;
 
@@ -50,12 +55,18 @@
 
 	async function loadAssetOptions() {
 		assetOptions = await getInstrumentOptions();
+
+		if (!assetOptions.length) {
+			selAssetOption.set(null);
+			return;
+		}
+
 		selAssetOption.set(assetOptions[0]);
 		pairSearchTerm.set(assetOptions[0].label);
 	}
 
 	coinstats_selected_coin.subscribe(() => {
-		browser && loadAssetOptions();
+		browser && $logged_in && loadAssetOptions();
 	});
 
 	async function safeRefreshData() {
@@ -88,7 +99,7 @@
 			</div>
 		{/if}
 
-		<div class="flex flex-col w-full h-full">
+		<div class="flex flex-col w-full h-full max-w-full overflow-hidden">
 			<DashboardCardHeader>
 				<DashboardCardTitle title={getTitle($selAssetOption)} subtitle="Liquidation Map" />
 
@@ -112,7 +123,9 @@
 					</div>
 				</div>
 
-				<div class="-desktop:order-2 place-self-end">
+				<div
+					class="-desktop:order-2 place-self-end duration-200 {$isFullscreenCardStore && 'pr-10'}"
+				>
 					<IconButton disabled={loading} on:click={safeRefreshData}>
 						<div class:animate-reverse-spin={loading}>
 							<IconRefresh />
@@ -122,19 +135,20 @@
 			</DashboardCardHeader>
 
 			<!-- Legend and Chart -->
-			<div class="flex-grow h-full flex flex-col">
+			<div class="flex-grow h-full flex flex-col max-w-full overflow-hidden">
 				<div class="flex-grow-0 mt-4 -desktop:mt-6 px-[30px] -desktop:px-4">
 					<slot name="legend" />
 				</div>
 
-				<div class="text-sm text-center pt-1 -desktop:text-xs">
+				<!-- <div class="text-sm text-center pt-1 -desktop:text-xs">
 					Current Price: {currentPrice}
-				</div>
+				</div> -->
 
 				{#if $enablePlusFeatures}
 					<InCardChartContainer {loading}>
 						{#if $selAssetOption}
 							<BaseLiqMapChart
+								bind:chart
 								bind:refreshData
 								bind:currentPrice
 								fetchLiqMapData={() => fetchLiqMapData(selectedTimeframe.value, $selAssetOption)}

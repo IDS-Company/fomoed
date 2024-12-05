@@ -35,6 +35,10 @@ export function supportedExchangePairsToOptions(
 	supportedExchangePairs: SupportedPairsData,
 	excludeOptions: boolean = true
 ) {
+	if (!supportedExchangePairs) {
+		return [];
+	}
+
 	const options: { label: string; value: InstrumentInfo }[] = [];
 
 	for (const [exchangeName, instruments] of Object.entries(supportedExchangePairs)) {

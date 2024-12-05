@@ -174,9 +174,9 @@ export async function fetchLiqMapData(
 			pushed = true;
 		}
 
-		if (!pushed) {
-			liqBars.push({ x: price, y: 0, color: '#0000' });
-		}
+		// if (!pushed) {
+		// 	liqBars.push({ x: price, y: 0, color: '#0000' });
+		// }
 	}
 
 	// Extract long cumulative liquidation leverage
@@ -249,19 +249,32 @@ export async function fetchLiqMapDataMerged(
 	const cumulativeShortLiqLeverage: { x: number; y: number }[] = [];
 
 	let cumulativeLongLiqLeverageAcc = 0;
-	let cumulativeShortLiqLeverageAcc = 0;
 
 	for (const price of range(currentPriceUsd, maxPrice + 1)) {
+		const accBefore = cumulativeLongLiqLeverageAcc;
+
 		for (const ex in exLiqData) {
 			cumulativeLongLiqLeverageAcc += exLiqData[ex][price] || 0;
+		}
+
+		if (cumulativeLongLiqLeverageAcc === accBefore) {
+			continue;
 		}
 
 		cumulativeLongLiqLeverage.push({ x: price, y: Math.round(cumulativeLongLiqLeverageAcc) });
 	}
 
+	let cumulativeShortLiqLeverageAcc = 0;
+
 	for (const price of range(currentPriceUsd, minPrice - 1, -1)) {
+		const accBefore = cumulativeShortLiqLeverageAcc;
+
 		for (const ex in exLiqData) {
 			cumulativeShortLiqLeverageAcc += exLiqData[ex][price] || 0;
+		}
+
+		if (cumulativeShortLiqLeverageAcc === accBefore) {
+			continue;
 		}
 
 		cumulativeShortLiqLeverage.push({ x: price, y: Math.round(cumulativeShortLiqLeverageAcc) });
@@ -282,10 +295,17 @@ export async function fetchLiqMapDataMerged(
 			{ ex: 'Bybit', liqValue: exLiqData['Bybit'][price] }
 		];
 		const maxLiq = maxBy(liqValues, (i) => i.liqValue);
-		const color = maxLiq ? exToBarColor[maxLiq.ex] : '#0000';
+
+		if (!maxLiq) {
+			continue;
+		}
+
+		const color = exToBarColor[maxLiq.ex];
 
 		combinedLiqBars.push({ color, x: price, y: sumBy(liqValues, (i) => i.liqValue) });
 	}
+
+	console.log(combinedLiqBars);
 
 	return {
 		cumulativeLongLiqLeverage,
@@ -302,10 +322,17 @@ export async function fetchLiqMapDataMerged(
 export async function getSupportedLiqMapInstrumentOptions(): Promise<
 	{ label: string; value: InstrumentInfo }[]
 > {
+	const coinstatsSelectedCoin = get(coinstats_selected_coin);
+
+	if (!coinstatsSelectedCoin) {
+		return [];
+	}
+
+	const symbol = coinstatsSelectedCoin.symbol;
+
 	const data = await getCacheOrFetchSupportedExchangePairs();
 	const options = supportedExchangePairsToOptions(data);
 
-	const symbol = get(coinstats_selected_coin).symbol;
 	const filtered = options.filter((i) => i.value.baseAsset === symbol);
 
 	return filtered;

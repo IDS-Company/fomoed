@@ -120,7 +120,6 @@
 			if (typeof window !== 'undefined') {
 				const calculated_device_id = new (window as any).DeviceUUID().get();
 				device_id.set(calculated_device_id);
-				console.log(calculated_device_id);
 			}
 			get_votes();
 		}
@@ -158,8 +157,6 @@
 
 		aped_score.set(ratings_mean);
 	}
-
-	$: console.log($votes);
 
 	votes.subscribe((v) => v?.length && update_mean_rating(v));
 	cfgi_summary.subscribe((cfgi) => cfgi && update_mean_rating($votes));
