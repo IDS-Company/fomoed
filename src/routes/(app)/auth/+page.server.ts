@@ -54,13 +54,15 @@ export const actions: Actions = {
 		// If user row with this email already exists, link the new user id to the existing user
 		// This does NOT enable users to create another account for an already registered email
 		if (await userWithEmailExists(email)) {
+			console.info(`Linking supabase id ${supabaseUserId} to email ${email}`);
+
 			const updateRes = await supabase
 				.from('users')
 				.update({
 					user_id: supabaseUserId,
 					username
 				})
-				.eq('email', email);
+				.ilike('email', email.toLowerCase());
 
 			if (updateRes.error) {
 				console.error('Failed to link new supabase user to existing user!');
