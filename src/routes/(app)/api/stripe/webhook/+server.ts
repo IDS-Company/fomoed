@@ -227,7 +227,13 @@ async function handle_subscription(
 		return error(400, 'customer_email is missing!');
 	}
 
-	const user = await getUserByEmail(supabase, invoice.customer_email);
+	const invoice_user_email = invoice.customer_email;
+	const user = await getUserByEmail(invoice_user_email);
+
+	if (!user) {
+		console.error(`User with email ${invoice_user_email} was not found during invoice handling!`);
+		error(404, `User with email ${invoice_user_email} not found!`);
+	}
 
 	const userId = user.user_id;
 	const isPaid = invoice.status === 'paid';
