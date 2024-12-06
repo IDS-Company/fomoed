@@ -20,6 +20,7 @@
 	import { fade } from 'svelte/transition';
 	import LoadingAnim from './animations/LoadingAnim.svelte';
 	import Gauge from './indicator/Gauge.svelte';
+	import { enableXmas } from '$ts/utils/client/ui';
 
 	export let onHomepage = false;
 	export let prev = 0;
@@ -196,6 +197,13 @@
 						alt=""
 						class="max-w-[92px] max-h-[124px]"
 					/>
+
+					{#if enableXmas}
+						<div
+							style="background-image: url(/images/xmas/hat.svg); aspect-ratio: 97/59;"
+							class="absolute -top-5 inset-x-0 -translate-x-3 z-30"
+						></div>
+					{/if}
 				</div>
 
 				{#if !$cfgi_summary}

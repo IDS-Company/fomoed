@@ -20,6 +20,14 @@
 	import { browser } from '$app/environment';
 	import PaidPlanCard from '$lib/comps/plan-cards/PaidPlanCard.svelte';
 	import { planInfoPlus, planInfoPro } from '$ts/utils/client/plans';
+	import {
+		enableXmas,
+		getDesktopHomepageTopBgUrl,
+		getMobileBnbCoinUrl,
+		getMobileBtcCoinUrl,
+		getMobileHomepageTopBgUrl,
+		getMobileSolCoinUrl
+	} from '$ts/utils/client/ui';
 
 	const selectedSymbol = writable<string>('BTC');
 
@@ -48,7 +56,8 @@
 <main class="w-full relative overflow-clip">
 	<!-- Mobile top bg image -->
 	<div
-		class="desktop:hidden absolute w-full bg-bottom -z-20 bg-[url(/background/mobile/homepage-top.png)] bg-no-repeat bg-cover h-[120vh]"
+		style="background-image: url({getMobileHomepageTopBgUrl()});"
+		class="desktop:hidden absolute w-full bg-bottom -z-20 bg-no-repeat bg-cover h-[120vh]"
 	></div>
 
 	<!-- Mobile top glow -->
@@ -58,7 +67,8 @@
 
 	<!-- Mobile bnb coin -->
 	<div
-		class="desktop:hidden bg-[url(/images/mobile/bnb-coin-bg.svg)] w-[94px] h-[94px] absolute left-0 top-20"
+		style="background-image: url({getMobileBnbCoinUrl()});"
+		class="desktop:hidden w-[94px] h-[94px] absolute left-0 top-20 bg-contain"
 	></div>
 
 	<!-- Mobile ether coin -->
@@ -68,8 +78,21 @@
 
 	<div class="h-full max-w-[980px] mx-auto desktop:min-h-screen px-4 flex flex-col justify-center">
 		<div
-			class="desktop:bg-[url(/background/homepage-1.webp)] bg-cover bg-center min-h-screen w-screen absolute top-0 left-0 -z-10"
+			style="background-image: url({getDesktopHomepageTopBgUrl()});"
+			class="-desktop:hidden bg-cover bg-center min-h-screen w-screen absolute top-0 left-0 -z-10"
 		></div>
+
+		{#if enableXmas}
+			<div
+				style="background-image: url(/images/xmas/snowflake.blur.png)"
+				class="absolute -left-12 top-[15vh] w-40 aspect-square -desktop:hidden"
+			></div>
+
+			<div
+				style="background-image: url(/images/xmas/ball.png); aspect-ratio: 256/396;"
+				class="w-36 absolute bg-cover bg-center right-0 top-0 translate-y-[60vh] brightness-[0.6]"
+			></div>
+		{/if}
 
 		<h1 class="text-5xl text-center font-paralucent-demibold -sm:text-[36px] mx-10 -desktop:mt-24">
 			<span class="bg-clip-text text-transparent bg-gradient-to-r from-primary to-[#F3C111]">
@@ -82,6 +105,7 @@
 			Toolset for effortlessly navigating the emotional rollercoaster that is crypto.
 		</h2>
 
+		<!-- Main card with chart -->
 		<div
 			style="background: linear-gradient(180deg, #000000 0%, rgba(0, 0, 0, 0.2) 125.15%) padding-box, linear-gradient(179.91deg, rgba(255, 59, 16, 0.4) 11.58%, rgba(255, 59, 16, 0) 99.92%) border-box"
 			class="relative bg-gradient-to-b from-black to-[#00000033] w-full desktop:h-[550px] mt-[25px] rounded-[28px] pt-[46px] flex flex-col border-2 border-transparent pb-[20px]"
@@ -90,14 +114,39 @@
 				<GetFreeTrialOverlay hideCb={() => (showGetFreeTrial = false)} />
 			{/if}
 
+			<!-- Xmas decorations -->
+			{#if enableXmas}
+				<div
+					style="background-image: url(/images/xmas/lights-left.png);"
+					class="w-72 -desktop:w-48 absolute bg-cover left-0 aspect-[1.568] bg-center top-0 -translate-x-12 -desktop:-translate-x-8 -translate-y-16 -desktop:-translate-y-10"
+				></div>
+
+				<div
+					style="background-image: url(/images/xmas/lights-right.png);"
+					class="w-96 -desktop:w-[17rem] absolute bg-cover right-0 aspect-[1.865] bg-center top-0 translate-x-24 -desktop:translate-x-20 -translate-y-20 -desktop:-translate-y-14"
+				></div>
+
+				<div
+					style="background-image: url(/images/xmas/star.png);"
+					class="w-24 absolute bg-cover right-0 aspect-square bg-center top-0 translate-y-24 translate-x-12 -desktop:hidden"
+				></div>
+
+				<div
+					style="background-image: url(/images/xmas/wreath.png); aspect-ratio: 86/94;"
+					class="w-20 absolute bg-cover left-0 bg-center bottom-0 -translate-y-16 -translate-x-16 -desktop:hidden"
+				></div>
+			{/if}
+
 			<!-- Mobile btc coin -->
 			<div
-				class="desktop:hidden bg-[url(/images/mobile/btc-coin.svg)] w-[94px] h-[94px] absolute -right-6 -top-10 z-20"
+				style="background-image: url({getMobileBtcCoinUrl()});"
+				class="desktop:hidden w-[94px] h-[94px] absolute -right-6 -top-10 z-20 bg-cover"
 			></div>
 
 			<!-- Mobile sol coin -->
 			<div
-				class="desktop:hidden bg-[url(/images/mobile/sol-coin.svg)] w-[94px] h-[94px] absolute -left-4 bottom-20 z-20"
+				style="background-image: url({getMobileSolCoinUrl()});"
+				class="desktop:hidden w-[94px] h-[94px] absolute -left-4 bottom-20 z-20 bg-contain"
 			></div>
 
 			<SmallCharts />

@@ -1,3 +1,7 @@
+<script lang="ts">
+	import { enableXmas } from '$ts/utils/client/ui';
+</script>
+
 <div class="relative">
 	<div
 		style="background: linear-gradient( #0F0F0F, #0F0F0F) padding-box, linear-gradient(180deg, rgba(255, 59, 16, 0.3) 0%, rgba(255, 205, 132, 0.3) 56.72%, rgba(255, 255, 255, 0.18) 100%) border-box"
@@ -21,6 +25,13 @@
 			class="scale-[101%]"
 		/>
 	</div>
+
+	{#if enableXmas}
+		<div
+			style="background-image: url(/images/xmas/lights-right.png);"
+			class="absolute top-0 inset-x-0 h-24 bg-center bg-cover scale-125 -rotate-45 -translate-x-20 translate-y-1"
+		></div>
+	{/if}
 
 	<!-- <div
 		class="flex opacity-50 justify-center absolute bottom-0 translate-y-24 inset-x-0 items-center gap-x-2 -desktop:hidden"

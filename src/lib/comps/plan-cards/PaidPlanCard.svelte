@@ -12,6 +12,8 @@
 	import { ClientSubscriptionManager } from '$ts/utils/client/plans';
 	import UnsubscribeConfirmPopup from '../popups/UnsubscribeConfirmPopup.svelte';
 	import MainButton from '../buttons/MainButton.svelte';
+	import ChristmasSaleIcon from '$lib/icons/ChristmasSaleIcon.svelte';
+	import { enableXmas } from '$ts/utils/client/ui';
 
 	export let planInfo: PlanInfo;
 	export let yearlySelected: boolean;
@@ -155,7 +157,17 @@
 	{#if planInfo.recommended}
 		<div class="absolute top-[-2px] inset-x-0 flex justify-center">
 			<div class="px-[20px] py-[6px] bg-primary rounded-b-xl font-paralucent-demibold">
-				Recommended
+				{#if enableXmas}
+					<div class="flex gap-x-1 items-center">
+						<div class="w-5">
+							<ChristmasSaleIcon />
+						</div>
+
+						Christmas Sale
+					</div>
+				{:else}
+					Recommended
+				{/if}
 			</div>
 		</div>
 	{/if}

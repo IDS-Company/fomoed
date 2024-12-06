@@ -1,7 +1,40 @@
+<script lang="ts">
+	import { enableXmas } from '$ts/utils/client/ui';
+
+	const coins = ['btc', 'ether', 'tether', 'bnc', 'map'];
+
+	function startExmasEffetcs() {
+		const targets = new Array(...document.querySelectorAll('.__coin-decor'));
+
+		function updateDecorOpacity() {
+			const screenW = document.body.clientWidth;
+			const screenCenterX = screenW / 2;
+
+			for (const target of targets) {
+				const { x, width } = target.getBoundingClientRect();
+				const center = x + width / 2;
+
+				const relOffset = Math.abs(center - screenCenterX) / (screenW / 10);
+				const opacity = Math.max(0, 1 - relOffset) * 0.3;
+
+				target.style.opacity = opacity;
+			}
+		}
+
+		setInterval(updateDecorOpacity, 1000 / 60);
+	}
+
+	$effect(() => {
+		if (enableXmas) {
+			startExmasEffetcs();
+		}
+	});
+</script>
+
 <div class="relative h-[500px] -sm:h-[250px] flex items-center">
 	<!-- Glow -->
 	<div class="absolute w-screen grid place-items-center h-full">
-		<div class="w-full h-[400px] transitionColor overflow-hidden -z-10">
+		<div class="w-full h-full overflow-hidden -z-10">
 			<div
 				class="h-full transitionColor"
 				style="background: radial-gradient(#0009, black 75%);"
@@ -13,21 +46,22 @@
 	<div class="h-full flex items-center">
 		<div class="overflow-hidden max-w-[100vw] relative h-full items-center flex">
 			<div class="movingContent">
-				<img src="/images/carousel/btc.svg" width={235} height={235} alt="Bitcoin." />
-				<img src="/images/carousel/ether.svg" width={235} height={235} alt="Ethereum." />
-				<img src="/images/carousel/tether.svg" width={235} height={235} alt="Tether." />
-				<img src="/images/carousel/bnc.svg" width={235} height={235} alt="Binance." />
-				<img src="/images/carousel/map.svg" width={235} height={235} alt="TODO coin." />
-				<img src="/images/carousel/btc.svg" width={235} height={235} alt="Bitcoin." />
-				<img src="/images/carousel/ether.svg" width={235} height={235} alt="Ethereum." />
-				<img src="/images/carousel/tether.svg" width={235} height={235} alt="Tether." />
-				<img src="/images/carousel/bnc.svg" width={235} height={235} alt="Binance." />
-				<img src="/images/carousel/map.svg" width={235} height={235} alt="TODO coin." />
+				{#each [...coins, ...coins] as coin}
+					<div style="background-image: url(/images/carousel/{coin}.svg); background-size: 94%;">
+						{#if enableXmas}
+							<div
+								class="__coin-decor absolute inset-0 bg-center bg-[url(/images/xmas/coin-frost.svg)] bg-no-repeat opacity-0"
+								style="background-size: 80%;"
+							></div>
+						{/if}
+					</div>
+				{/each}
 			</div>
 
 			<div
 				class="h-full bg-gradient-to-r from-black to-transparent w-[50%] absolute -left-1 top-0 z-10"
 			></div>
+
 			<div
 				class="h-full bg-gradient-to-l from-black to-transparent w-[50%] absolute -right-1 top-0 z-10"
 			></div>
@@ -37,13 +71,13 @@
 
 <style>
 	.movingContent {
-		@apply flex;
+		@apply flex max-w-full;
 		display: flex;
 		animation: moveLinear 15s linear infinite;
 	}
 
-	.movingContent > img {
-		@apply -sm:w-[33.33vw] w-[20vw] flex-shrink-0 p-2;
+	.movingContent > div {
+		@apply -sm:w-[33.33vw] w-[20vw] h-[40vw] flex-shrink-0 inline-block bg-center relative;
 	}
 
 	@media (max-width: 639px) {
