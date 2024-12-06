@@ -16,7 +16,7 @@ export async function GET({ locals: { user } }: RequestEvent) {
 	const { data: users, error: err }: PostgrestSingleResponse<IUser[]> = await supabase
 		.from('users')
 		.select()
-		.eq('email', user.email);
+		.ilike('email', user.email);
 
 	if (err) {
 		return error(+err.code, {
