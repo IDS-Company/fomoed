@@ -20,7 +20,7 @@
 		(expanded
 			? 'bg-[#201E1E]'
 			: 'bg-[#13100F]')} max-w-max -sm:max-w-[130px] w-full gap-x-4 font-paralucent-demibold flex items-center justify-center text-[#FFFFFFCC] {!premium &&
-		'hover:border-[#42403F]'} text-sm duration-150 p-[5px] rounded-[11px] border-[#FFFFFF1A] border pr-5"
+		'hover:border-[#42403F]'} text-sm duration-150 p-[5px] rounded-[11px] border-[#FFFFFF1A] border pr-5 relative"
 	on:click={() => (expanded = !expanded)}
 >
 	<div
@@ -34,10 +34,10 @@
 	<div class="uppercase truncate">
 		{$auth_user?.username || $auth_email?.substring(0, 8) + '...'}
 	</div>
-</button>
 
-{#if expanded}
-	<div class="absolute top-16 right-0">
-		<ProfileDropdown></ProfileDropdown>
-	</div>
-{/if}
+	{#if expanded}
+		<div class="absolute top-16 right-0">
+			<ProfileDropdown></ProfileDropdown>
+		</div>
+	{/if}
+</button>
