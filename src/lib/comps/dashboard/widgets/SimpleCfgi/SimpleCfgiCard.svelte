@@ -4,7 +4,7 @@
 	import DurationSwitcher from '$lib/comps/DurationSwitcher.svelte';
 	import InCardChartContainer from '$lib/comps/InCardChartContainer.svelte';
 	import Legend from '$lib/comps/charts/Legend.svelte';
-	import PlusRequiredOverlay from '$lib/comps/overlays/PlusRequiredOverlay.svelte';
+	import PlanRequiredOverlay from '$lib/comps/overlays/PlanRequiredOverlay.svelte';
 	import { coinstats_selected_coin } from '$lib/stores';
 	import { isDesktop } from '$lib/stores/ui';
 	import { ClientSubscriptionManager } from '$ts/utils/client/plans';
@@ -37,7 +37,7 @@
 	<DashboardCard isChartCard {hideCard}>
 		{#if !$enablePlusFeatures}
 			<div class="absolute inset-px">
-				<PlusRequiredOverlay />
+				<PlanRequiredOverlay planId="pro" />
 			</div>
 		{/if}
 

@@ -2,6 +2,10 @@
 	import { fade } from 'svelte/transition';
 	import MainButton from '../buttons/MainButton.svelte';
 	import PaidPlanBadge from '../decorations/PaidPlanBadge.svelte';
+	import type { PlanId } from '$ts/types';
+	import { capitalize } from 'lodash-es';
+
+	let props: { planId: PlanId } = $props();
 </script>
 
 <div
@@ -15,7 +19,7 @@
 
 		<div class="mt-2 flex justify-center space-x-3">
 			<img src="/fomoed.svg" alt="Fomoed." class="w-[158px] -desktop:w-[125px]" />
-			<PaidPlanBadge planName="Plus"></PaidPlanBadge>
+			<PaidPlanBadge planName={capitalize(props.planId)}></PaidPlanBadge>
 		</div>
 
 		<div class="mt-6 mx-4">

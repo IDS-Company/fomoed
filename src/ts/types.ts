@@ -44,3 +44,6 @@ export type NewsFilterVal = (typeof newsFilterVals)[number];
 
 export const newsKindVals = ['news', 'media', 'all'] as const;
 export type NewsKindVal = (typeof newsKindVals)[number];
+
+const planIds = ['plus', 'pro'] as const;
+export type PlanId = (typeof planIds)[number];

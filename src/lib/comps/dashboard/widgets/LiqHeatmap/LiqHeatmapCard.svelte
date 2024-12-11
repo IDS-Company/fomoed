@@ -10,7 +10,7 @@
 	import LiqHeatmapChart from './LiqHeatmapChart.svelte';
 	import Legend from '$lib/comps/charts/Legend.svelte';
 	import DashboardCard from '$lib/comps/DashboardCard.svelte';
-	import PlusRequiredOverlay from '$lib/comps/overlays/PlusRequiredOverlay.svelte';
+	import PlanRequiredOverlay from '$lib/comps/overlays/PlanRequiredOverlay.svelte';
 	import { ClientSubscriptionManager } from '$ts/utils/client/plans';
 	import { coinstats_selected_coin } from '$lib/stores';
 	import InCardChartContainer from '$lib/comps/InCardChartContainer.svelte';
@@ -89,7 +89,7 @@
 	<DashboardCard isChartCard {hideCard}>
 		{#if !$enablePlusFeatures}
 			<div class="absolute inset-px">
-				<PlusRequiredOverlay />
+				<PlanRequiredOverlay planId="pro" />
 			</div>
 		{/if}
 
