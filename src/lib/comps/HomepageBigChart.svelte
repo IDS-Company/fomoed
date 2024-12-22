@@ -1,6 +1,5 @@
 <script lang="ts">
 	import Chart from 'chart.js/auto';
-	import { dayjs } from 'svelte-time';
 	import type { _DeepPartialObject } from 'chart.js/dist/types/utils';
 	import { coin_data, trend_chart_loading } from '$lib/stores';
 	import type {
@@ -19,7 +18,12 @@
 	import 'chartjs-adapter-dayjs-4/dist/chartjs-adapter-dayjs-4.esm';
 	import { registerChartPluginZoomInBrowser } from '$ts/client/utils/ui';
 	import type { ZoomPluginOptions } from 'chartjs-plugin-zoom/types/options';
-	import { maxBy, minBy } from 'lodash-es';
+	import { maxBy, minBy, sampleSize } from 'lodash-es';
+	import '$ts/client/charts/plugins/CrosshairPlugin';
+	import '$ts/client/charts/plugins/DoubleTabResetZoom';
+	import type { CrosshairPluginConfig } from '$ts/client/charts/plugins/CrosshairPlugin';
+	import dayjs from 'dayjs';
+	import { commaFormatNumber } from '$ts/utils/client/charts';
 
 	registerChartPluginZoomInBrowser();
 
@@ -76,7 +80,7 @@
 			spanGaps: true,
 			pointRadius: 0,
 			borderColor: 'white',
-			borderWidth: 1,
+			borderWidth: 2,
 			parsing: false
 		};
 
@@ -106,6 +110,30 @@
 			}
 		};
 
+		const crosshairPluginOptions: CrosshairPluginConfig = {
+			labels: [
+				{
+					scaleId: 'x',
+					label: 'Date & Time',
+					getText: () => (val) => {
+						return dayjs(val).format('DD MMM YYYY');
+					}
+				},
+				{
+					scaleId: 'indexY',
+					label: 'CFGI',
+					getText: () => (val) => val.toFixed(0),
+					getTextColor: () => (val) => get_data_color(val)
+				},
+				{
+					scaleId: 'priceY',
+					label: 'Price',
+					getText: () => (val) => '$' + commaFormatNumber(Math.round(val))
+				}
+			],
+			crosshairEnableDelay: 200
+		};
+
 		const options: _DeepPartialObject<
 			CoreChartOptions<'bar'> &
 				ElementChartOptions<'bar'> &
@@ -114,24 +142,24 @@
 				ScaleChartOptions<'bar'> &
 				LineControllerChartOptions
 		> = {
-			interaction: {
-				mode: 'nearest',
-				intersect: false
-			},
-			animations: false,
+			interaction: false,
 			responsive: false,
 			maintainAspectRatio: false,
+			animations: false,
 			scales: {
 				priceY: {
 					beginAtZero: false,
 					ticks: {
 						font: { family: 'Manrope', size: 10 },
+						source: 'data',
+						stepSize: 5000,
 						callback: (value: number) => {
 							return `$${Math.round(value / 1000)}k`;
 						}
 					},
-					min: minPrice,
-					max: maxPrice,
+					// Uncomment this to make the price scale fixed
+					// min: minPrice,
+					// max: maxPrice,
 					position: 'left'
 				},
 				indexY: {
@@ -164,13 +192,21 @@
 					ticks: {
 						minRotation: 0,
 						maxRotation: 0,
-						offset: true
+						offset: false,
+						source: 'data',
+						padding: 10,
+						sampleSize: 1,
+						font: { family: 'Manrope', size: 10 }
 					},
 					time: {
+						unit: 'month',
 						displayFormats: {
 							day: 'DD MMM YY'
-						}
+						},
+						min: minDate,
+						max: maxDate
 					},
+					offset: false,
 					type: 'time'
 				}
 			},
@@ -180,9 +216,12 @@
 				},
 				zoom: zoomPluginOptions,
 				tooltip: {
-					enabled: true,
-					position: 'nearest'
-				}
+					enabled: false,
+					mode: 'nearest',
+					intersect: false
+				},
+				crosshair: crosshairPluginOptions,
+				doubleTapResetZoom: true
 			}
 		};
 
