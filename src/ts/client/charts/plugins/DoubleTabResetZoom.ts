@@ -4,11 +4,19 @@ const doubleTapResetZoomPlugin = {
 	id: 'doubleTapResetZoom',
 	beforeInit(chart: Chart) {
 		let lastTap = 0;
+		let isTouchEvent = false;
 
 		const canvas = chart.canvas;
 
-		canvas.addEventListener('touchstart', (event) => {
-			if (event.touches.length > 1) {
+		const handleEvent = (event: any) => {
+			if (event.type === 'touchstart') {
+				isTouchEvent = true;
+			} else if (event.type === 'mousedown' && isTouchEvent) {
+				isTouchEvent = false;
+				return;
+			}
+
+			if (event.touches && event.touches.length > 1) {
 				return;
 			}
 
@@ -19,8 +27,11 @@ const doubleTapResetZoomPlugin = {
 				const originalAnimations = chart.options.animations;
 
 				chart.options.animations = {
+					// @ts-ignore
 					duration: 100,
-					easing: 'easeOutQuad'
+
+					// @ts-ignore
+					easing: 'easeOutExpo'
 				};
 
 				if (chart.resetZoom) {
@@ -34,7 +45,10 @@ const doubleTapResetZoomPlugin = {
 			}
 
 			lastTap = currentTime;
-		});
+		};
+
+		canvas.addEventListener('touchstart', handleEvent);
+		canvas.addEventListener('mousedown', handleEvent);
 	}
 };
 
