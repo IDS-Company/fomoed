@@ -90,14 +90,14 @@
 crypto. Have complete access to your favorite Altcoins and get precise data-based market
 sentiment analysis"
 	openGraph={{
-		title: `Fomoed ${$page.url.searchParams.get('score') ? `Score ${$page.url.searchParams.get('score')}` : ''}`,
+		title: `Fomoed`,
 		url: $page.url.href,
 		images: [
 			{
-				url: '/images/plans_graphic.png',
-				width: 1200,
-				height: 630,
-				alt: `Fomoed Score ${$page.url.searchParams.get('score') ? $page.url.searchParams.get('score') : ''}`
+				url: '/images/indicator-meme-1.png',
+				width: 248,
+				height: 248,
+				alt: `Fomoed`
 			}
 		],
 		siteName: 'Fomoed',
@@ -106,11 +106,11 @@ sentiment analysis"
 	}}
 	twitter={{
 		cardType: 'summary_large_image',
-		title: `Fomoed ${$page.url.searchParams.get('score') ? `Score ${$page.url.searchParams.get('score')}` : ''}`,
+		title: `Fomoed`,
 		description:
 			'Fomoed provides a toolset for effortlessly navigating the emotional rollercoaster that is crypto. Have complete access to your favorite Altcoins and get precise data-based market sentiment analysis',
-		image: '/images/plans_graphic.png',
-		imageAlt: `Fomoed Score ${$page.url.searchParams.get('score') ? $page.url.searchParams.get('score') : ''}`
+		image: '/images/indicator-meme-1.png',
+		imageAlt: `Fomoed`
 	}}
 />
 

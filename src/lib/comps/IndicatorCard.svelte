@@ -52,10 +52,7 @@
 	});
 
 	// Sentiment rating
-	enum SentimentRatingEnum {
-		BEARISH = 'BEARISH',
-		BULLISH = 'BULLISH'
-	}
+	type SentimentRating = 'bearish' | 'bullish';
 
 	export let for_screenshot = false;
 
@@ -64,15 +61,14 @@
 	const votes = writable<{ device_id: string; sentiment: number }[]>([]);
 	const device_id = writable<string>();
 
-	async function vote(rating: SentimentRatingEnum) {
+	async function vote(rating: SentimentRating) {
 		if (!$device_id) {
 			console.log('Failed to Extract Device ID');
 			return;
 		}
 
 		loading.set(true);
-		const num_rating =
-			rating == SentimentRatingEnum.BEARISH ? 25 : rating == SentimentRatingEnum.BULLISH ? 75 : 50;
+		const num_rating = rating == 'bearish' ? 25 : rating == 'bullish' ? 75 : 50;
 
 		$votes.push({
 			device_id: $device_id,
@@ -309,7 +305,7 @@
 					<div class="flex gap-x-[10px] justify-center mt-4 relative z-10">
 						<TintedSecondaryButton
 							disabled={$loading || $has_voted}
-							on:click={() => vote(SentimentRatingEnum.BEARISH)}
+							on:click={() => vote('bearish')}
 							color="red"
 						>
 							Bearish
@@ -317,7 +313,7 @@
 
 						<TintedSecondaryButton
 							disabled={$loading || $has_voted}
-							on:click={() => vote(SentimentRatingEnum.BULLISH)}
+							on:click={() => vote('bullish')}
 							color="green"
 						>
 							Bullish
