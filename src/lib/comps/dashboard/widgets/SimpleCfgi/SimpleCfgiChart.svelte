@@ -72,8 +72,6 @@
 
 		const labels = formatted_data.map((d) => d.date);
 
-		console.log({ labels });
-
 		const chart_data = {
 			labels,
 			datasets: [cfgiData]

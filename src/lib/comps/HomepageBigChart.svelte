@@ -18,8 +18,8 @@
 	import 'chartjs-adapter-dayjs-4/dist/chartjs-adapter-dayjs-4.esm';
 	import { registerChartPluginZoomInBrowser } from '$ts/client/utils/ui';
 	import type { ZoomPluginOptions } from 'chartjs-plugin-zoom/types/options';
-	import { maxBy, minBy, sampleSize } from 'lodash-es';
-	import '$ts/client/charts/plugins/CrosshairPlugin';
+	import { maxBy, minBy } from 'lodash-es';
+	import { CrosshairPlugin } from '$ts/client/charts/plugins/CrosshairPlugin';
 	import '$ts/client/charts/plugins/DoubleTabResetZoom';
 	import type { CrosshairPluginConfig } from '$ts/client/charts/plugins/CrosshairPlugin';
 	import dayjs from 'dayjs';

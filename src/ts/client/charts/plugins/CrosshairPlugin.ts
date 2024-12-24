@@ -1,6 +1,4 @@
-import { Chart, type ChartEvent } from 'chart.js';
-import { color } from 'chart.js/helpers';
-import type { StringToNumber } from 'type-fest/source/internal';
+import { Chart, type ChartEvent, type Plugin } from 'chart.js';
 
 interface LabelingOptions {
 	scaleId: string;
@@ -19,8 +17,10 @@ export interface CrosshairPluginConfig {
 	crosshairEnableDelay?: number;
 }
 
+type InputInterface = 'mouse' | 'touch';
+
 interface CrosshairCache {
-	crosshairEnabled: boolean;
+	enabledByTouch: boolean;
 	datasetCache: any[];
 	opts: CrosshairPluginConfig;
 	coords: {
@@ -36,7 +36,8 @@ interface CrosshairCache {
 		y: number;
 	};
 	crosshairEnabledInLastTouchSeq: boolean;
-	// panEnableBeforeTouchSeq: boolean;
+	lastUsedInputInterface: InputInterface;
+	customEventHandlers: { event: string; handler: any }[];
 }
 
 type Chart_ = Chart & { _crosshairCache: CrosshairCache };
@@ -175,18 +176,13 @@ const defaultOptions: CrosshairPluginConfig = {
 	crosshairEnableDelay: 500
 };
 
-const CrosshairPlugin = {
+export const CrosshairPlugin: Plugin = {
 	id: 'crosshair',
 	beforeInit(chart: Chart) {
 		// Register listening for pointerdown and pointerup events
-		chart.options.events = chart.options.events || [];
-
-		// if (!chart.options.events.includes('pointerdown')) {
-		// 	chart.options.events.push('pointerdown');
-		// }
-
-		// if (!chart.options.events.includes('pointerup')) {
-		// 	chart.options.events.push('pointerup');
+		// chart.options.events = chart.options.events || [];
+		// if (!chart.options.events.includes('pointermove')) {
+		// 	chart.options.events.push('pointermove');
 		// }
 	},
 	afterInit: (chart: Chart_) => {
@@ -194,7 +190,7 @@ const CrosshairPlugin = {
 		const opts = Object.assign({}, defaultOptions, userOpts);
 
 		chart._crosshairCache = {
-			crosshairEnabled: false,
+			enabledByTouch: false,
 			datasetCache: [],
 			opts,
 			coords: null,
@@ -205,13 +201,18 @@ const CrosshairPlugin = {
 			totalLastTouchSeqDelta: {
 				x: 0,
 				y: 0
-			}
+			},
+			crosshairEnabledInLastTouchSeq: false,
+			lastUsedInputInterface: 'mouse',
+			customEventHandlers: []
 
 			// It is safer to have the original pan enabled
 			// panEnableBeforeTouchSeq: true
-		};
+		} as CrosshairCache;
 
-		chart.canvas.addEventListener('touchmove', (e) => {
+		if (opts.labels.length < 1) return;
+
+		function touchmoveHandler(e: TouchEvent) {
 			const deltaX = e.touches[0].clientX - chart._crosshairCache.lastToucheventCoords.x;
 			const deltaY = e.touches[0].clientY - chart._crosshairCache.lastToucheventCoords.y;
 
@@ -229,10 +230,12 @@ const CrosshairPlugin = {
 			};
 
 			chart.render();
-		});
+		}
 
-		chart.canvas.addEventListener('touchstart', (e) => {
-			const crossEnabled = chart._crosshairCache.crosshairEnabled;
+		function touchstartHanlder(e: TouchEvent) {
+			chart._crosshairCache.lastUsedInputInterface = 'touch';
+
+			const crossEnabled = chart._crosshairCache.enabledByTouch;
 
 			// Remember crosshair coords
 			if (!crossEnabled) {
@@ -274,7 +277,7 @@ const CrosshairPlugin = {
 					return;
 				}
 
-				chart._crosshairCache.crosshairEnabled = true;
+				chart._crosshairCache.enabledByTouch = true;
 				chart._crosshairCache.crosshairEnabledInLastTouchSeq = true;
 
 				// In crosshair mode, disable panning
@@ -292,15 +295,15 @@ const CrosshairPlugin = {
 				},
 				{ once: true }
 			);
-		});
+		}
 
-		chart.canvas.addEventListener('touchend', (e) => {
+		function touchendHandler(e: TouchEvent) {
 			if (
 				!chart._crosshairCache.crosshairEnabledInLastTouchSeq &&
 				chart._crosshairCache.totalLastTouchSeqDelta.x === 0 &&
 				chart._crosshairCache.totalLastTouchSeqDelta.y === 0
 			) {
-				chart._crosshairCache.crosshairEnabled = false;
+				chart._crosshairCache.enabledByTouch = false;
 
 				// @ts-ignore
 				console.log('enabling pan');
@@ -309,29 +312,100 @@ const CrosshairPlugin = {
 
 				chart.render();
 			}
-		});
+		}
+
+		function pointermoveHandler(e: PointerEvent) {
+			if (e.pointerType === 'mouse') {
+				chart._crosshairCache.lastUsedInputInterface = 'mouse';
+
+				const canvasRect = chart.canvas.getBoundingClientRect();
+
+				chart._crosshairCache.coords = {
+					x: e.clientX - canvasRect.left,
+					y: e.clientY - canvasRect.top
+				};
+
+				chart.render();
+			}
+		}
+
+		function pointerleaveHandler(e: PointerEvent) {
+			if (e.pointerType === 'mouse') {
+				chart._crosshairCache.coords = null;
+				chart.render();
+			}
+		}
+
+		chart.canvas.addEventListener('touchmove', touchmoveHandler);
+		chart.canvas.addEventListener('touchstart', touchstartHanlder);
+		chart.canvas.addEventListener('touchend', touchendHandler);
+		chart.canvas.addEventListener('pointermove', pointermoveHandler);
+		chart.canvas.addEventListener('pointerleave', pointerleaveHandler);
+
+		chart._crosshairCache.customEventHandlers = [
+			{
+				event: 'touchmove',
+				handler: touchmoveHandler
+			},
+			{
+				event: 'touchstart',
+				handler: touchstartHanlder
+			},
+			{
+				event: 'touchend',
+				handler: touchendHandler
+			},
+			{
+				event: 'pointermove',
+				handler: pointermoveHandler
+			},
+			{
+				event: 'pointerleave',
+				handler: pointerleaveHandler
+			}
+		];
 	},
-	afterEvent: (chart: Chart_, args: { event: ChartEvent }) => {
-		const { event } = args;
-		const { canvas, ctx } = chart;
-
-		const crosshairEnabled = chart._crosshairCache.crosshairEnabled;
-
-		if (event.type === 'mousemove') {
-			// if (!crosshairEnabled) return;
-			// chart._crosshairCache.coords = {
-			// 	x: event.x || 0,
-			// 	y: event.y || 0
-			// };
-		} else if (event.type === 'mouseout') {
-			chart._crosshairCache.coords = null;
+	beforeDestroy: (chart: Chart_) => {
+		for (const { event, handler } of chart._crosshairCache.customEventHandlers) {
+			chart.canvas.removeEventListener(event, handler);
 		}
 	},
+	// afterEvent: (chart: Chart_, args) => {
+	// 	const { event } = args;
+
+	// 	const e = event.native as PointerEvent;
+
+	// 	console.log(e);
+
+	// 	if (e && e.pointerType === 'mouse') {
+	// 		console.log('mouse');
+	// 		chart._crosshairCache.lastUsedInputInterface = 'mouse';
+
+	// 		const canvasRect = chart.canvas.getBoundingClientRect();
+
+	// 		chart._crosshairCache.coords = {
+	// 			x: e.clientX - canvasRect.left,
+	// 			y: e.clientY - canvasRect.top
+	// 		};
+
+	// 		args.changed = true;
+	// 	}
+	// },
 	afterDraw: (chart: Chart_) => {
+		const options = chart._crosshairCache.opts;
+
+		if (options.labels.length < 1) return;
+
 		const { ctx } = chart;
 		const coords = chart._crosshairCache.coords;
 
-		if (!coords || !chart._crosshairCache.crosshairEnabled) return;
+		if (!coords) return;
+
+		if (
+			chart._crosshairCache.lastUsedInputInterface === 'touch' &&
+			!chart._crosshairCache.enabledByTouch
+		)
+			return;
 
 		const { x, y } = coords;
 
@@ -374,8 +448,6 @@ const CrosshairPlugin = {
 
 		ctx.restore();
 
-		const options = chart._crosshairCache.opts;
-
 		for (const labelOpts of options.labels) {
 			const { scaleId } = labelOpts;
 			const scale = chart.scales[scaleId];
@@ -392,5 +464,8 @@ const CrosshairPlugin = {
 		drawIntersections(chart, { xVal: nearestXVal, xPixel: nearestXPixel, labelOptions: yScales });
 	}
 };
+
+// Fix for HMR
+Chart.unregister(CrosshairPlugin);
 
 Chart.register(CrosshairPlugin);
