@@ -411,18 +411,26 @@ export const CrosshairPlugin: Plugin = {
 
 		// Get nearest value from x axis
 		const xDataset = chart.data.datasets[0];
+
 		const xScale = chart.scales[(xDataset as any).xAxisID as string];
+
+		// TODO this should be taken somewhere from chart JS internals
+		// rather than trying labels and datasets for X values.
+		const xVals = (chart.data.labels || []) as number[];
+
+		if (xVals.length < 1) {
+			xVals.push(...xDataset.data.map((i: any) => i.x));
+		}
 
 		const xVal = xScale.getValueForPixel(x) as number;
 
-		const largerXData = xDataset.data.find((i: any) => i.x > xVal) as any;
-		const smallerXData = xDataset.data.findLast((i: any) => i.x < xVal) as any;
+		const largerXVal = xVals.find((i: number) => i > xVal) as any;
+		const smallerXVal = xVals.findLast((i: number) => i < xVal) as any;
 
 		let nearestXVal = null;
 
-		if (largerXData && smallerXData) {
-			nearestXVal =
-				Math.abs(largerXData.x - x) < Math.abs(smallerXData.x - x) ? largerXData.x : smallerXData.x;
+		if (largerXVal && smallerXVal) {
+			nearestXVal = Math.abs(largerXVal - x) < Math.abs(smallerXVal - x) ? largerXVal : smallerXVal;
 		}
 
 		const nearestXPixel = xScale.getPixelForValue(nearestXVal);
