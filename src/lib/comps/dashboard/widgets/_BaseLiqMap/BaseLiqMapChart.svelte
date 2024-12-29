@@ -14,28 +14,17 @@
 
 	export let chart: Chart;
 	export let currentPrice: number = 0;
-	export let fetchLiqMapData: () => Promise<LiqMapData | null>;
+	export let data: LiqMapData | null;
 
-	let refreshId = 0;
+	let canvas: HTMLCanvasElement;
 
-	export async function refreshData() {
+	function reset() {
 		if (!canvas) return;
 
-		const localRefreshId = ++refreshId;
-
-		if (chart) {
-			chart.destroy();
-		}
-
-		const data = await fetchLiqMapData();
+		chart?.destroy();
 
 		if (!data) {
 			failure('No data.');
-			return;
-		}
-
-		if (refreshId !== localRefreshId) {
-			console.log('refreshData: stale data');
 			return;
 		}
 
@@ -266,7 +255,7 @@
 		chart.resize();
 	}
 
-	let canvas: HTMLCanvasElement;
+	$: data && reset();
 </script>
 
 <div class="relative w-full h-full">

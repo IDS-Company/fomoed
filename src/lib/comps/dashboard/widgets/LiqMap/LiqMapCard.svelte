@@ -43,9 +43,9 @@
 	let assetOptions: Option[] = [];
 	let selAssetOption = writable<InstrumentOption | null>(null);
 
-	let refreshData: () => any;
 	let loading: boolean;
 	let currentPrice: number;
+	let data: LiqMapData | null = null;
 
 	const pairSearchTerm = writable($selAssetOption?.label || '');
 
@@ -65,38 +65,23 @@
 		browser && $logged_in && loadAssetOptions();
 	});
 
-	async function safeRefreshData() {
-		console.log('safe refreshing data');
-
+	async function refreshData() {
 		loading = true;
 
-		await tick();
-
-		try {
-			await refreshData?.();
-		} catch (ex) {
-			console.error(ex);
-		} finally {
-			loading = false;
-		}
-	}
-
-	async function fetchLiqMapDataWrapper(): Promise<LiqMapData | null> {
 		if (!$selAssetOption) {
 			return null;
 		}
 
-		const res = await fetchLiqMapData(selectedTimeframe.value, [$selAssetOption.value]);
+		try {
+			data = await fetchLiqMapData(selectedTimeframe.value, [$selAssetOption.value]);
+		} catch (ex) {
+			console.error(ex);
+		}
 
-		return res;
+		loading = false;
 	}
 
-	onMount(() => {
-		// Automatically load data on mount
-		selAssetOption.subscribe(async (val) => {
-			safeRefreshData();
-		});
-	});
+	$: $selAssetOption && refreshData();
 </script>
 
 <div class="h-full overflow-hidden relative">
@@ -128,7 +113,7 @@
 							options={timeframeOptions}
 							bind:selected={selectedTimeframe}
 							on:change={async () => {
-								safeRefreshData();
+								refreshData?.();
 							}}
 						/>
 					</div>
@@ -137,7 +122,7 @@
 				<div
 					class="-desktop:order-2 place-self-end duration-200 {$isFullscreenCardStore && 'pr-10'}"
 				>
-					<IconButton disabled={loading} on:click={safeRefreshData}>
+					<IconButton disabled={loading} on:click={refreshData}>
 						<div class:animate-reverse-spin={loading}>
 							<IconRefresh />
 						</div>
@@ -167,12 +152,7 @@
 				{#if $enablePlusFeatures}
 					<InCardChartContainer {loading}>
 						{#if $selAssetOption}
-							<BaseLiqMapChart
-								bind:chart
-								bind:refreshData
-								bind:currentPrice
-								fetchLiqMapData={fetchLiqMapDataWrapper}
-							/>
+							<BaseLiqMapChart bind:chart bind:currentPrice {data} />
 						{/if}
 					</InCardChartContainer>
 				{/if}

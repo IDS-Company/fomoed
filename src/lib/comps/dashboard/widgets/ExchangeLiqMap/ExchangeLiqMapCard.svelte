@@ -9,7 +9,7 @@
 	import IconButton from '$lib/comps/buttons/IconButton.svelte';
 	import Legend from '$lib/comps/charts/Legend.svelte';
 	import BaseLiqMapChart from '../_BaseLiqMap/BaseLiqMapChart.svelte';
-	import { fetchLiqMapDataMerged } from '$lib/comps/charts/chartUtils';
+	import { fetchLiqMapDataMerged, type LiqMapData } from '$lib/comps/charts/chartUtils';
 	import DashboardCardTitle from '$lib/comps/DashboardCardTitle.svelte';
 	import DashboardCardHeader from '$lib/comps/DashboardCardHeader.svelte';
 	import InCardChartContainer from '$lib/comps/InCardChartContainer.svelte';
@@ -32,17 +32,17 @@
 
 	let selectedTimeframe: Option = timeframeOptions[0];
 
-	let refreshData: () => any;
 	let loading: boolean;
 	let currentPrice: number;
+	let data: LiqMapData | null = null;
 
-	async function safeRefreshData() {
+	async function refreshData() {
 		loading = true;
 
 		await tick();
 
 		try {
-			await refreshData?.();
+			data = await fetchLiqMapDataMerged(selectedTimeframe.value, $coinstats_selected_coin.symbol);
 		} catch (ex) {
 			console.error(ex);
 		} finally {
@@ -50,9 +50,7 @@
 		}
 	}
 
-	coinstats_selected_coin.subscribe(() => {
-		safeRefreshData();
-	});
+	$: $coinstats_selected_coin && refreshData();
 </script>
 
 <div class="h-full w-full overflow-hidden relative">
@@ -76,15 +74,15 @@
 							options={timeframeOptions}
 							bind:selected={selectedTimeframe}
 							on:change={async () => {
-								safeRefreshData();
+								refreshData();
 							}}
 						/>
 					</div>
 
 					<div class="-desktop:flex-grow"></div>
 
-					<div class={$isFullscreenCardStore && 'pr-10'}>
-						<IconButton disabled={loading} on:click={safeRefreshData}>
+					<div class:pr-10={$isFullscreenCardStore}>
+						<IconButton disabled={loading} on:click={refreshData}>
 							<div class:animate-reverse-spin={loading}>
 								<IconRefresh />
 							</div>
@@ -113,13 +111,7 @@
 
 				{#if $enablePlusFeatures}
 					<InCardChartContainer {loading}>
-						<BaseLiqMapChart
-							bind:chart
-							bind:refreshData
-							bind:currentPrice
-							fetchLiqMapData={() =>
-								fetchLiqMapDataMerged(selectedTimeframe.value, $coinstats_selected_coin.symbol)}
-						/>
+						<BaseLiqMapChart bind:chart bind:currentPrice {data} />
 					</InCardChartContainer>
 				{/if}
 			</div>
