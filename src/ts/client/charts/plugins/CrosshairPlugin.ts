@@ -189,6 +189,8 @@ export const CrosshairPlugin: Plugin = {
 		const userOpts = (chart.options.plugins as any)['crosshair'] as CrosshairPluginConfig;
 		const opts = Object.assign({}, defaultOptions, userOpts);
 
+		console.log({ opts });
+
 		chart._crosshairCache = {
 			enabledByTouch: false,
 			datasetCache: [],
@@ -367,7 +369,7 @@ export const CrosshairPlugin: Plugin = {
 	},
 	beforeDestroy: (chart: Chart_) => {
 		for (const { event, handler } of chart._crosshairCache.customEventHandlers) {
-			chart.canvas.removeEventListener(event, handler);
+			chart.canvas?.removeEventListener(event, handler);
 		}
 	},
 	// afterEvent: (chart: Chart_, args) => {

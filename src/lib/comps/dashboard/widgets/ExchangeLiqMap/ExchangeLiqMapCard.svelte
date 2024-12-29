@@ -8,7 +8,7 @@
 	import IconRefresh from '$lib/icons/IconRefresh.svelte';
 	import IconButton from '$lib/comps/buttons/IconButton.svelte';
 	import Legend from '$lib/comps/charts/Legend.svelte';
-	import BaseLiqMapChart from '../_BaseLiqMapCard/BaseLiqMapChart.svelte';
+	import BaseLiqMapChart from '../_BaseLiqMap/BaseLiqMapChart.svelte';
 	import { fetchLiqMapDataMerged } from '$lib/comps/charts/chartUtils';
 	import DashboardCardTitle from '$lib/comps/DashboardCardTitle.svelte';
 	import DashboardCardHeader from '$lib/comps/DashboardCardHeader.svelte';

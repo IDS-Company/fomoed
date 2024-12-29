@@ -6,13 +6,15 @@
 	import { failure } from '$lib/utils';
 	import { registerChartPluginZoomInBrowser } from '$ts/client/utils/ui';
 	import type { ZoomPluginOptions } from 'chartjs-plugin-zoom/types/options';
+	import { type CrosshairPluginConfig } from '$ts/client/charts/plugins/CrosshairPlugin';
+	import dayjs from 'dayjs';
 
 	Chart.register(annotationPlugin);
 	registerChartPluginZoomInBrowser();
 
 	export let chart: Chart;
 	export let currentPrice: number = 0;
-	export let fetchLiqMapData: () => Promise<LiqMapData>;
+	export let fetchLiqMapData: () => Promise<LiqMapData | null>;
 
 	let refreshId = 0;
 
@@ -87,6 +89,25 @@
 
 		const nf = Intl.NumberFormat('en-US');
 
+		const crosshairPluginOptions: CrosshairPluginConfig = {
+			labels: [
+				{
+					scaleId: 'x',
+					label: 'Date & Time',
+					getText: () => (val) => {
+						return dayjs(val).format('DD MMM YYYY');
+					}
+				},
+				{
+					scaleId: 'y',
+					label: 'CFGI',
+					getText: () => (val) => val.toFixed(0),
+					getTextColor: () => (val) => 'white'
+				}
+			],
+			crosshairEnableDelay: 200
+		};
+
 		chart = new Chart(canvas, {
 			data: {
 				datasets: [
@@ -95,7 +116,8 @@
 						data: data.liqBars,
 						barThickness: 0.5,
 						order: 20,
-						backgroundColor: data.liqBars.map((i) => i.color)
+						backgroundColor: data.liqBars.map((i) => i.color),
+						xAxisID: 'x'
 					},
 					{
 						type: 'line',
@@ -107,7 +129,8 @@
 						borderWidth: 2,
 						order: 10,
 						backgroundColor: gradientLong,
-						fill: true
+						fill: true,
+						xAxisID: 'x'
 					},
 					{
 						type: 'line',
@@ -119,7 +142,8 @@
 						borderWidth: 2,
 						order: 10,
 						backgroundColor: gradientShort,
-						fill: true
+						fill: true,
+						xAxisID: 'x'
 					}
 				]
 			},
@@ -178,6 +202,7 @@
 					axis: 'x'
 				},
 				plugins: {
+					crosshair: crosshairPluginOptions,
 					legend: {
 						display: false
 					},
