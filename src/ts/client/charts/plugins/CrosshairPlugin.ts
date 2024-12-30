@@ -15,6 +15,7 @@ interface LabelingOptions {
 export interface CrosshairPluginConfig {
 	labels: LabelingOptions[];
 	crosshairEnableDelay?: number;
+	labelStackDirection: 'horizontal' | 'vertical';
 }
 
 type InputInterface = 'mouse' | 'touch';
@@ -112,7 +113,7 @@ function renderYCrosshairLabel(chart: Chart, yCenterPixel: number, opts: Labelin
 }
 
 function drawIntersections(
-	chart: Chart,
+	chart: Chart_,
 	opts: {
 		labelOptions: LabelingOptions[];
 		drawLabels?: boolean;
@@ -126,8 +127,6 @@ function drawIntersections(
 	const { ctx } = chart;
 	const { chartArea } = chart;
 
-	let leftAcc = 0;
-
 	ctx.save();
 
 	if (drawLabels) {
@@ -136,23 +135,33 @@ function drawIntersections(
 		ctx.textBaseline = 'middle';
 	}
 
+	const labelsToDraw: { label: string; value: string; totalW: number; color: string }[] = [];
+
 	for (const datasetMeta of chart.getSortedVisibleDatasetMetas()) {
 		const yAxisID = datasetMeta.yAxisID as string;
 
 		const datasetYScaleOpts = labelOptions.find((i) => i.scaleId === yAxisID);
+
+		if (!datasetYScaleOpts) {
+			console.error(`No label options found for scale ${yAxisID}`);
+			continue;
+		}
+
 		const datapoint = datasetMeta._parsed.find((i: any) => i.x === xVal) as any;
 
-		if (!datapoint) return;
+		if (!datapoint) continue;
 
 		const { text, color } = interpretOpts(datasetYScaleOpts!, datapoint.y);
 
 		if (drawLabels) {
 			const textWithLabel = `${datasetYScaleOpts!.label}: ${text}`;
 
-			ctx.fillStyle = color;
-			ctx.fillText(textWithLabel, chartArea.left + leftAcc, chartArea.top);
-
-			leftAcc += ctx.measureText(textWithLabel).width + 10;
+			labelsToDraw.push({
+				label: datasetYScaleOpts.label,
+				value: text,
+				totalW: ctx.measureText(textWithLabel).width,
+				color
+			});
 		}
 
 		if (drawPoints) {
@@ -168,12 +177,41 @@ function drawIntersections(
 		}
 	}
 
+	// Draw labels
+	let leftAcc = 0;
+	let topAcc = 2;
+
+	const maxWidth = Math.max(...labelsToDraw.map((l) => l.totalW)) + 10;
+
+	for (const label of labelsToDraw) {
+		ctx.fillStyle = label.color;
+
+		const labelText = label.label + ': ';
+
+		if (chart._crosshairCache.opts.labelStackDirection === 'horizontal') {
+			ctx.fillText(labelText, chartArea.left + leftAcc, chartArea.top);
+			leftAcc += ctx.measureText(labelText).width;
+
+			ctx.fillText(label.value, chartArea.left + leftAcc, chartArea.top);
+			leftAcc += ctx.measureText(label.value).width + 10;
+		} else {
+			ctx.fillText(labelText, chartArea.left, chartArea.top + topAcc);
+
+			const valWidth = ctx.measureText(label.value).width;
+			ctx.fillText(label.value, chartArea.left + maxWidth - valWidth, chartArea.top + topAcc);
+		}
+
+		// leftAcc += label.totalW + 10;
+		topAcc += ctx.measureText(label.value).emHeightAscent + 10;
+	}
+
 	ctx.restore();
 }
 
 const defaultOptions: CrosshairPluginConfig = {
 	labels: [],
-	crosshairEnableDelay: 500
+	crosshairEnableDelay: 500,
+	labelStackDirection: 'horizontal'
 };
 
 export const CrosshairPlugin: Plugin = {
@@ -188,8 +226,6 @@ export const CrosshairPlugin: Plugin = {
 	afterInit: (chart: Chart_) => {
 		const userOpts = (chart.options.plugins as any)['crosshair'] as CrosshairPluginConfig;
 		const opts = Object.assign({}, defaultOptions, userOpts);
-
-		console.log({ opts });
 
 		chart._crosshairCache = {
 			enabledByTouch: false,
@@ -432,7 +468,8 @@ export const CrosshairPlugin: Plugin = {
 		let nearestXVal = null;
 
 		if (largerXVal && smallerXVal) {
-			nearestXVal = Math.abs(largerXVal - x) < Math.abs(smallerXVal - x) ? largerXVal : smallerXVal;
+			nearestXVal =
+				Math.abs(largerXVal - xVal) < Math.abs(smallerXVal - xVal) ? largerXVal : smallerXVal;
 		}
 
 		const nearestXPixel = xScale.getPixelForValue(nearestXVal);

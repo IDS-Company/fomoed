@@ -10,6 +10,8 @@ export function humanizeNumber(num: number) {
 	} else if (num >= 1000000000) {
 		return (num / 1000000000).toFixed(1).replace(/\.0$/, '') + 'B'; // Billion (B)
 	}
+
+	return num.toString();
 }
 
 export type ForeignInstrument = {

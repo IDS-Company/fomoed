@@ -6,7 +6,7 @@
 	import DashboardCard from '$lib/comps/DashboardCard.svelte';
 	import Autocomplete from '$lib/comps/Autocomplete.svelte';
 	import DropdownNew from '$lib/comps/DropdownNew.svelte';
-	import { getContext, onMount, tick } from 'svelte';
+	import { getContext } from 'svelte';
 	import IconRefresh from '$lib/icons/IconRefresh.svelte';
 	import IconButton from '$lib/comps/buttons/IconButton.svelte';
 	import { writable, type Readable } from 'svelte/store';

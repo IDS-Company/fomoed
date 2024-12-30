@@ -305,8 +305,6 @@ export async function fetchLiqMapDataMerged(
 		combinedLiqBars.push({ color, x: price, y: sumBy(liqValues, (i) => i.liqValue) });
 	}
 
-	console.log(combinedLiqBars);
-
 	return {
 		cumulativeLongLiqLeverage,
 		cumulativeShortLiqLeverage,

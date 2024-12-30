@@ -8,6 +8,8 @@
 	import type { ZoomPluginOptions } from 'chartjs-plugin-zoom/types/options';
 	import { type CrosshairPluginConfig } from '$ts/client/charts/plugins/CrosshairPlugin';
 	import dayjs from 'dayjs';
+	import { commaFormatNumber } from '$ts/utils/client/charts';
+	import { humanizeNumber } from '$ts/utils/client';
 
 	Chart.register(annotationPlugin);
 	registerChartPluginZoomInBrowser();
@@ -82,19 +84,26 @@
 			labels: [
 				{
 					scaleId: 'x',
-					label: 'Date & Time',
+					label: 'Price',
 					getText: () => (val) => {
-						return dayjs(val).format('DD MMM YYYY');
+						return '$' + commaFormatNumber(val);
 					}
 				},
 				{
 					scaleId: 'y',
-					label: 'CFGI',
-					getText: () => (val) => val.toFixed(0),
+					label: 'At price',
+					getText: () => (val) => humanizeNumber(val),
+					getTextColor: () => (val) => 'white'
+				},
+				{
+					scaleId: 'cumulative',
+					label: 'Cumulative',
+					getText: () => (val) => humanizeNumber(val),
 					getTextColor: () => (val) => 'white'
 				}
 			],
-			crosshairEnableDelay: 200
+			crosshairEnableDelay: 200,
+			labelStackDirection: 'vertical'
 		};
 
 		chart = new Chart(canvas, {
@@ -106,7 +115,8 @@
 						barThickness: 0.5,
 						order: 20,
 						backgroundColor: data.liqBars.map((i) => i.color),
-						xAxisID: 'x'
+						xAxisID: 'x',
+						yAxisID: 'y'
 					},
 					{
 						type: 'line',
@@ -185,44 +195,43 @@
 						}
 					}
 				},
-				interaction: {
-					mode: 'nearest',
-					intersect: false,
-					axis: 'x'
-				},
+				interaction: false,
 				plugins: {
 					crosshair: crosshairPluginOptions,
 					legend: {
 						display: false
 					},
+					// tooltip: {
+					// 	position: 'nearest',
+					// 	callbacks: {
+					// 		title: (ctx: any) => {
+					// 			const formatted = nf.format(ctx[0].parsed.x);
+
+					// 			return `Price: ${formatted} USD`;
+					// 		},
+					// 		label: (ctx) => {
+					// 			const formatted = nf.format(Math.round(ctx.parsed.y));
+
+					// 			if (ctx.datasetIndex === 0) {
+					// 				return ` Leverage: ${formatted}`;
+					// 			} else if (ctx.datasetIndex === 1 || ctx.datasetIndex === 2) {
+					// 				return ` Cumulative: ${formatted}`;
+					// 			}
+					// 		},
+					// 		labelColor: (ctx: any) => {
+					// 			const color = ctx.dataset.borderColor || ctx.raw.color;
+
+					// 			return {
+					// 				borderColor: color,
+					// 				backgroundColor: color,
+					// 				borderWidth: 2,
+					// 				borderRadius: 2
+					// 			};
+					// 		}
+					// 	}
+					// },
 					tooltip: {
-						position: 'nearest',
-						callbacks: {
-							title: (ctx: any) => {
-								const formatted = nf.format(ctx[0].parsed.x);
-
-								return `Price: ${formatted} USD`;
-							},
-							label: (ctx) => {
-								const formatted = nf.format(Math.round(ctx.parsed.y));
-
-								if (ctx.datasetIndex === 0) {
-									return ` Leverage: ${formatted}`;
-								} else if (ctx.datasetIndex === 1 || ctx.datasetIndex === 2) {
-									return ` Cumulative: ${formatted}`;
-								}
-							},
-							labelColor: (ctx: any) => {
-								const color = ctx.dataset.borderColor || ctx.raw.color;
-
-								return {
-									borderColor: color,
-									backgroundColor: color,
-									borderWidth: 2,
-									borderRadius: 2
-								};
-							}
-						}
+						enabled: false
 					},
 					annotation: {
 						annotations: {
