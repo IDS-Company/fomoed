@@ -6,34 +6,27 @@
 	import { failure } from '$lib/utils';
 	import { registerChartPluginZoomInBrowser } from '$ts/client/utils/ui';
 	import type { ZoomPluginOptions } from 'chartjs-plugin-zoom/types/options';
+	import { type CrosshairPluginConfig } from '$ts/client/charts/plugins/CrosshairPlugin';
+	import dayjs from 'dayjs';
+	import { commaFormatNumber } from '$ts/utils/client/charts';
+	import { humanizeNumber } from '$ts/utils/client';
 
 	Chart.register(annotationPlugin);
 	registerChartPluginZoomInBrowser();
 
 	export let chart: Chart;
 	export let currentPrice: number = 0;
-	export let fetchLiqMapData: () => Promise<LiqMapData>;
+	export let data: LiqMapData | null;
 
-	let refreshId = 0;
+	let canvas: HTMLCanvasElement;
 
-	export async function refreshData() {
+	function reset() {
 		if (!canvas) return;
 
-		const localRefreshId = ++refreshId;
-
-		if (chart) {
-			chart.destroy();
-		}
-
-		const data = await fetchLiqMapData();
+		chart?.destroy();
 
 		if (!data) {
 			failure('No data.');
-			return;
-		}
-
-		if (refreshId !== localRefreshId) {
-			console.log('refreshData: stale data');
 			return;
 		}
 
@@ -87,6 +80,32 @@
 
 		const nf = Intl.NumberFormat('en-US');
 
+		const crosshairPluginOptions: CrosshairPluginConfig = {
+			labels: [
+				{
+					scaleId: 'x',
+					label: 'Price',
+					getText: () => (val) => {
+						return '$' + commaFormatNumber(val);
+					}
+				},
+				{
+					scaleId: 'y',
+					label: 'At price',
+					getText: () => (val) => humanizeNumber(val),
+					getTextColor: () => (val) => 'white'
+				},
+				{
+					scaleId: 'cumulative',
+					label: 'Cumulative',
+					getText: () => (val) => humanizeNumber(val),
+					getTextColor: () => (val) => 'white'
+				}
+			],
+			crosshairEnableDelay: 200,
+			labelStackDirection: 'vertical'
+		};
+
 		chart = new Chart(canvas, {
 			data: {
 				datasets: [
@@ -95,7 +114,9 @@
 						data: data.liqBars,
 						barThickness: 0.5,
 						order: 20,
-						backgroundColor: data.liqBars.map((i) => i.color)
+						backgroundColor: data.liqBars.map((i) => i.color),
+						xAxisID: 'x',
+						yAxisID: 'y'
 					},
 					{
 						type: 'line',
@@ -107,7 +128,8 @@
 						borderWidth: 2,
 						order: 10,
 						backgroundColor: gradientLong,
-						fill: true
+						fill: true,
+						xAxisID: 'x'
 					},
 					{
 						type: 'line',
@@ -119,7 +141,8 @@
 						borderWidth: 2,
 						order: 10,
 						backgroundColor: gradientShort,
-						fill: true
+						fill: true,
+						xAxisID: 'x'
 					}
 				]
 			},
@@ -172,43 +195,43 @@
 						}
 					}
 				},
-				interaction: {
-					mode: 'nearest',
-					intersect: false,
-					axis: 'x'
-				},
+				interaction: false,
 				plugins: {
+					crosshair: crosshairPluginOptions,
 					legend: {
 						display: false
 					},
+					// tooltip: {
+					// 	position: 'nearest',
+					// 	callbacks: {
+					// 		title: (ctx: any) => {
+					// 			const formatted = nf.format(ctx[0].parsed.x);
+
+					// 			return `Price: ${formatted} USD`;
+					// 		},
+					// 		label: (ctx) => {
+					// 			const formatted = nf.format(Math.round(ctx.parsed.y));
+
+					// 			if (ctx.datasetIndex === 0) {
+					// 				return ` Leverage: ${formatted}`;
+					// 			} else if (ctx.datasetIndex === 1 || ctx.datasetIndex === 2) {
+					// 				return ` Cumulative: ${formatted}`;
+					// 			}
+					// 		},
+					// 		labelColor: (ctx: any) => {
+					// 			const color = ctx.dataset.borderColor || ctx.raw.color;
+
+					// 			return {
+					// 				borderColor: color,
+					// 				backgroundColor: color,
+					// 				borderWidth: 2,
+					// 				borderRadius: 2
+					// 			};
+					// 		}
+					// 	}
+					// },
 					tooltip: {
-						position: 'nearest',
-						callbacks: {
-							title: (ctx: any) => {
-								const formatted = nf.format(ctx[0].parsed.x);
-
-								return `Price: ${formatted} USD`;
-							},
-							label: (ctx) => {
-								const formatted = nf.format(Math.round(ctx.parsed.y));
-
-								if (ctx.datasetIndex === 0) {
-									return ` Leverage: ${formatted}`;
-								} else if (ctx.datasetIndex === 1 || ctx.datasetIndex === 2) {
-									return ` Cumulative: ${formatted}`;
-								}
-							},
-							labelColor: (ctx: any) => {
-								const color = ctx.dataset.borderColor || ctx.raw.color;
-
-								return {
-									borderColor: color,
-									backgroundColor: color,
-									borderWidth: 2,
-									borderRadius: 2
-								};
-							}
-						}
+						enabled: false
 					},
 					annotation: {
 						annotations: {
@@ -241,7 +264,7 @@
 		chart.resize();
 	}
 
-	let canvas: HTMLCanvasElement;
+	$: data && reset();
 </script>
 
 <div class="relative w-full h-full">

@@ -305,8 +305,6 @@ export async function fetchLiqMapDataMerged(
 		combinedLiqBars.push({ color, x: price, y: sumBy(liqValues, (i) => i.liqValue) });
 	}
 
-	console.log(combinedLiqBars);
-
 	return {
 		cumulativeLongLiqLeverage,
 		cumulativeShortLiqLeverage,
@@ -319,9 +317,12 @@ export async function fetchLiqMapDataMerged(
 	};
 }
 
-export async function getSupportedLiqMapInstrumentOptions(): Promise<
-	{ label: string; value: InstrumentInfo }[]
-> {
+export type InstrumentOption = {
+	label: string;
+	value: InstrumentInfo;
+};
+
+export async function getSupportedLiqMapInstrumentOptions(): Promise<InstrumentOption[]> {
 	const coinstatsSelectedCoin = get(coinstats_selected_coin);
 
 	if (!coinstatsSelectedCoin) {

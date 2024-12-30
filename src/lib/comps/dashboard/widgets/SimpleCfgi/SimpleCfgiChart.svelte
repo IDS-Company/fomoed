@@ -20,6 +20,8 @@
 	import 'chartjs-adapter-dayjs-4/dist/chartjs-adapter-dayjs-4.esm';
 	import type { ZoomPluginOptions } from 'chartjs-plugin-zoom/types/options';
 	import { callback } from 'chart.js/helpers';
+	import dayjs from 'dayjs';
+	import { type CrosshairPluginConfig } from '$ts/client/charts/plugins/CrosshairPlugin';
 
 	registerChartPluginZoomInBrowser();
 
@@ -67,12 +69,11 @@
 			fill: true,
 			borderColor: color,
 			borderWidth: 1,
-			pointRadius: 0
+			pointRadius: 0,
+			xAxisID: 'x'
 		};
 
 		const labels = formatted_data.map((d) => d.date);
-
-		console.log({ labels });
 
 		const chart_data = {
 			labels,
@@ -104,6 +105,25 @@
 			}
 		};
 
+		const crosshairPluginOptions: CrosshairPluginConfig = {
+			labels: [
+				{
+					scaleId: 'x',
+					label: 'Date & Time',
+					getText: () => (val) => {
+						return dayjs(val).format('DD MMM YYYY');
+					}
+				},
+				{
+					scaleId: 'y',
+					label: 'CFGI',
+					getText: () => (val) => val.toFixed(0),
+					getTextColor: () => (val) => 'white'
+				}
+			],
+			crosshairEnableDelay: 200
+		};
+
 		const options: _DeepPartialObject<
 			CoreChartOptions<'bar'> &
 				ElementChartOptions<'bar'> &
@@ -117,10 +137,7 @@
 			},
 			responsive: false,
 			maintainAspectRatio: false,
-			interaction: {
-				mode: 'nearest',
-				intersect: false
-			},
+			interaction: false,
 			scales: {
 				y: {
 					beginAtZero: true,
@@ -169,7 +186,11 @@
 				legend: {
 					display: false
 				},
-				zoom: zoomPluginOptions
+				tooltip: {
+					enabled: false
+				},
+				zoom: zoomPluginOptions,
+				crosshair: crosshairPluginOptions
 			}
 		};
 
